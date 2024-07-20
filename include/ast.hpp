@@ -9,6 +9,8 @@
 
 #include "statements/ast_return.hpp"
 #include "statements/ast_statements.hpp"
+#include "statements/ast_declaration.hpp"
+#include "statements/ast_assignment.hpp"
 
 #include "primitives/ast_identifier.hpp"
 #include "primitives/ast_constant.hpp"

@@ -86,11 +86,16 @@ direct_declarator
 	;
 
 statement
-	: jump_statement { $$ = $1; }
+	: compound_statement 	{ $$ = new CompoundStatement($1); }
+	| expression_statement 	{ $$ = $1; }
+	| jump_statement 		{ $$ = $1; }
+
 	;
 
 compound_statement
-	: '{' statement_list '}' { $$ = new CompoundStatement($2); }
+	: '{' declaration_list '}' 					{ $$ = new CompoundStatement($2); }
+	| '{' declaration_list statement_list '}' 	{ CompoundStatement *compound_statement = new CompoundStatement($2); compound_statement->PushBack($3); $$ = compound_statement; }
+	| '{' statement_list '}' 					{ $$ = new CompoundStatement($2); }
 	;
 
 statement_list
@@ -104,7 +109,13 @@ jump_statement
 	;
 
 primary_expression
-	: INT_CONSTANT { $$ = new IntConstant($1); }
+	: INT_CONSTANT 	{ $$ = new IntConstant($1); }
+	| IDENTIFIER	{ $$ = new Identifier($1); }
+	;
+
+expression_statement
+	: ';'
+	| expression ';' { $$ = $1; }
 	;
 
 postfix_expression
@@ -169,10 +180,39 @@ conditional_expression
 
 assignment_expression
 	: conditional_expression
+	| unary_expression '=' assignment_expression	{ $$ = new Assignment($1, $3); }
 	;
 
 expression
 	: assignment_expression
+	;
+
+declaration
+	: declaration_specifiers init_declarator_list ';'	{ $$ = new Declaration($1, $2); }
+	;
+
+init_declarator_list
+	: init_declarator							{ $$ = new NodeList($1); }
+	| init_declarator_list ',' init_declarator	{ NodeList *declarator_list = dynamic_cast<NodeList *>($1); declarator_list->PushBack($3); $$ = declarator_list; }
+	;
+
+init_declarator
+	: declarator
+	| declarator '=' initializer	{ $$ = new Assignment($1, $3); }
+	;
+
+initializer
+	: assignment_expression
+	;
+
+initializer_list
+	: initializer						{ $$ = new NodeList($1); }
+	| initializer_list ',' initializer	{ $1->PushBack($3); $$ = $1; }
+	;
+
+declaration_list
+	: declaration					{ $$ = new NodeList($1); }
+	| declaration_list declaration	{ NodeList *declaration_list = dynamic_cast<NodeList *>($1); declaration_list->PushBack($2); $$ = declaration_list; }
 	;
 
 %%
