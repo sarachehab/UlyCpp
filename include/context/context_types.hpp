@@ -1,7 +1,7 @@
 #ifndef CONTEXT_TYPES
 #define CONTEXT_TYPES
 
-enum class SpecifierType
+enum class Type
 {
     _VOID,
     _CHAR,

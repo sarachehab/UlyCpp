@@ -22,9 +22,9 @@ public:
     ~Context();
 
     // Register allocation
-    std::string get_register(SpecifierType type);
-    std::string get_return_register(SpecifierType type);
-    void allocate_register(std::string reg_name, SpecifierType type);
+    std::string get_register(Type type);
+    std::string get_return_register() const;
+    void allocate_register(std::string reg_name, Type type);
     void deallocate_register(std::string reg_name);
 
     // Register saving for function calls
@@ -45,6 +45,7 @@ public:
     void define_function(std::string identifier, Function function);
     Function get_function(std::string identifier) const;
     std::string get_last_function_end_statement() const;
+    void set_return_register(Type type);
 
     // Label creation for control flow
     std::string create_label(std::string id);
@@ -58,9 +59,9 @@ public:
     std::string get_end_label() const;
 
     // Move, store and load instructions
-    std::string move_instruction(SpecifierType type) const;
-    std::string store_instruction(SpecifierType type) const;
-    std::string load_instruction(SpecifierType type) const;
+    std::string move_instruction(Type type) const;
+    std::string store_instruction(Type type) const;
+    std::string load_instruction(Type type) const;
 
     // Mode management
     void mode_push(Mode mode);
@@ -70,8 +71,8 @@ public:
     // TODO: Add functions to handle enums, structs, typedef, char and strings
 
     // Type specific properties
-    static const std::unordered_map<SpecifierType, int> types_size;
-    static const std::unordered_map<SpecifierType, std::string> assembler_directives;
+    static const std::unordered_map<Type, int> types_size;
+    static const std::unordered_map<Type, std::string> assembler_directives;
 
 private:
     // Register file
@@ -86,6 +87,7 @@ private:
     // Function map
     std::unordered_map<std::string, Function> function_bindings;
     std::string last_function_end_statement;
+    std::string return_register;
 
     // Control flow labels
     int label_counter;

@@ -13,7 +13,7 @@ struct Variable
 {
     bool is_pointer = false;
     bool is_array = false;
-    SpecifierType type;
+    Type type;
     Scope scope;
     int offset;
 };

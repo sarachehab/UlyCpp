@@ -14,14 +14,14 @@ protected:
 public:
     Node(){};
     virtual ~Node();
-    virtual void EmitRISC(std::ostream &stream, Context &context, std::string passedReg) const = 0;
+    virtual void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const = 0;
     virtual void Print(std::ostream &stream) const = 0;
 };
 
 // Represents a list of nodes.
 class NodeList : public Node
 {
-private:
+protected:
     std::vector<Node *> nodes_;
 
 public:
@@ -36,7 +36,7 @@ public:
     }
 
     void PushBack(Node *item);
-    virtual void EmitRISC(std::ostream &stream, Context &context, std::string passedReg) const override;
+    virtual void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     virtual void Print(std::ostream &stream) const override;
     std::vector<Node *> get_nodes() const;
 };

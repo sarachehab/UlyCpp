@@ -4,11 +4,11 @@
 struct Register
 {
     bool is_available;
-    SpecifierType type;
+    Type type;
     std::string name;
 
-    Register() : is_available(false), type(SpecifierType::_VOID), name("") {}
-    Register(bool is_available, SpecifierType type, std::string name) : is_available(is_available), type(type), name(name) {}
+    Register() : is_available(false), type(Type::_VOID), name("") {}
+    Register(bool is_available, Type type, std::string name) : is_available(is_available), type(type), name(name) {}
 };
 
 #endif
