@@ -211,8 +211,8 @@ initializer_list
 	;
 
 declaration_list
-	: declaration					{ $$ = new NodeList($1); }
-	| declaration_list declaration	{ NodeList *declaration_list = dynamic_cast<NodeList *>($1); declaration_list->PushBack($2); $$ = declaration_list; }
+	: declaration					{ $$ = new DeclarationList($1); }
+	| declaration_list declaration	{ DeclarationList *declaration_list = dynamic_cast<DeclarationList *>($1); declaration_list->PushBack($2); $$ = declaration_list; }
 	;
 
 %%

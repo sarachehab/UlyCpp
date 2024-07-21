@@ -9,7 +9,7 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
     std::string reg = context.get_register(type);
     expression_->EmitRISC(stream, context, reg);
 
-    stream << context.store_instruction(type) << " " << reg << ", " << offset << "(sp)" << std::endl;
+    stream << context.store_instruction(type) << " " << reg << ", " << offset << "(s0)" << std::endl;
     context.deallocate_register(reg);
 }
 

@@ -36,6 +36,7 @@ public:
     void pop_scope();
     int get_stack_offset() const;
     void increase_stack_offset(int offset);
+    void set_initial_offset(int offset);
 
     // Variable management
     void define_variable(std::string identifier, Variable variable);
@@ -82,6 +83,7 @@ private:
 
     // Variable map
     int current_stack_offset;
+    int initial_stack_offset;
     std::vector<VariablesLayer> variable_bindings;
 
     // Function map
