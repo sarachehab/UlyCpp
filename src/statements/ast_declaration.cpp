@@ -18,9 +18,9 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
         if (assignment != nullptr)
         {
             std::string variable_name = assignment->GetIdentifier();
-            assignment->EmitRISC(stream, context, passed_reg);
             Variable variable_specs(false, false, type, Scope::_LOCAL, offset);
             context.define_variable(variable_name, variable_specs);
+            assignment->EmitRISC(stream, context, passed_reg);
         }
         else if (identifier != nullptr)
         {

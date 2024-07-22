@@ -69,6 +69,11 @@ public:
     void mode_pop();
     bool has_mode(Mode mode) const;
 
+    // Type management
+    void set_operation_type(Type type);
+    void pop_operation_type();
+    Type get_operation_type() const;
+
     // TODO: Add functions to handle enums, structs, typedef, char and strings
 
     // Type specific properties
@@ -98,6 +103,9 @@ private:
 
     // Mode tracking
     std::stack<Mode> mode_stack;
+
+    // Type tracking
+    std::stack<Type> operation_type_stack;
 };
 
 #endif

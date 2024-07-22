@@ -7,6 +7,7 @@ void Context::define_variable(std::string identifier, Variable variable)
         throw std::runtime_error("Context::define_variable - trying to define variable in empty scope");
     }
     variable_bindings.back()[identifier] = variable;
+    std::cout << "Context::define_variable - defined variable " << identifier << " in scope " << variable_bindings.size() << std::endl;
 }
 
 Variable Context::get_variable(std::string identifier) const

@@ -128,6 +128,9 @@ argument_expression_list
 
 unary_expression
 	: postfix_expression
+	| '+' unary_expression	{ $$ = $2; }
+	| '-' unary_expression	{ $$ = new Negate($2); }
+	| '~' unary_expression	{ $$ = new OneComplement($2); }
 	;
 
 cast_expression
@@ -136,10 +139,15 @@ cast_expression
 
 multiplicative_expression
 	: cast_expression
+	| multiplicative_expression '*' cast_expression	{ $$ = new Multiplication($1, $3); }
+	| multiplicative_expression '/' cast_expression { $$ = new Division($1, $3); }
+	| multiplicative_expression '%' cast_expression { $$ = new Modulus($1, $3); }
 	;
 
 additive_expression
 	: multiplicative_expression
+	| additive_expression '+' multiplicative_expression	{ $$ = new Addition($1, $3); }
+	| additive_expression '-' multiplicative_expression	{ $$ = new Substraction($1, $3); }
 	;
 
 shift_expression
@@ -148,30 +156,41 @@ shift_expression
 
 relational_expression
 	: shift_expression
+	| relational_expression '<' shift_expression	{ $$ = new LessThan($1, $3); }
+	| relational_expression '>' shift_expression	{ $$ = new GreaterThan($1, $3); }
+	| relational_expression LE_OP shift_expression	{ GreaterThan *greater_than = new GreaterThan($1, $3); $$ = new Negate(greater_than); }
+	| relational_expression GE_OP shift_expression	{ LessThan *less_than = new LessThan($1, $3); $$ = new Negate(less_than); }
 	;
 
 equality_expression
 	: relational_expression
+	| equality_expression EQ_OP relational_expression	{ $$ = new EqualityCheck($1, $3);}
+	| equality_expression NE_OP relational_expression	{ EqualityCheck *equality = new EqualityCheck($1, $3); $$ = new Negate(equality); }
 	;
 
 and_expression
 	: equality_expression
+	| and_expression '&' equality_expression	{ $$ = new BitwiseAnd($1, $3); }
 	;
 
 exclusive_or_expression
 	: and_expression
+	| exclusive_or_expression '^' and_expression	{ $$ = new ExclusiveOr($1, $3); }
 	;
 
 inclusive_or_expression
 	: exclusive_or_expression
+	| inclusive_or_expression '|' exclusive_or_expression	{ $$ = new InclusiveOr($1, $3); }
 	;
 
 logical_and_expression
 	: inclusive_or_expression
+	| logical_and_expression AND_OP inclusive_or_expression	{ $$ = new LogicalAnd($1, $3); }
 	;
 
 logical_or_expression
 	: logical_and_expression
+	| logical_and_expression OR_OP inclusive_or_expression	{ $$ = new LogicalOr($1, $3); }
 	;
 
 conditional_expression
@@ -180,11 +199,22 @@ conditional_expression
 
 assignment_expression
 	: conditional_expression
-	| unary_expression '=' assignment_expression	{ $$ = new Assignment($1, $3); }
+	| unary_expression '=' assignment_expression			{ $$ = new Assignment($1, $3); }
+	| unary_expression MUL_ASSIGN assignment_expression		{ Multiplication *multiplication = new Multiplication($1, $3); $$ = new Assignment($1, multiplication); }
+	| unary_expression DIV_ASSIGN assignment_expression		{ Division *division = new Division($1, $3); $$ = new Assignment($1, division); }
+	| unary_expression MOD_ASSIGN assignment_expression		{ Modulus *modulus = new Modulus($1, $3); $$ = new Assignment($1, modulus); }
+	| unary_expression ADD_ASSIGN assignment_expression		{ Addition *addition = new Addition($1, $3); $$ = new Assignment($1, addition); }
+	| unary_expression SUB_ASSIGN assignment_expression		{ Substraction *substraction = new Substraction($1, $3); $$ = new Assignment($1, substraction); }
+	| unary_expression LEFT_ASSIGN assignment_expression	{ LeftShift *left_shift = new LeftShift($1, $3); $$ = new Assignment($1, left_shift); }
+	| unary_expression RIGHT_ASSIGN assignment_expression	{ RightShift *right_shift = new RightShift($1, $3); $$ = new Assignment($1, right_shift); }
+	| unary_expression AND_ASSIGN assignment_expression		{ LogicalAnd *and_op = new LogicalAnd($1, $3); $$ = new Assignment($1, and_op); }
+	| unary_expression XOR_ASSIGN assignment_expression		{ ExclusiveOr *xor_op = new ExclusiveOr($1, $3); $$ = new ExclusiveOr($1, xor_op); }
+	| unary_expression OR_ASSIGN assignment_expression		{ LogicalOr *or_op = new LogicalOr($1, $3); $$ = new Assignment($1, or_op); }
 	;
 
 expression
-	: assignment_expression
+	: assignment_expression					{ $$ = new NodeList($1); }
+	| expression ',' assignment_expression	{ NodeList *expression_list = dynamic_cast<NodeList *>($1); expression_list->PushBack($3); $$ = expression_list; }
 	;
 
 declaration

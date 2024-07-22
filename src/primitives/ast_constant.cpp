@@ -9,3 +9,8 @@ void IntConstant::Print(std::ostream &stream) const
 {
     stream << value_;
 }
+
+Type IntConstant::GetType(Context &context) const
+{
+    return Type::_INT;
+}

@@ -5,12 +5,14 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
     Variable variable_specs = context.get_variable(GetIdentifier());
     Type type = variable_specs.type;
     int offset = variable_specs.offset;
+    context.set_operation_type(type);
 
     std::string reg = context.get_register(type);
     expression_->EmitRISC(stream, context, reg);
 
-    stream << context.store_instruction(type) << " " << reg << ", " << offset << "(s0)" << std::endl;
+    stream << context.store_instruction(type) << " " << reg << ", " << offset << "(sp)" << std::endl;
     context.deallocate_register(reg);
+    context.pop_operation_type();
 }
 
 void Assignment::Print(std::ostream &stream) const

@@ -22,6 +22,8 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
 
     if (compound_statement_ != nullptr)
     {
+        context.set_operation_type(return_type);
+
         // Allocate stack space
         CompoundStatement *compound_statement = dynamic_cast<CompoundStatement *>(compound_statement_);
         int stack_allocated_space = compound_statement->GetScopeOffset(context) + 8;
@@ -39,6 +41,8 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
         stream << "lw ra, 0(sp)" << std::endl;
         stream << "addi sp, sp, " << stack_allocated_space << std::endl;
         stream << "ret" << std::endl;
+
+        context.pop_operation_type();
     }
 }
 
