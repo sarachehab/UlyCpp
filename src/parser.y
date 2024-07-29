@@ -16,15 +16,16 @@
 
 // Represents the value associated with any kind of AST node.
 %union{
-	Node         *node;
-	NodeList     *nodes;
-	int          number_int;
-	double       number_float;
-	std::string  *string;
-	yytokentype  token;
+	Node         	*node;
+	NodeList     	*nodes;
+	int         	number_int;
+	float       	number_float;
+	double			number_double;
+	std::string  	*string;
+	yytokentype  	token;
 }
 
-%token IDENTIFIER INT_CONSTANT FLOAT_CONSTANT STRING_LITERAL
+%token IDENTIFIER INT_CONSTANT FLOAT_CONSTANT STRING_LITERAL DOUBLE_CONSTANT
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP AND_OP OR_OP
 %token MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN
 %token TYPE_NAME TYPEDEF EXTERN STATIC AUTO REGISTER SIZEOF
@@ -47,6 +48,7 @@
 
 %type <number_int> INT_CONSTANT STRING_LITERAL
 %type <number_float> FLOAT_CONSTANT
+%type <number_double> DOUBLE_CONSTANT
 %type <string> IDENTIFIER
 
 
@@ -73,7 +75,12 @@ declaration_specifiers
 	;
 
 type_specifier
-	: INT { $$ = new TypeSpecifier(Type::_INT); }
+	: INT 		{ $$ = new TypeSpecifier(Type::_INT); }
+	| FLOAT 	{ $$ = new TypeSpecifier(Type::_FLOAT); }
+	| DOUBLE 	{ $$ = new TypeSpecifier(Type::_DOUBLE); }
+	| CHAR 		{ $$ = new TypeSpecifier(Type::_CHAR); }
+	| UNSIGNED 	{ $$ = new TypeSpecifier(Type::_UNSIGNED_INT); }
+	| SHORT 	{ $$ = new TypeSpecifier(Type::_SHORT); }
 	;
 
 declarator
@@ -109,8 +116,10 @@ jump_statement
 	;
 
 primary_expression
-	: INT_CONSTANT 	{ $$ = new IntConstant($1); }
-	| IDENTIFIER	{ $$ = new Identifier($1); }
+	: INT_CONSTANT 		{ $$ = new IntConstant($1); }
+	| DOUBLE_CONSTANT	{ $$ = new DoubleConstant($1); }
+	| FLOAT_CONSTANT	{ $$ = new FloatConstant($1); }
+	| IDENTIFIER		{ $$ = new Identifier($1); }
 	;
 
 expression_statement
@@ -204,16 +213,16 @@ conditional_expression
 assignment_expression
 	: conditional_expression
 	| unary_expression '=' assignment_expression			{ $$ = new Assignment($1, $3); }
-	| unary_expression MUL_ASSIGN assignment_expression		{ Multiplication *multiplication = new Multiplication($1, $3); $$ = new Assignment($1, multiplication); }
-	| unary_expression DIV_ASSIGN assignment_expression		{ Division *division = new Division($1, $3); $$ = new Assignment($1, division); }
-	| unary_expression MOD_ASSIGN assignment_expression		{ Modulus *modulus = new Modulus($1, $3); $$ = new Assignment($1, modulus); }
-	| unary_expression ADD_ASSIGN assignment_expression		{ Addition *addition = new Addition($1, $3); $$ = new Assignment($1, addition); }
-	| unary_expression SUB_ASSIGN assignment_expression		{ Substraction *substraction = new Substraction($1, $3); $$ = new Assignment($1, substraction); }
-	| unary_expression LEFT_ASSIGN assignment_expression	{ LeftShift *left_shift = new LeftShift($1, $3); $$ = new Assignment($1, left_shift); }
-	| unary_expression RIGHT_ASSIGN assignment_expression	{ RightShift *right_shift = new RightShift($1, $3); $$ = new Assignment($1, right_shift); }
-	| unary_expression AND_ASSIGN assignment_expression		{ LogicalAnd *and_op = new LogicalAnd($1, $3); $$ = new Assignment($1, and_op); }
-	| unary_expression XOR_ASSIGN assignment_expression		{ ExclusiveOr *xor_op = new ExclusiveOr($1, $3); $$ = new ExclusiveOr($1, xor_op); }
-	| unary_expression OR_ASSIGN assignment_expression		{ LogicalOr *or_op = new LogicalOr($1, $3); $$ = new Assignment($1, or_op); }
+	| unary_expression MUL_ASSIGN assignment_expression		{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); Multiplication *multiplication = new Multiplication(operator_, $3); $$ = new Assignment(identifier_, multiplication); }
+	| unary_expression DIV_ASSIGN assignment_expression		{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); Division *division = new Division(operator_, $3); $$ = new Assignment(identifier_, division); }
+	| unary_expression MOD_ASSIGN assignment_expression		{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); Modulus *modulus = new Modulus(operator_, $3); $$ = new Assignment(identifier_, modulus); }
+	| unary_expression ADD_ASSIGN assignment_expression		{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); Addition *addition = new Addition(operator_, $3); $$ = new Assignment(identifier_, addition); }
+	| unary_expression SUB_ASSIGN assignment_expression		{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); Substraction *substraction = new Substraction(operator_, $3); $$ = new Assignment(identifier_, substraction); }
+	| unary_expression LEFT_ASSIGN assignment_expression	{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); LeftShift *left_shift = new LeftShift(operator_, $3); $$ = new Assignment(identifier_, left_shift); }
+	| unary_expression RIGHT_ASSIGN assignment_expression	{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); RightShift *right_shift = new RightShift(operator_, $3); $$ = new Assignment(identifier_, right_shift); }
+	| unary_expression AND_ASSIGN assignment_expression		{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); LogicalAnd *and_op = new LogicalAnd(operator_, $3); $$ = new Assignment(identifier_, and_op); }
+	| unary_expression XOR_ASSIGN assignment_expression		{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); ExclusiveOr *xor_op = new ExclusiveOr(operator_, $3); $$ = new ExclusiveOr(identifier_, xor_op); }
+	| unary_expression OR_ASSIGN assignment_expression		{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); LogicalOr *or_op = new LogicalOr(operator_, $3); $$ = new Assignment(identifier_, or_op); }
 	;
 
 expression

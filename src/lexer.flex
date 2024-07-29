@@ -13,7 +13,8 @@ D	  [0-9]
 L	  [a-zA-Z_]
 H   [a-fA-F0-9]
 E	  [Ee][+-]?{D}+
-FS  (f|F|l|L)
+FSF (f|F)
+FSL (l|L)
 IS  (u|U|l|L)*
 
 %%
@@ -59,9 +60,13 @@ IS  (u|U|l|L)*
 {D}+{IS}?		      {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
 L?'(\\.|[^\\'])+'	{yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
 
-{D}+{E}{FS}?		        {yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
-{D}*"."{D}+({E})?{FS}?	{yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
-{D}+"."{D}*({E})?{FS}?	{yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
+{D}+{E}{FSF}?		        {yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
+{D}*"."{D}+({E})?{FSF}?	{yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
+{D}+"."{D}*({E})?{FSF}?	{yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
+
+{D}+{E}{FSL}		        {yylval.number_double = strtod(yytext, NULL); return(DOUBLE_CONSTANT);}
+{D}*"."{D}+({E})?{FSL}	{yylval.number_double = strtod(yytext, NULL); return(DOUBLE_CONSTANT);}
+{D}+"."{D}*({E})?{FSL}	{yylval.number_double = strtod(yytext, NULL); return(DOUBLE_CONSTANT);}
 
 L?\"(\\.|[^\\"])*\"	{/* TODO process string literal */; return(STRING_LITERAL);}
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-double f();
+float f();
 
 void test(double a)
 {
@@ -12,7 +12,9 @@ int main()
     printf("Hello from RISC-V\n");
 
     test(5.5);
-    printf("Example function returned: %d\n", f());
+    printf("Example function returned: %f\n", f());
 
-    return !(f() == 5.0l);
+    float result = 1.1 * 2.0;
+
+    return !(f() == result);
 }

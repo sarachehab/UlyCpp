@@ -13,6 +13,7 @@
 #include "context_functions.hpp"
 #include "context_variables.hpp"
 #include "context_mode.hpp"
+#include "context_constant.hpp"
 
 class Context
 {
@@ -77,11 +78,12 @@ public:
     // Operation instructions
     bool evaluating_expression() const;
 
-    // TODO: Add functions to handle enums, structs, typedef, char and strings
+    // Constant declarations
+    int declare_constant(float value);
+    int declare_constant(double value);
+    void print_constant_declarations(std::ostream &stream) const;
 
-    // Type specific properties
-    static const std::unordered_map<Type, int> types_size;
-    static const std::unordered_map<Type, std::string> assembler_directives;
+    // TODO: Add functions to handle enums, structs, typedef, char and strings
 
 private:
     // Register file
@@ -109,6 +111,10 @@ private:
 
     // Type tracking
     std::stack<Type> operation_type_stack;
+
+    // Constant declarations
+    int constant_declaration_number = 0;
+    std::vector<ContextConstant> constant_declarations;
 };
 
 #endif

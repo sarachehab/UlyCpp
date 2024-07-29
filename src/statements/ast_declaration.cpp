@@ -4,7 +4,7 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
 {
     TypeSpecifier *type_specifier = dynamic_cast<TypeSpecifier *>(type_specifier_);
     Type type = type_specifier->GetType();
-    int type_size = context.types_size.at(type);
+    int type_size = types_size.at(type);
 
     NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
     for (auto declarator : declarator_list->get_nodes())
@@ -48,7 +48,7 @@ int Declaration::GetScopeOffset(Context &context) const
 {
     TypeSpecifier *type_specifier = dynamic_cast<TypeSpecifier *>(type_specifier_);
     Type type = type_specifier->GetType();
-    int type_size = context.types_size.at(type);
+    int type_size = types_size.at(type);
 
     NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
     return type_size * declarator_list->get_nodes().size();
