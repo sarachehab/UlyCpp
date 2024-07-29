@@ -21,3 +21,8 @@ Variable Context::get_variable(std::string identifier) const
     }
     throw std::runtime_error("Context::get_variable - variable " + identifier + " not found");
 }
+
+bool Context::evaluating_expression() const
+{
+    return operation_type_stack.size() > 0;
+}

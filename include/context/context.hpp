@@ -74,6 +74,9 @@ public:
     void pop_operation_type();
     Type get_operation_type() const;
 
+    // Operation instructions
+    bool evaluating_expression() const;
+
     // TODO: Add functions to handle enums, structs, typedef, char and strings
 
     // Type specific properties

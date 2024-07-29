@@ -20,6 +20,7 @@
 #include "operations/ast_bitwise_operation.hpp"
 #include "operations/ast_comparaison_strict.hpp"
 #include "operations/ast_comparaison_equality_check.hpp"
+#include "operations/ast_increment_operation.hpp"
 #include "operations/ast_logical_operation.hpp"
 #include "operations/ast_unary_operation.hpp"
 

@@ -1,7 +1,8 @@
 int f()
 {
-    int x = 3, y = 4;
+    int x = 2, y = 4;
     int z;
-    z = x + y;
-    return z != x;
+    x++;
+    z = ++x + y;
+    return z;
 }
