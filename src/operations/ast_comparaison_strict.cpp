@@ -45,26 +45,3 @@ std::string LessThan::GetMneumonic(Type type) const
 }
 
 std::string LessThan::GetOperation() const { return " < "; }
-
-std::string GreaterThan::GetMneumonic(Type type) const
-{
-    switch (type)
-    {
-    case Type::_CHAR:
-        return "sgt";
-    case Type::_SHORT:
-        return "sgt";
-    case Type::_INT:
-        return "sgt";
-    case Type::_UNSIGNED_INT:
-        return "sgtu";
-    case Type::_FLOAT:
-        return "fgt.s";
-    case Type::_LONG:
-        return "fgt.d";
-    default:
-        throw std::runtime_error("LessThan::GetMneumonic - Invalid type for LessThan operation");
-    }
-}
-
-std::string GreaterThan::GetOperation() const { return " > "; }

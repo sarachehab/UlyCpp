@@ -30,3 +30,7 @@ std::string LogicalAnd::GetOperation() const { return " & "; }
 std::string LogicalOr::GetMneumonic(Type type) const { return "or"; }
 
 std::string LogicalOr::GetOperation() const { return " | "; }
+
+std::string Inverse::GetMneumonic(Type type) const { return "seqz"; }
+
+std::string Inverse::GetOperation() const { return "! "; }

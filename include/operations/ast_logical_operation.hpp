@@ -26,6 +26,16 @@ public:
     std::string GetOperation() const override;
 };
 
+class Inverse : public UnaryOperation
+{
+public:
+    using UnaryOperation::UnaryOperation;
+    ~Inverse() {}
+
+    std::string GetMneumonic(Type type) const override;
+    std::string GetOperation() const override;
+};
+
 class LogicalAnd : public LogicalOperation
 {
 public:

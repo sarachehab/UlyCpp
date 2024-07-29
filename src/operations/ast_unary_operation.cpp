@@ -19,7 +19,9 @@ void UnaryOperation::EmitRISC(std::ostream &stream, Context &context, std::strin
 void UnaryOperation::Print(std::ostream &stream) const
 {
     stream << GetOperation();
+    stream << "(";
     expression_->Print(stream);
+    stream << ")";
 }
 
 Type UnaryOperation::GetType(Context &context) const

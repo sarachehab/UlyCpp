@@ -142,6 +142,7 @@ unary_expression
 	| '+' cast_expression		{ $$ = $2; }
 	| '-' cast_expression		{ $$ = new Negate($2); }
 	| '~' cast_expression		{ $$ = new OneComplement($2); }
+	| '!' cast_expression		{ $$ = new Inverse($2); }
 	| INC_OP unary_expression	{ Identifier* identifier_ = dynamic_cast<Identifier *>($2); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new Prefixincrement(identifier_, new Addition(operator_, new IntConstant(1))); }
 	| DEC_OP unary_expression	{ Identifier* identifier_ = dynamic_cast<Identifier *>($2); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new Prefixincrement(identifier_, new Substraction(operator_, new IntConstant(1))); }
 	;
@@ -170,15 +171,15 @@ shift_expression
 relational_expression
 	: shift_expression
 	| relational_expression '<' shift_expression	{ $$ = new LessThan($1, $3); }
-	| relational_expression '>' shift_expression	{ $$ = new GreaterThan($1, $3); }
-	| relational_expression LE_OP shift_expression	{ GreaterThan *greater_than = new GreaterThan($1, $3); $$ = new Negate(greater_than); }
-	| relational_expression GE_OP shift_expression	{ LessThan *less_than = new LessThan($1, $3); $$ = new Negate(less_than); }
+	| relational_expression '>' shift_expression	{ $$ = new LessThan($3, $1); }
+	| relational_expression LE_OP shift_expression	{ LessThan *greater_than = new LessThan($3, $1); $$ = new Inverse(greater_than); }
+	| relational_expression GE_OP shift_expression	{ LessThan *less_than = new LessThan($1, $3); $$ = new Inverse(less_than); }
 	;
 
 equality_expression
 	: relational_expression
 	| equality_expression EQ_OP relational_expression	{ $$ = new EqualityCheck($1, $3);}
-	| equality_expression NE_OP relational_expression	{ EqualityCheck *equality = new EqualityCheck($1, $3); $$ = new Negate(equality); }
+	| equality_expression NE_OP relational_expression	{ EqualityCheck *equality = new EqualityCheck($1, $3); $$ = new Inverse(equality); }
 	;
 
 and_expression

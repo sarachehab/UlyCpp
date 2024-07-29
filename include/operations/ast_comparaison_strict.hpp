@@ -27,14 +27,4 @@ public:
     std::string GetOperation() const override;
 };
 
-class GreaterThan : public StrictComparaisonOperation
-{
-public:
-    using StrictComparaisonOperation::StrictComparaisonOperation;
-    ~GreaterThan() {}
-
-    std::string GetMneumonic(Type type) const override;
-    std::string GetOperation() const override;
-};
-
 #endif
