@@ -159,7 +159,7 @@ std::string Context::get_register(Type type)
         if (register_file[i].is_available)
         {
             allocate_register(register_file[i].name, type);
-            return register_file[i].name;
+            return get_register_name(i);
         }
     }
     throw std::runtime_error("Context::get_register: No available register");
@@ -209,4 +209,15 @@ void Context::pop_registers()
         Type type = register_file[reg].type;
         std::cout << load_instruction(type) << std::endl;
     }
+}
+
+std::string Context::get_register_name(int reg_number) const
+{
+    return register_file.at(reg_number).name;
+}
+
+void Context::set_register_type(std::string reg_name, Type type)
+{
+    int reg = register_name_to_int[reg_name];
+    register_file[reg].type = type;
 }

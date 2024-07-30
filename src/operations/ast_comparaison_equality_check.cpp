@@ -25,10 +25,12 @@ void EqualityCheck::EmitRISC(std::ostream &stream, Context &context, std::string
         stream << "seqz " << passed_reg << ", " << passed_reg << std::endl;
         break;
     case Type::_FLOAT:
-        stream << "fsub.s " << passed_reg << ", " << left_register << ", " << right_register << std::endl;
+        stream << "feq.s " << passed_reg << ", " << left_register << ", " << right_register << std::endl;
+        stream << "snez " << passed_reg << ", " << passed_reg << std::endl;
         break;
     case Type::_DOUBLE:
-        stream << "fsub.d " << passed_reg << ", " << left_register << ", " << right_register << std::endl;
+        stream << "feq.d " << passed_reg << ", " << left_register << ", " << right_register << std::endl;
+        stream << "snez " << passed_reg << ", " << passed_reg << std::endl;
         break;
     default:
         throw std::runtime_error("EqualityCheck::EmitRISC: Floating point equality check not supported");

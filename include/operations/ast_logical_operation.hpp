@@ -14,6 +14,8 @@ public:
 
     virtual std::string GetMneumonic(Type type) const override = 0;
     virtual std::string GetOperation() const override = 0;
+
+    void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
 };
 
 class Negate : public UnaryOperation

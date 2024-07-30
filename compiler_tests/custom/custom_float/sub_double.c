@@ -1,3 +1,4 @@
-double f(double x){
-    return x+2.2;
+double f(double x)
+{
+    return x + 2.2l;
 }

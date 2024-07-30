@@ -88,8 +88,18 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER                { $$ = new Identifier($1); }
-	| direct_declarator '(' ')' { $$ = new DirectDeclarator($1); }
+	: IDENTIFIER                					{ $$ = new Identifier($1); }
+	| direct_declarator '(' ')' 					{ $$ = new DirectDeclarator($1); }
+	| direct_declarator '(' parameter_list ')'		{ $$ = new DirectDeclarator($1, $3); }
+	;
+
+parameter_list
+	: parameter_declaration						{ $$ = new ParameterList($1); }
+	| parameter_list ',' parameter_declaration	{ ParameterList *parameter_list = dynamic_cast<ParameterList *>($1); parameter_list->PushBack($3); $$ = parameter_list; }
+	;
+
+parameter_declaration
+	: declaration_specifiers declarator			{ $$ = new ParameterDeclaration($1, $2); }
 	;
 
 statement
@@ -103,6 +113,7 @@ compound_statement
 	: '{' declaration_list '}' 					{ $$ = new CompoundStatement($2); }
 	| '{' declaration_list statement_list '}' 	{ CompoundStatement *compound_statement = new CompoundStatement($2); compound_statement->PushBack($3); $$ = compound_statement; }
 	| '{' statement_list '}' 					{ $$ = new CompoundStatement($2); }
+	| '{' '}' 									{ $$ = new CompoundStatement(nullptr); }
 	;
 
 statement_list
@@ -166,6 +177,8 @@ additive_expression
 
 shift_expression
 	: additive_expression
+	| shift_expression LEFT_OP additive_expression		{ $$ = new LeftShift($1, $3); }
+	| shift_expression RIGHT_OP additive_expression 	{ $$ = new RightShift($1, $3); }
 	;
 
 relational_expression

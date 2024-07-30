@@ -37,7 +37,7 @@ std::string LessThan::GetMneumonic(Type type) const
         return "sltu";
     case Type::_FLOAT:
         return "flt.s";
-    case Type::_LONG:
+    case Type::_DOUBLE:
         return "flt.d";
     default:
         throw std::runtime_error("LessThan::GetMneumonic - Invalid type for LessThan operation");

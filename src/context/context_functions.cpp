@@ -1,5 +1,10 @@
 #include "../../include/context/context.hpp"
 
+int Parameter::GetSize() const
+{
+    return types_size.at(type);
+}
+
 void Context::define_function(std::string identifier, Function function)
 {
     function_bindings[identifier] = function;

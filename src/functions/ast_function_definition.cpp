@@ -14,25 +14,29 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
     stream << ".type " << function_name << ", @function" << std::endl;
     stream << function_name << ":" << std::endl;
 
-    // TODO: Create new function in context with arguments and return value
     ReturnValue return_value(false, false, return_type);
-    std::vector<Argument> arguments = {};
-    Function function(return_value, arguments);
+    std::vector<Parameter> parameters = direct_declarator_->GetParameters(context);
+    Function function(return_value, parameters);
     context.define_function(function_name, function);
 
     if (compound_statement_ != nullptr)
     {
+        context.create_new_scope();
         context.set_operation_type(return_type);
 
         // Allocate stack space
         CompoundStatement *compound_statement = dynamic_cast<CompoundStatement *>(compound_statement_);
-        int stack_allocated_space = compound_statement->GetScopeOffset(context) + 8;
+        int initial_offset = 8 + direct_declarator_->GetScopeOffset();
+        context.set_initial_offset(initial_offset);
+        context.increase_stack_offset(8);
+
+        int stack_allocated_space = compound_statement->GetScopeOffset(context) + initial_offset;
 
         stream << "addi sp, sp, -" << stack_allocated_space << std::endl;
         stream << "sw ra, 0(sp)" << std::endl;
         stream << "sw s0, 4(sp)" << std::endl;
+        direct_declarator_->StoreParameters(stream, context, passed_reg);
         stream << "addi s0, sp, " << stack_allocated_space << std::endl;
-        context.set_initial_offset(8);
 
         compound_statement_->EmitRISC(stream, context, passed_reg);
 
@@ -43,6 +47,7 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
         stream << "ret" << std::endl;
 
         context.pop_operation_type();
+        context.pop_scope();
     }
 }
 
@@ -52,7 +57,7 @@ void FunctionDefinition::Print(std::ostream &stream) const
     stream << " ";
 
     declarator_->Print(stream);
-    stream << "() {" << std::endl;
+    stream << "{" << std::endl;
 
     if (compound_statement_ != nullptr)
     {

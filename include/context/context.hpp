@@ -27,6 +27,8 @@ public:
     std::string get_return_register() const;
     void allocate_register(std::string reg_name, Type type);
     void deallocate_register(std::string reg_name);
+    std::string get_register_name(int reg_number) const;
+    void set_register_type(std::string reg_name, Type type);
 
     // Register saving for function calls
     void push_registers();
