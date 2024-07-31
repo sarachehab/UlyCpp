@@ -2,6 +2,7 @@
 
 void CompoundStatement::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    context.set_initial_offset(context.get_stack_offset());
     context.create_new_scope();
 
     for (auto statement : nodes_)
