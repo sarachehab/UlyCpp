@@ -4,6 +4,15 @@
 #include "../ast_node.hpp"
 #include "../primitives/ast_identifier.hpp"
 
+class AssignmentList : public NodeList
+{
+public:
+    using NodeList::NodeList;
+    ~AssignmentList() {}
+
+    void GetArguments(std::ostream &stream, Context &context, std::string passed_reg) const;
+};
+
 class Assignment : public Node
 {
 private:
@@ -19,6 +28,8 @@ public:
     }
 
     std::string GetIdentifier() const;
+
+    void GetArgument(std::ostream &stream, Context &context, std::string passed_reg);
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;

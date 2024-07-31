@@ -12,7 +12,6 @@
 #include "context_registers.hpp"
 #include "context_functions.hpp"
 #include "context_variables.hpp"
-#include "context_mode.hpp"
 #include "context_constant.hpp"
 
 class Context
@@ -50,6 +49,9 @@ public:
     Function get_function(std::string identifier) const;
     std::string get_last_function_end_statement() const;
     void set_return_register(Type type);
+    void set_function_call(std::string function);
+    void pop_function_call();
+    Function get_function_call() const;
 
     // Label creation for control flow
     std::string create_label(std::string id);
@@ -66,11 +68,6 @@ public:
     std::string move_instruction(Type type) const;
     std::string store_instruction(Type type) const;
     std::string load_instruction(Type type) const;
-
-    // Mode management
-    void mode_push(Mode mode);
-    void mode_pop();
-    bool has_mode(Mode mode) const;
 
     // Type management
     void set_operation_type(Type type);
@@ -102,14 +99,12 @@ private:
     std::unordered_map<std::string, Function> function_bindings;
     std::string last_function_end_statement;
     std::string return_register;
+    std::stack<std::string> function_call_stack;
 
     // Control flow labels
     int label_counter;
     std::stack<std::string> start_labels;
     std::stack<std::string> end_labels;
-
-    // Mode tracking
-    std::stack<Mode> mode_stack;
 
     // Type tracking
     std::stack<Type> operation_type_stack;

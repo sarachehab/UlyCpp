@@ -59,11 +59,13 @@ ROOT
     : translation_unit { g_root = $1; }
 
 translation_unit
-	: external_declaration { $$ = $1; }
+	: external_declaration 						{ $$ = new NodeList($1); }
+	| translation_unit external_declaration		{ NodeList *translation_unit = dynamic_cast<NodeList *>($1); translation_unit->PushBack($2); $$ = translation_unit; }
 	;
 
 external_declaration
-	: function_definition { $$ = $1; }
+	: function_definition 	{ $$ = $1; }
+	| declaration 			{ $$ = $1; }
 	;
 
 function_definition
@@ -140,12 +142,15 @@ expression_statement
 
 postfix_expression
 	: primary_expression
-	| postfix_expression INC_OP	{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new PostfixIncrement(identifier_, new Addition(operator_, new IntConstant(1))); }
-	| postfix_expression DEC_OP	{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new PostfixIncrement(identifier_, new Substraction(operator_, new IntConstant(1))); }
+	| postfix_expression INC_OP									{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new PostfixIncrement(identifier_, new Addition(operator_, new IntConstant(1))); }
+	| postfix_expression DEC_OP									{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new PostfixIncrement(identifier_, new Substraction(operator_, new IntConstant(1))); }
+	| postfix_expression '(' ')' 								{ $$ = new FunctionCall($1); }
+	| postfix_expression '(' argument_expression_list ')'		{ $$ = new FunctionCall($1, $3); }
 	;
 
 argument_expression_list
-	: assignment_expression
+	: assignment_expression									{ $$ = new AssignmentList($1); }
+	| argument_expression_list ',' assignment_expression	{ AssignmentList *argument_list = dynamic_cast<AssignmentList *>($1); argument_list->PushBack($3); $$ = argument_list; }
 	;
 
 unary_expression

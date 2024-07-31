@@ -19,7 +19,15 @@ void DirectDeclarator::Print(std::ostream &stream) const
 
 std::string DirectDeclarator::GetIdentifier() const
 {
+    if (identifier_ == nullptr)
+    {
+        throw std::runtime_error("DirectDeclarator::GetIdentifier() - identifier_ is nullptr");
+    }
     Identifier *id = dynamic_cast<Identifier *>(identifier_);
+    if (id == nullptr)
+    {
+        throw std::runtime_error("DirectDeclarator::GetIdentifier() - identifier_ is not an Identifier");
+    }
     return id->GetIdentifier();
 }
 

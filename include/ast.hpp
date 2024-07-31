@@ -7,6 +7,7 @@
 
 #include "functions/ast_parameter_definition.hpp"
 #include "functions/ast_function_definition.hpp"
+#include "functions/ast_function_call.hpp"
 
 #include "statements/ast_assignment.hpp"
 #include "statements/ast_declaration.hpp"

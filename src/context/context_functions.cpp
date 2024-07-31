@@ -54,3 +54,22 @@ void Context::set_return_register(Type type)
         throw std::runtime_error("Context::set_return_register: Invalid return type");
     }
 }
+
+void Context::set_function_call(std::string function)
+{
+    function_call_stack.push(function);
+}
+
+void Context::pop_function_call()
+{
+    function_call_stack.pop();
+}
+
+Function Context::get_function_call() const
+{
+    if (function_call_stack.empty())
+    {
+        throw std::runtime_error("Context::get_function_call - no function call");
+    }
+    return get_function(function_call_stack.top());
+}
