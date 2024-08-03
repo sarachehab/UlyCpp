@@ -4,6 +4,15 @@
 #include "../ast_node.hpp"
 #include "../operations/ast_operand.hpp"
 
+class Expression : public NodeList
+{
+public:
+    using NodeList::NodeList;
+    ~Expression() = default;
+
+    Type GetType(Context &context) const;
+};
+
 class ExpressionList : public NodeList
 {
 public:

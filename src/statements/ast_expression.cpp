@@ -1,17 +1,23 @@
 #include "../../include/statements/ast_expression.hpp"
 
+Type Expression::GetType(Context &context) const
+{
+    return dynamic_cast<Operand *>(nodes_[0])->GetType(context);
+}
+
 void ExpressionList::GetArguments(std::ostream &stream, Context &context, std::string passed_reg) const
 {
     Function function = context.get_function_call();
     int int_arg_reg = 10, float_arg_reg = 42;
     int argument_register_number;
 
-    for (auto arg_nb = 0; arg_nb < function.arguments.size(); arg_nb++)
+    for (long unsigned int arg_nb = 0; arg_nb < function.arguments.size(); arg_nb++)
     {
 
         switch (function.arguments[arg_nb].type)
         {
         case Type::_CHAR:
+        case Type::_SHORT:
         case Type::_UNSIGNED_INT:
         case Type::_INT:
             argument_register_number = int_arg_reg++;

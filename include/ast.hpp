@@ -27,6 +27,8 @@
 #include "operations/ast_logical_operation.hpp"
 #include "operations/ast_unary_operation.hpp"
 
+#include "control_flow/ast_conditional_statement.hpp"
+
 #include "ast_direct_declarator.hpp"
 #include "ast_type_specifier.hpp"
 #include "ast_node.hpp"

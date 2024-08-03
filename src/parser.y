@@ -108,7 +108,7 @@ statement
 	: compound_statement 	{ $$ = new CompoundStatement($1); }
 	| expression_statement 	{ $$ = $1; }
 	| jump_statement 		{ $$ = $1; }
-
+	| selection_statement 	{ $$ = $1; }
 	;
 
 compound_statement
@@ -227,6 +227,7 @@ logical_or_expression
 
 conditional_expression
 	: logical_or_expression
+	| logical_or_expression '?' expression ':' conditional_expression	{ $$ = new ConditionalStatement($1, $3, $5); }
 	;
 
 assignment_expression
@@ -245,8 +246,8 @@ assignment_expression
 	;
 
 expression
-	: assignment_expression					{ $$ = new NodeList($1); }
-	| expression ',' assignment_expression	{ NodeList *expression_list = dynamic_cast<NodeList *>($1); expression_list->PushBack($3); $$ = expression_list; }
+	: assignment_expression					{ $$ = new Expression($1); }
+	| expression ',' assignment_expression	{ Expression *expression_list = dynamic_cast<Expression *>($1); expression_list->PushBack($3); $$ = expression_list; }
 	;
 
 declaration
@@ -275,6 +276,11 @@ initializer_list
 declaration_list
 	: declaration					{ $$ = new DeclarationList($1); }
 	| declaration_list declaration	{ DeclarationList *declaration_list = dynamic_cast<DeclarationList *>($1); declaration_list->PushBack($2); $$ = declaration_list; }
+	;
+
+selection_statement
+	: IF '(' expression ')' statement					{ $$ = new ConditionalStatement($3, $5); }
+	| IF '(' expression ')' statement ELSE statement	{ $$ = new ConditionalStatement($3, $5, $7); }
 	;
 
 %%
