@@ -59,12 +59,14 @@ void Context::set_return_register(Type type)
 void Context::set_function_call(std::string function)
 {
     function_call_stack.push(function);
+    std::cout << "Create new function call" << std::endl;
     allocated_registers.push(std::set<int>());
 }
 
 void Context::pop_function_call()
 {
     function_call_stack.pop();
+    std::cout << "Pop set" << std::endl;
     allocated_registers.pop();
 }
 

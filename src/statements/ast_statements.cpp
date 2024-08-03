@@ -6,6 +6,10 @@ void CompoundStatement::EmitRISC(std::ostream &stream, Context &context, std::st
 
     for (auto statement : nodes_)
     {
+        if (statement == nullptr)
+        {
+            continue;
+        }
         statement->EmitRISC(stream, context, passed_reg);
     }
     context.pop_scope();

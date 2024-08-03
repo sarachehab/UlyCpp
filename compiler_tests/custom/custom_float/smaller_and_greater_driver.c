@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int f(double a, double b);
+int f(float a, float b);
 
 int main()
 {

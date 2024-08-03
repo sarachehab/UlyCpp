@@ -109,6 +109,7 @@ statement
 	| expression_statement 	{ $$ = $1; }
 	| jump_statement 		{ $$ = $1; }
 	| selection_statement 	{ $$ = $1; }
+	| iteration_statement	{ $$ = $1; }
 	;
 
 compound_statement
@@ -227,7 +228,7 @@ logical_or_expression
 
 conditional_expression
 	: logical_or_expression
-	| logical_or_expression '?' expression ':' conditional_expression	{ $$ = new ConditionalStatement($1, $3, $5); }
+	| logical_or_expression '?' expression ':' conditional_expression	{ $$ = new IfElse(new ConditionEvaluation($1), $3, $5); }
 	;
 
 assignment_expression
@@ -279,8 +280,12 @@ declaration_list
 	;
 
 selection_statement
-	: IF '(' expression ')' statement					{ $$ = new ConditionalStatement($3, $5); }
-	| IF '(' expression ')' statement ELSE statement	{ $$ = new ConditionalStatement($3, $5, $7); }
+	: IF '(' expression ')' statement					{ $$ = new IfElse(new ConditionEvaluation($3), $5); }
+	| IF '(' expression ')' statement ELSE statement	{ $$ = new IfElse(new ConditionEvaluation($3), $5, $7); }
+	;
+
+iteration_statement
+	: WHILE '(' expression ')' statement	{ $$ = new WhileLoop(new ConditionEvaluation($3), $5); }
 	;
 
 %%

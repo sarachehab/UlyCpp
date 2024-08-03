@@ -1,8 +1,8 @@
-int f(double a, double b)
+int f(float a, float b)
 {
     if (a < b)
     {
-        return a <= 4.0l;
+        return a <= 4.0;
     }
-    return b >= 4.0l;
+    return b >= 4.0;
 }

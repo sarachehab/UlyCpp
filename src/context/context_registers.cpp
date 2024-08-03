@@ -190,20 +190,32 @@ void Context::deallocate_register(std::string reg_name)
 void Context::add_register_to_set(std::string reg_name)
 {
     int reg = register_name_to_int[reg_name];
+    allocated_registers.top().insert(reg);
+    std::cout << "Adding register " << reg << " to set" << std::endl;
+    std::cout << "STACK SIZE: " << allocated_registers.size() << std::endl;
+    std::cout << "SET SIZE: " << allocated_registers.top().size() << std::endl;
 }
 
 void Context::remove_register_from_set(std::string reg_name)
 {
     int reg = register_name_to_int[reg_name];
     allocated_registers.top().erase(reg);
+    std::cout << "Removing register " << reg << " from set" << std::endl;
+    std::cout << "STACK SIZE: " << allocated_registers.size() << std::endl;
 }
 
 // TODO
 void Context::push_registers(std::ostream &stream)
 {
+    stream << "# Push registers ..." << std::endl;
+    std::cout << "# Push registers ..." << std::endl;
+    std::cout << "STACK SIZE: " << allocated_registers.size() << std::endl;
+    std::cout << "SET SIZE: " << allocated_registers.top().size() << std::endl;
+
     for (int reg : allocated_registers.top())
     {
         stream << "# Pushing register " << reg << std::endl;
+        std::cout << "# Pushing register " << reg << std::endl;
 
         int offset = get_stack_offset();
         Type type = register_file[reg].type;

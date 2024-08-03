@@ -27,7 +27,9 @@
 #include "operations/ast_logical_operation.hpp"
 #include "operations/ast_unary_operation.hpp"
 
-#include "control_flow/ast_conditional_statement.hpp"
+#include "control_flow/ast_if_else.hpp"
+#include "control_flow/ast_while_loop.hpp"
+#include "control_flow/ast_condition_evaluation.hpp"
 
 #include "ast_direct_declarator.hpp"
 #include "ast_type_specifier.hpp"

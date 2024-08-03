@@ -7,6 +7,12 @@ void ParameterList::EmitRISC(std::ostream &stream, Context &context, std::string
 
     for (auto node : nodes_)
     {
+
+        if (node == nullptr)
+        {
+            continue;
+        }
+
         ParameterDeclaration *parameter = dynamic_cast<ParameterDeclaration *>(node);
 
         switch (parameter->GetType(context))

@@ -1,32 +1,7 @@
-#include "../../include/control_flow/ast_conditional_statement.hpp"
+#include "../../include/control_flow/ast_condition_evaluation.hpp"
 
-void ConditionalStatement::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
+void ConditionEvaluation::CheckCondition(std::ostream &stream, Context &context, std::string condition_evaluation_register, std::string jump_label, Type type) const
 {
-    std::string end_label = context.create_label("if_end");
-    std::string false_label = context.create_label("if_else");
-    std::string jump_label = (false_statement_ == nullptr) ? end_label : false_label;
-
-    Type type = dynamic_cast<Expression *>(condition_)->GetType(context);
-    std::string condition_evaluation_register = context.get_register(type);
-
-    condition_->EmitRISC(stream, context, condition_evaluation_register);
-    CheckCondition(stream, context, condition_evaluation_register, jump_label, type);
-    context.deallocate_register(condition_evaluation_register);
-
-    true_statement_->EmitRISC(stream, context, passed_reg);
-
-    if (false_statement_ != nullptr)
-    {
-        stream << false_label << ":" << std::endl;
-        false_statement_->EmitRISC(stream, context, passed_reg);
-    }
-
-    stream << end_label << ":" << std::endl;
-}
-
-void ConditionalStatement::CheckCondition(std::ostream &stream, Context &context, std::string condition_evaluation_register, std::string jump_label, Type type) const
-{
-
     std::string float_zero_register, double_zero_register, temporary_register;
 
     switch (type)
@@ -63,16 +38,24 @@ void ConditionalStatement::CheckCondition(std::ostream &stream, Context &context
     }
 }
 
-void ConditionalStatement::Print(std::ostream &stream) const
+void ConditionEvaluation::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
-    stream << "if (";
-    condition_->Print(stream);
-    stream << ")" << std::endl;
-    true_statement_->Print(stream);
+    // this is never called
+}
 
-    if (false_statement_ != nullptr)
-    {
-        stream << "else" << std::endl;
-        false_statement_->Print(stream);
-    }
+void ConditionEvaluation::Evaluate(std::ostream &stream, Context &context, std::string passed_reg, std::string jump_label) const
+{
+    Type type = dynamic_cast<Expression *>(condition_)->GetType(context);
+    std::string condition_evaluation_register = context.get_register(type);
+
+    condition_->EmitRISC(stream, context, condition_evaluation_register);
+
+    CheckCondition(stream, context, condition_evaluation_register, jump_label, type);
+
+    context.deallocate_register(condition_evaluation_register);
+}
+
+void ConditionEvaluation::Print(std::ostream &stream) const
+{
+    condition_->Print(stream);
 }

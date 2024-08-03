@@ -2,9 +2,9 @@
 #define AST_CONDITIONAL_STATEMENT_HPP
 
 #include "../ast_node.hpp"
-#include "../statements/ast_expression.hpp"
+#include "../control_flow/ast_condition_evaluation.hpp"
 
-class ConditionalStatement : public Node
+class IfElse : public Node
 {
 private:
     Node *condition_;
@@ -12,10 +12,10 @@ private:
     Node *false_statement_;
 
 public:
-    ConditionalStatement(Node *condition, Node *true_statement) : condition_(condition), true_statement_(true_statement), false_statement_(nullptr) {}
-    ConditionalStatement(Node *condition, Node *true_statement, Node *false_statement) : condition_(condition), true_statement_(true_statement), false_statement_(false_statement) {}
+    IfElse(Node *condition, Node *true_statement) : condition_(condition), true_statement_(true_statement), false_statement_(nullptr) {}
+    IfElse(Node *condition, Node *true_statement, Node *false_statement) : condition_(condition), true_statement_(true_statement), false_statement_(false_statement) {}
 
-    ~ConditionalStatement()
+    ~IfElse()
     {
         delete condition_;
         delete true_statement_;
