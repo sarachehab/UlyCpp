@@ -10,6 +10,7 @@ void Context::define_function(std::string identifier, Function function)
     function_bindings[identifier] = function;
     last_function_end_statement = identifier + "_end";
     set_return_register(function.return_value.type);
+    stack_offset.push(0);
 }
 
 Function Context::get_function(std::string identifier) const
@@ -58,11 +59,13 @@ void Context::set_return_register(Type type)
 void Context::set_function_call(std::string function)
 {
     function_call_stack.push(function);
+    allocated_registers.push(std::set<int>());
 }
 
 void Context::pop_function_call()
 {
     function_call_stack.pop();
+    allocated_registers.pop();
 }
 
 Function Context::get_function_call() const
@@ -72,4 +75,9 @@ Function Context::get_function_call() const
         throw std::runtime_error("Context::get_function_call - no function call");
     }
     return get_function(function_call_stack.top());
+}
+
+void Context::exit_function()
+{
+    stack_offset.pop();
 }

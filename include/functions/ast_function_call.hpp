@@ -3,8 +3,7 @@
 
 #include "../ast_node.hpp"
 #include "../primitives/ast_identifier.hpp"
-#include "../statements/ast_assignment.hpp"
-#include "../operations/ast_operand.hpp"
+#include "../statements/ast_expression.hpp"
 
 class FunctionCall : public Operand
 {

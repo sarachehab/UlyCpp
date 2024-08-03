@@ -26,9 +26,9 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
 
         // Allocate stack space
         CompoundStatement *compound_statement = dynamic_cast<CompoundStatement *>(compound_statement_);
-        int initial_offset = 8 + direct_declarator_->GetScopeOffset();
-        context.set_initial_offset(initial_offset);
+
         context.increase_stack_offset(8);
+        int initial_offset = 8 + direct_declarator_->GetScopeOffset();
 
         int stack_allocated_space = compound_statement->GetScopeOffset(context) + initial_offset;
 
@@ -49,6 +49,8 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
         context.pop_operation_type();
         context.pop_scope();
     }
+
+    context.exit_function();
 }
 
 void FunctionDefinition::Print(std::ostream &stream) const

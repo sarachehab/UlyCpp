@@ -9,11 +9,12 @@ void EqualityCheck::EmitRISC(std::ostream &stream, Context &context, std::string
 
     context.set_operation_type(type);
 
-    std::string right_register = context.get_register(type);
     std::string left_register = context.get_register(type);
-
-    right_->EmitRISC(stream, context, right_register);
     left_->EmitRISC(stream, context, left_register);
+    context.add_register_to_set(left_register);
+
+    std::string right_register = context.get_register(type);
+    right_->EmitRISC(stream, context, right_register);
 
     switch (type)
     {
@@ -37,6 +38,7 @@ void EqualityCheck::EmitRISC(std::ostream &stream, Context &context, std::string
     }
 
     context.pop_operation_type();
+    context.remove_register_from_set(left_register);
 }
 
 std::string EqualityCheck::GetOperation() const { return " == "; }

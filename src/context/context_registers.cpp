@@ -177,7 +177,6 @@ void Context::allocate_register(std::string reg_name, Type type)
     int reg = register_name_to_int[reg_name];
     register_file[reg].is_available = false;
     register_file[reg].type = type;
-    allocated_registers.insert(reg);
 }
 
 // Deallocate a register
@@ -186,28 +185,50 @@ void Context::deallocate_register(std::string reg_name)
     int reg = register_name_to_int[reg_name];
     // Future Scopes: Add store instruction here
     register_file[reg].is_available = true;
-    allocated_registers.erase(reg);
+}
+
+void Context::add_register_to_set(std::string reg_name)
+{
+    int reg = register_name_to_int[reg_name];
+}
+
+void Context::remove_register_from_set(std::string reg_name)
+{
+    int reg = register_name_to_int[reg_name];
+    allocated_registers.top().erase(reg);
 }
 
 // TODO
-void Context::push_registers()
+void Context::push_registers(std::ostream &stream)
 {
-    for (int reg : allocated_registers)
+    for (int reg : allocated_registers.top())
     {
-        // Future Scopes: Add load instruction here
+        stream << "# Pushing register " << reg << std::endl;
+
+        int offset = get_stack_offset();
         Type type = register_file[reg].type;
-        std::cout << store_instruction(type) << std::endl;
+        stream << store_instruction(type) << " " << get_register_name(reg) << ", " << offset << "(sp)" << std::endl;
+        allocated_register_offsets[reg] = offset;
+        increase_stack_offset(types_size.at(type));
+
+        // reset register file to empty state
+        register_file[reg].is_available = true;
     }
 }
 
 // TODO
-void Context::pop_registers()
+void Context::pop_registers(std::ostream &stream)
 {
-    for (int reg : allocated_registers)
+    for (int reg : allocated_registers.top())
     {
-        // Future Scopes: Add load instruction here
         Type type = register_file[reg].type;
-        std::cout << load_instruction(type) << std::endl;
+        stream << load_instruction(type) << " " << get_register_name(reg) << ", " << allocated_register_offsets[reg] << "(sp)" << std::endl;
+        increase_stack_offset(-types_size.at(type));
+        allocated_register_offsets.erase(reg);
+
+        // reset register file to state before function call
+        register_file[reg].is_available = false;
+        register_file[reg].type = type;
     }
 }
 

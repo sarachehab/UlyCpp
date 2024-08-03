@@ -28,17 +28,18 @@ public:
     void deallocate_register(std::string reg_name);
     std::string get_register_name(int reg_number) const;
     void set_register_type(std::string reg_name, Type type);
+    void add_register_to_set(std::string reg_name);
+    void remove_register_from_set(std::string reg_name);
 
     // Register saving for function calls
-    void push_registers();
-    void pop_registers();
+    void push_registers(std::ostream &stream);
+    void pop_registers(std::ostream &stream);
 
     // Stack management
     void create_new_scope();
     void pop_scope();
     int get_stack_offset() const;
     void increase_stack_offset(int offset);
-    void set_initial_offset(int offset);
 
     // Variable management
     void define_variable(std::string identifier, Variable variable);
@@ -48,6 +49,7 @@ public:
     void define_function(std::string identifier, Function function);
     Function get_function(std::string identifier) const;
     std::string get_last_function_end_statement() const;
+    void exit_function();
     void set_return_register(Type type);
     void set_function_call(std::string function);
     void pop_function_call();
@@ -88,11 +90,11 @@ private:
     // Register file
     static std::unordered_map<int, Register> register_file;
     static std::unordered_map<std::string, int> register_int_to_name;
-    std::set<int> allocated_registers;
+    std::stack<std::set<int>> allocated_registers;
+    std::unordered_map<int, int> allocated_register_offsets;
 
     // Variable map
-    int current_stack_offset;
-    int initial_stack_offset;
+    std::stack<int> stack_offset;
     std::vector<VariablesLayer> variable_bindings;
 
     // Function map

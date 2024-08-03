@@ -7,12 +7,13 @@ void LogicalOperation::EmitRISC(std::ostream &stream, Context &context, std::str
     context.set_operation_type(type);
 
     std::string left_register = context.get_register(type);
-    std::string right_register = context.get_register(type);
-    std::string tmp_register = context.get_register(Type::_INT);
-
     left_->EmitRISC(stream, context, left_register);
+    context.add_register_to_set(left_register);
+
+    std::string right_register = context.get_register(type);
     right_->EmitRISC(stream, context, right_register);
 
+    std::string tmp_register = context.get_register(Type::_INT);
     stream << "snez " << tmp_register << ", " << left_register << std::endl;
     stream << "snez " << passed_reg << ", " << right_register << std::endl;
     stream << GetMneumonic(type) << " " << passed_reg << ", " << tmp_register << ", " << passed_reg << std::endl;
@@ -20,6 +21,8 @@ void LogicalOperation::EmitRISC(std::ostream &stream, Context &context, std::str
     context.deallocate_register(right_register);
     context.deallocate_register(left_register);
     context.deallocate_register(tmp_register);
+
+    context.remove_register_from_set(left_register);
 
     context.pop_operation_type();
 }

@@ -149,8 +149,8 @@ postfix_expression
 	;
 
 argument_expression_list
-	: assignment_expression									{ $$ = new AssignmentList($1); }
-	| argument_expression_list ',' assignment_expression	{ AssignmentList *argument_list = dynamic_cast<AssignmentList *>($1); argument_list->PushBack($3); $$ = argument_list; }
+	: assignment_expression									{ $$ = new ExpressionList($1); }
+	| argument_expression_list ',' assignment_expression	{ ExpressionList *expression_list = dynamic_cast<ExpressionList *>($1); expression_list->PushBack($3); $$ = expression_list; }
 	;
 
 unary_expression

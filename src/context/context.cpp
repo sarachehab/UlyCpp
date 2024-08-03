@@ -3,7 +3,8 @@
 Context::Context()
 {
     label_counter = 0;
-    current_stack_offset = 0;
+    stack_offset.push(0);
+    allocated_registers.push(std::set<int>());
 }
 
 Context::~Context()

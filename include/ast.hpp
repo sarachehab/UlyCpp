@@ -13,6 +13,7 @@
 #include "statements/ast_declaration.hpp"
 #include "statements/ast_return.hpp"
 #include "statements/ast_statements.hpp"
+#include "statements/ast_expression.hpp"
 
 #include "primitives/ast_constant.hpp"
 #include "primitives/ast_identifier.hpp"

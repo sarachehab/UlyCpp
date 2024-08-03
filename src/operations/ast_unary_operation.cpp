@@ -6,12 +6,12 @@ void UnaryOperation::EmitRISC(std::ostream &stream, Context &context, std::strin
 
     context.set_operation_type(type);
 
-    std::string left_register = context.get_register(type);
+    std::string operation_reg = context.get_register(type);
 
-    expression_->EmitRISC(stream, context, left_register);
-    stream << GetMneumonic(type) << " " << passed_reg << ", " << left_register << std::endl;
+    expression_->EmitRISC(stream, context, operation_reg);
+    stream << GetMneumonic(type) << " " << passed_reg << ", " << operation_reg << std::endl;
 
-    context.deallocate_register(left_register);
+    context.deallocate_register(operation_reg);
 
     context.pop_operation_type();
 }

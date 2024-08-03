@@ -3,7 +3,7 @@
 void Context::create_new_scope()
 {
     variable_bindings.push_back(VariablesLayer());
-    current_stack_offset = initial_stack_offset;
+    stack_offset.push(stack_offset.top());
 }
 
 void Context::pop_scope()
@@ -13,19 +13,15 @@ void Context::pop_scope()
         std::runtime_error("Error: trying to pop empty scope");
     }
     variable_bindings.pop_back();
+    stack_offset.pop();
 }
 
 int Context::get_stack_offset() const
 {
-    return current_stack_offset;
+    return stack_offset.top();
 }
 
 void Context::increase_stack_offset(int offset)
 {
-    current_stack_offset += offset;
-}
-
-void Context::set_initial_offset(int offset)
-{
-    initial_stack_offset = offset;
+    stack_offset.top() += offset;
 }
