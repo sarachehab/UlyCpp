@@ -28,3 +28,13 @@ void ExpressionList::GetArguments(std::ostream &stream, Context &context, std::s
         dynamic_cast<Operand *>(nodes_[arg_nb])->EmitRISC(stream, context, argument_register_name);
     }
 }
+
+void ExpressionList::Print(std::ostream &stream) const
+{
+    for (auto node : nodes_)
+    {
+        node->Print(stream);
+        stream << ", ";
+    }
+    stream << std::endl;
+}

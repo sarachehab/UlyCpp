@@ -5,6 +5,7 @@
 #include "../ast_type_specifier.hpp"
 #include "../primitives/ast_identifier.hpp"
 #include "ast_assignment.hpp"
+#include "../ast_direct_declarator.hpp"
 
 class Declaration : public Node
 {
@@ -21,6 +22,8 @@ public:
     }
 
     int GetScopeOffset(Context &context) const;
+
+    Type GetType() const;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;

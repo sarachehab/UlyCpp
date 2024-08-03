@@ -11,6 +11,7 @@ public:
     ~ExpressionList() = default;
 
     void GetArguments(std::ostream &stream, Context &context, std::string passed_reg) const;
+    void Print(std::ostream &stream) const override;
 };
 
 #endif
