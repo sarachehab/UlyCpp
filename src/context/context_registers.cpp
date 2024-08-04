@@ -1,6 +1,5 @@
 #include "../../include/context/context.hpp"
 
-// Initialize register file
 std::unordered_map<int, Register> Context::register_file = {
     {0, Register(false, Type::_INT, "zero")},
     {1, Register(false, Type::_INT, "ra")},
@@ -67,7 +66,6 @@ std::unordered_map<int, Register> Context::register_file = {
     {62, Register(true, Type::_FLOAT, "ft10")},
     {63, Register(true, Type::_FLOAT, "ft11")}};
 
-// Map register name to register number
 std::unordered_map<std::string, int> register_name_to_int = {
     {"zero", 0},
     {"ra", 1},
@@ -137,6 +135,8 @@ std::unordered_map<std::string, int> register_name_to_int = {
 std::string Context::get_register(Type type)
 {
     int start_register_file;
+
+    // Set start register in function of type of variable
     switch (type)
     {
     case Type::_INT:
@@ -154,6 +154,7 @@ std::string Context::get_register(Type type)
         throw std::runtime_error("Context::get_register: Invalid variable type");
     }
 
+    // Iterate through register file until available register is found
     for (int i = start_register_file; i < start_register_file + 32; i++)
     {
         if (register_file[i].is_available)
@@ -165,13 +166,11 @@ std::string Context::get_register(Type type)
     throw std::runtime_error("Context::get_register: No available register");
 }
 
-// Get the return register of the given type
 std::string Context::get_return_register() const
 {
     return return_register;
 }
 
-// Allocate a register of the given type
 void Context::allocate_register(std::string reg_name, Type type)
 {
     int reg = register_name_to_int[reg_name];
@@ -179,11 +178,9 @@ void Context::allocate_register(std::string reg_name, Type type)
     register_file[reg].type = type;
 }
 
-// Deallocate a register
 void Context::deallocate_register(std::string reg_name)
 {
     int reg = register_name_to_int[reg_name];
-    // Future Scopes: Add store instruction here
     register_file[reg].is_available = true;
 }
 
@@ -199,15 +196,17 @@ void Context::remove_register_from_set(std::string reg_name)
     allocated_registers.top().erase(reg);
 }
 
-// TODO
 void Context::push_registers(std::ostream &stream)
 {
-
     for (int reg : allocated_registers.top())
     {
         int offset = get_stack_offset();
         Type type = register_file[reg].type;
+
+        // Spill register to memory
         stream << store_instruction(type) << " " << get_register_name(reg) << ", " << offset << "(sp)" << std::endl;
+
+        // Increase stack offset to account for spilled register
         allocated_register_offsets[reg] = offset;
         increase_stack_offset(types_size.at(type));
 
@@ -216,14 +215,18 @@ void Context::push_registers(std::ostream &stream)
     }
 }
 
-// TODO
 void Context::pop_registers(std::ostream &stream)
 {
     for (int reg : allocated_registers.top())
     {
+        // Restore register from memory
         Type type = register_file[reg].type;
         stream << load_instruction(type) << " " << get_register_name(reg) << ", " << allocated_register_offsets[reg] << "(sp)" << std::endl;
+
+        // Reset stack offset to previous value
         increase_stack_offset(-types_size.at(type));
+
+        // Mark register as restored by removing its dedicated stack offset
         allocated_register_offsets.erase(reg);
 
         // reset register file to state before function call

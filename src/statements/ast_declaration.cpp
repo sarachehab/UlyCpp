@@ -2,9 +2,11 @@
 
 void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    // Get size of atomic type
     Type type = GetType();
     int type_size = types_size.at(type);
 
+    // Iterate over all declarations
     NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
     for (auto declarator : declarator_list->get_nodes())
     {
@@ -14,31 +16,52 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
 
         int offset = context.get_stack_offset();
 
+        // Initialization
         if (assignment != nullptr)
         {
+            // Increase stack offset to account for new variable
             context.increase_stack_offset(type_size);
+
+            // Get variable name
             std::string variable_name = assignment->GetIdentifier();
+
+            // Add variable to bindings
             Variable variable_specs(false, false, type, Scope::_LOCAL, offset);
             context.define_variable(variable_name, variable_specs);
+
+            // Evaluate expression and store in variable
             assignment->EmitRISC(stream, context, passed_reg);
         }
+
+        // Simple declaration
         else if (identifier != nullptr)
         {
+            // Increase stack offset to account for new variable
             context.increase_stack_offset(type_size);
+
+            // Get variable name
             std::string variable_name = identifier->GetIdentifier();
+
+            // Add variable to bindings
             Variable variable_specs(false, false, type, Scope::_LOCAL, offset);
             context.define_variable(variable_name, variable_specs);
         }
+
+        // Function external declaration
         else if (direct_declarator != nullptr)
         {
+            // Get function name
             std::string function_name = direct_declarator->GetIdentifier();
 
+            // Define function return value and parameters
             ReturnValue return_value = ReturnValue(false, false, type);
             std::vector<Parameter> arguments = direct_declarator->GetParameters(context);
-            Function function = Function(return_value, arguments);
 
+            // Define function for later access in context
+            Function function = Function(return_value, arguments);
             context.define_function(function_name, function);
         }
+
         else
         {
             throw std::runtime_error("Declaration EmitRISC: Unknown declarator type");
@@ -57,10 +80,12 @@ void Declaration::Print(std::ostream &stream) const
 
 int Declaration::GetScopeOffset(Context &context) const
 {
+    // Get size of atomic type
     TypeSpecifier *type_specifier = dynamic_cast<TypeSpecifier *>(type_specifier_);
     Type type = type_specifier->GetType();
     int type_size = types_size.at(type);
 
+    // Get size of all declarations by counting the number of declarations
     NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
     return type_size * declarator_list->get_nodes().size();
 }

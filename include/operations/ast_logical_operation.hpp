@@ -5,6 +5,9 @@
 #include "ast_binary_operation.hpp"
 #include "ast_unary_operation.hpp"
 
+/**
+ * @brief Abstract class for logical operations
+ */
 class LogicalOperation : public BinaryOperation
 {
 

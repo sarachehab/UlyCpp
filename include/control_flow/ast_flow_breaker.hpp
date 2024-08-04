@@ -3,6 +3,11 @@
 
 #include "ast_node.hpp"
 
+/**
+ * @brief Abstract class for flow breakers
+ *
+ * Represents a flow breaker, such as a CONTINUE, BREAK and RETURN.
+ */
 class FlowBreaker : public Node
 {
 public:

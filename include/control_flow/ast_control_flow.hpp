@@ -3,6 +3,11 @@
 
 #include "../ast_node.hpp"
 
+/**
+ * @brief Abstract class for control
+ *
+ * Represents a control flow, such as an IF, ELSE, WHILE, DO_WHILE, FOR
+ */
 class ControlFlow : public Node
 {
 public:

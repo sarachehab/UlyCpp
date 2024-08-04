@@ -19,9 +19,14 @@ void FloatConstant::EmitRISC(std::ostream &stream, Context &context, std::string
 {
     int label_number = context.declare_constant(value_);
 
+    // load address of floating number representation
     std::string address_register = context.get_register(Type::_INT);
     stream << "lui " << address_register << ", %hi(.constant_representation_" << label_number << ")" << std::endl;
+
+    // fetch value from specified address
     stream << context.load_instruction(Type::_FLOAT) << " " << passed_reg << ", %lo(.constant_representation_" << label_number << ")" << "(" << address_register << ")" << std::endl;
+
+    // deallocate register
     context.deallocate_register(address_register);
 }
 
@@ -39,9 +44,14 @@ void DoubleConstant::EmitRISC(std::ostream &stream, Context &context, std::strin
 {
     int label_number = context.declare_constant(value_);
 
+    // load address of floating number representation
     std::string address_register = context.get_register(Type::_INT);
     stream << "lui " << address_register << ", %hi(.constant_representation_" << label_number << ")" << std::endl;
+
+    // fetch value from specified address
     stream << context.load_instruction(Type::_DOUBLE) << " " << passed_reg << ", %lo(.constant_representation_" << label_number << ")" << "(" << address_register << ")" << std::endl;
+
+    // deallocate register
     context.deallocate_register(address_register);
 }
 

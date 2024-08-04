@@ -13,10 +13,23 @@ protected:
     std::vector<Node *> branches_;
 
 public:
-    Node(){};
+    Node() {};
     virtual ~Node();
 
+    /**
+     * @brief Emit RISC-V assembly code
+     *
+     * @param stream Output stream
+     * @param context Context object
+     * @param passed_reg Register to pass to the next node
+     */
     virtual void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const = 0;
+
+    /**
+     * @brief Print the node
+     *
+     * @param stream Output stream
+     */
     virtual void Print(std::ostream &stream) const = 0;
 };
 
@@ -37,10 +50,22 @@ public:
         }
     }
 
+    /**
+     * @brief Add a node to the list
+     *
+     * @param item Node to add
+     */
     void PushBack(Node *item);
+
+    /**
+     * @brief Get nodes from NodeList
+     *
+     * @return List of nodes
+     */
+    std::vector<Node *> get_nodes() const;
+
     virtual void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     virtual void Print(std::ostream &stream) const override;
-    std::vector<Node *> get_nodes() const;
 };
 
 #endif

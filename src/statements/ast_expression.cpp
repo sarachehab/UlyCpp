@@ -12,8 +12,10 @@ void Expression::PushBack(Node *item)
 
 void Expression::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    // Iterate through expressions
     for (auto node : nodes_)
     {
+        // There to fix bug
         if (node == nullptr)
         {
             continue;
@@ -36,10 +38,12 @@ void Expression::Print(std::ostream &stream) const
 
 void ExpressionList::GetArguments(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    // Get function parameters list to get individual types of args
     Function function = context.get_function_call();
     int int_arg_reg = 10, float_arg_reg = 42;
     int argument_register_number;
 
+    // Iterate through list of arguments
     for (long unsigned int arg_nb = 0; arg_nb < function.arguments.size(); arg_nb++)
     {
 
@@ -59,7 +63,10 @@ void ExpressionList::GetArguments(std::ostream &stream, Context &context, std::s
             throw std::runtime_error("ExpressionList GetArguments: Unknown type");
         }
 
+        // Get argument register name
         std::string argument_register_name = context.get_register_name(argument_register_number);
+
+        // Evaluate argument and store in register
         context.set_operation_type(function.arguments[arg_nb].type);
         dynamic_cast<Operand *>(nodes_[arg_nb])->EmitRISC(stream, context, argument_register_name);
         context.pop_operation_type();

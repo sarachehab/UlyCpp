@@ -21,6 +21,14 @@ public:
         delete declarator_list_;
     }
 
+    /**
+     * @brief Get offset needed to account for variable declarations
+     *
+     * Goes through all the declarations and adds up the size of each variable
+     *
+     * @param context Context of the program
+     * @return Offset
+     */
     int GetScopeOffset(Context &context) const;
 
     Type GetType() const;

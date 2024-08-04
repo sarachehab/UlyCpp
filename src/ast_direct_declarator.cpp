@@ -2,6 +2,7 @@
 
 void DirectDeclarator::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    // Emit function label
     identifier_->EmitRISC(stream, context, passed_reg);
     stream << ":" << std::endl;
 }
@@ -46,10 +47,13 @@ std::vector<Parameter> DirectDeclarator::GetParameters(Context &context) const
 
 int DirectDeclarator::GetScopeOffset() const
 {
+    // No parameters for function: no need to account for them
     if (parameter_list_ == nullptr)
     {
         return 0;
     }
+
+    // Function has parameters: account for them when allocating stack space
     else
     {
         ParameterList *parameter_list = dynamic_cast<ParameterList *>(parameter_list_);

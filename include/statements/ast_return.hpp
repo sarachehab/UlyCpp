@@ -2,8 +2,9 @@
 #define AST_RETURN_HPP
 
 #include "../ast_node.hpp"
+#include "../control_flow/ast_flow_breaker.hpp"
 
-class ReturnStatement : public Node
+class ReturnStatement : public FlowBreaker
 {
 private:
     Node *expression_;

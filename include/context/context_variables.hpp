@@ -3,12 +3,22 @@
 
 #include "context_types.hpp"
 
+/**
+ * @brief Enum class for scopes
+ *
+ * Precises if declaration is Global or Local
+ */
 enum class Scope
 {
     _GLOBAL,
     _LOCAL,
 };
 
+/**
+ * @brief Information on variables
+ *
+ * Contains information on variables, such as whether they are pointers, arrays, their type, their scope, and their offset.
+ */
 struct Variable
 {
     bool is_pointer = false;

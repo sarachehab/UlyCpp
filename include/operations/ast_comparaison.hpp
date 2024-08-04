@@ -4,6 +4,9 @@
 #include "../ast_node.hpp"
 #include "ast_binary_operation.hpp"
 
+/**
+ * @brief Abstract class for comparaison operations
+ */
 class ComparaisonOperation : public BinaryOperation
 {
 public:

@@ -7,7 +7,10 @@ Type IncrementOperation::GetType(Context &context) const
 
 void PostfixIncrement::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    // Fetch variable from memory
     identifier_->EmitRISC(stream, context, passed_reg);
+
+    // Increment or decrement the variable
     assignment_->EmitRISC(stream, context, passed_reg);
 }
 
@@ -26,7 +29,10 @@ void PostfixIncrement::Print(std::ostream &stream) const
 
 void Prefixincrement::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    // Increment or decrement the variable
     assignment_->EmitRISC(stream, context, passed_reg);
+
+    // Fetch variable from memory
     identifier_->EmitRISC(stream, context, passed_reg);
 }
 

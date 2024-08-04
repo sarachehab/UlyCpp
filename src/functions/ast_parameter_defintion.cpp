@@ -5,6 +5,7 @@ void ParameterList::EmitRISC(std::ostream &stream, Context &context, std::string
     int register_number, int_register = 10, float_register = 42;
     std::string register_name;
 
+    // Iterate through list of parameters
     for (auto node : nodes_)
     {
 
@@ -31,7 +32,11 @@ void ParameterList::EmitRISC(std::ostream &stream, Context &context, std::string
         default:
             throw std::runtime_error("ParameterDeclaration::EmitRISC - Invalid type");
         }
+
+        // Specify argument register for parameter
         register_name = context.get_register_name(register_number);
+
+        // Emit parameter store instruction
         parameter->EmitRISC(stream, context, register_name);
     }
 }
@@ -39,8 +44,11 @@ void ParameterList::EmitRISC(std::ostream &stream, Context &context, std::string
 std::vector<Parameter> ParameterList::GetParameters(Context &context)
 {
     int initial_offset = context.get_stack_offset();
+
+    // Iterate through list of parameters
     for (auto node : nodes_)
     {
+        // Append new parameter to list, specifying offset and type
         ParameterDeclaration *parameter = dynamic_cast<ParameterDeclaration *>(node);
         Parameter Parameter = parameter->GetParameter(context, initial_offset + GetScopeOffset());
         parameters.push_back(Parameter);
@@ -51,8 +59,11 @@ std::vector<Parameter> ParameterList::GetParameters(Context &context)
 int ParameterList::GetScopeOffset() const
 {
     int size = 0;
+
+    // Iterate through list of parameters
     for (Parameter Parameter : parameters)
     {
+        // Add size of parameter to total size
         size += Parameter.GetSize();
     }
     return size;
@@ -65,13 +76,20 @@ Type ParameterDeclaration::GetType(Context &context) const
 
 void ParameterDeclaration::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    // Get type of parameter declaration
     Type type = GetType(context);
+
+    // Get stack offset for parameter
     int offset = context.get_stack_offset();
+
+    // Store parameter on stack
     stream << context.store_instruction(type) << " " << passed_reg << ", " << offset << "(sp)" << std::endl;
 
+    // Define parameter as variable accessible within function body
     Variable variable_specs(false, false, type, Scope::_LOCAL, offset);
     context.define_variable(GetIdentifier(), variable_specs);
 
+    // Increase stack offset to accomodate for parameter
     context.increase_stack_offset(types_size.at(type));
 }
 
@@ -84,12 +102,14 @@ void ParameterDeclaration::Print(std::ostream &stream) const
 
 Parameter ParameterDeclaration::GetParameter(Context &context, int offset) const
 {
+    // Define parameter type for function
     Type type = GetType(context);
     return Parameter(GetIdentifier(), false, false, type, offset);
 }
 
 int ParameterDeclaration::GetSize(Context &context) const
 {
+    // Get size of parameter
     return types_size.at(GetType(context));
 }
 

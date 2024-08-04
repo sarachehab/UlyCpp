@@ -11,13 +11,17 @@ private:
 
 public:
     Identifier(std::string *identifier) : identifier_(*identifier) { delete identifier; };
-    ~Identifier(){};
+    ~Identifier() {};
 
     Type GetType(Context &context) const override;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
 
+    /**
+     * @brief Get the identifier name
+     * @return Identifier name
+     */
     std::string GetIdentifier() const;
 };
 

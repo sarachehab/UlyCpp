@@ -36,6 +36,8 @@
 #include "control_flow/ast_break.hpp"
 #include "control_flow/ast_continue.hpp"
 #include "control_flow/ast_flow_breaker.hpp"
+#include "control_flow/ast_switch.hpp"
+#include "control_flow/ast_case.hpp"
 
 #include "ast_direct_declarator.hpp"
 #include "ast_type_specifier.hpp"

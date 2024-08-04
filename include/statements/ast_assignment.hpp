@@ -25,6 +25,10 @@ public:
         delete expression_;
     }
 
+    /**
+     * @brief Get the identifier name
+     * @return Identifier name
+     */
     std::string GetIdentifier() const;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;

@@ -4,6 +4,9 @@
 #include <unordered_map>
 #include <string>
 
+/**
+ * @brief Enum class for types
+ */
 enum class Type
 {
     _VOID,
@@ -16,6 +19,12 @@ enum class Type
     _DOUBLE,
 };
 
+/**
+ * @brief Map of types to their size in bytes
+ *
+ * Used in conjunction with Context::increase_stack_size.
+ * Used with SizeOf operator.
+ */
 const std::unordered_map<Type, int> types_size = {
     {Type::_VOID, 0},
     {Type::_CHAR, 1},
@@ -27,6 +36,9 @@ const std::unordered_map<Type, int> types_size = {
     {Type::_DOUBLE, 8},
 };
 
+/**
+ * @brief Map of types to their assembler directives
+ */
 const std::unordered_map<Type, std::string> assembler_directives = {
     {Type::_VOID, ".space"},
     {Type::_CHAR, ".byte"},

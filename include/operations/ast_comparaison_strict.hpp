@@ -5,6 +5,9 @@
 #include "ast_comparaison.hpp"
 #include "ast_operand.hpp"
 
+/**
+ * @brief Abstract class for strict comparaison operations
+ */
 class StrictComparaisonOperation : public ComparaisonOperation
 {
 public:

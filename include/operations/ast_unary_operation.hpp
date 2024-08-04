@@ -4,19 +4,34 @@
 #include "../ast_node.hpp"
 #include "ast_operand.hpp"
 
+/**
+ * @brief Abstract class for unary operations
+ */
 class UnaryOperation : public Operand
 {
 private:
     Node *expression_;
 
 public:
-    UnaryOperation(Node *expression) : expression_(expression){};
+    UnaryOperation(Node *expression) : expression_(expression) {};
     ~UnaryOperation()
     {
         delete expression_;
     };
 
+    /**
+     * @brief Get the mneumonic for the operation
+     *
+     * @param type Type of the operation
+     * @return Mneumonic
+     */
     virtual std::string GetMneumonic(Type type) const = 0;
+
+    /**
+     * @brief Get the operation
+     *
+     * @return Operation symbol
+     */
     virtual std::string GetOperation() const = 0;
 
     Type GetType(Context &context) const override;

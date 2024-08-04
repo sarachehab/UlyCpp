@@ -33,6 +33,9 @@ public:
     using NodeList::NodeList;
     ~ExpressionList() = default;
 
+    /**
+     * @brief Puts arguments in the corresponding register during function call
+     */
     void GetArguments(std::ostream &stream, Context &context, std::string passed_reg) const;
     void Print(std::ostream &stream) const override;
 };

@@ -2,23 +2,32 @@
 
 void BinaryOperation::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    // set type of operation by comparing the type of the operation and the type of the operands
     Type type = std::max(context.get_operation_type(), GetType(context));
-
     context.set_operation_type(type);
 
+    // evaluate left operand
     std::string left_register = context.get_register(type);
     left_->EmitRISC(stream, context, left_register);
+
+    // add left operand to register set, can be spilled if right part contains function call
     context.add_register_to_set(left_register);
 
+    // evaluate right operand
     std::string right_register = context.get_register(type);
     right_->EmitRISC(stream, context, right_register);
 
+    // execute desired operation
     stream << GetMneumonic(type) << " " << passed_reg << ", " << left_register << ", " << right_register << std::endl;
 
+    // deallocate registers
     context.deallocate_register(right_register);
     context.deallocate_register(left_register);
+
+    // remove left operand from register set
     context.remove_register_from_set(left_register);
 
+    // set operation type to the type of the operands
     context.pop_operation_type();
 }
 
@@ -32,23 +41,23 @@ void BinaryOperation::Print(std::ostream &stream) const
 Type BinaryOperation::GetType(Context &context) const
 {
     // Attempt to cast left_ and right_ to Operand
-    Operand *leftOperand = dynamic_cast<Operand *>(left_);
-    Operand *rightOperand = dynamic_cast<Operand *>(right_);
+    Operand *left_operand = dynamic_cast<Operand *>(left_);
+    Operand *right_operand = dynamic_cast<Operand *>(right_);
 
     // Check if the cast was successful
-    if (!leftOperand)
+    if (!left_operand)
     {
         throw std::runtime_error("Error: dynamic_cast failed for left_ in BinaryOperation::GetType");
     }
 
-    if (!rightOperand)
+    if (!right_operand)
     {
         throw std::runtime_error("Error: dynamic_cast failed for right_ in BinaryOperation::GetType");
     }
 
     // Get types from the operands
-    Type leftType = leftOperand->GetType(context);
-    Type rightType = rightOperand->GetType(context);
+    Type leftType = left_operand->GetType(context);
+    Type rightType = right_operand->GetType(context);
 
     // Return the max type
     return std::max(leftType, rightType);

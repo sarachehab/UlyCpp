@@ -1,6 +1,11 @@
 #ifndef CONTEXT_REGISTERS
 #define CONTEXT_REGISTERS
 
+/**
+ * @brief Information on registers
+ *
+ * Contains information on registers, such as whether they are available, their type, and their name.
+ */
 struct Register
 {
     bool is_available;

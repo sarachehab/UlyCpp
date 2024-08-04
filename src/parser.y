@@ -110,6 +110,7 @@ statement
 	| jump_statement 		{ $$ = $1; }
 	| selection_statement 	{ $$ = $1; }
 	| iteration_statement	{ $$ = $1; }
+	| labeled_statement		{ $$ = $1; }
 	;
 
 compound_statement
@@ -285,6 +286,7 @@ declaration_list
 selection_statement
 	: IF '(' expression ')' statement					{ $$ = new IfElse(new ConditionEvaluation($3), $5); }
 	| IF '(' expression ')' statement ELSE statement	{ $$ = new IfElse(new ConditionEvaluation($3), $5, $7); }
+	| SWITCH '(' expression ')' statement				{ $$ = new SwitchStatement($3, $5); }
 	;
 
 iteration_statement
@@ -292,6 +294,15 @@ iteration_statement
 	| FOR '(' expression_statement expression_statement ')' statement				{ $$ = new ForLoop($3, new ConditionEvaluation($4), $6); }
 	| FOR '(' expression_statement expression_statement expression ')' statement	{ $$ = new ForLoop($3, new ConditionEvaluation($4), $5, $7); }
 	| DO statement WHILE '(' expression ')' ';'										{ $$ = new DoWhileLoop($2, new ConditionEvaluation($5)); }
+	;
+
+labeled_statement
+	: CASE constant_expression ':' statement	{ $$ = new Case($2, $4); }
+	| DEFAULT ':' statement						{ $$ = new DefaultCase($3); }
+	;
+
+constant_expression
+	: conditional_expression
 	;
 
 %%
