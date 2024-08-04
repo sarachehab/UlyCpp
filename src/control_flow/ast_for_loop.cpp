@@ -16,7 +16,7 @@ void ForLoop::EmitRISC(std::ostream &stream, Context &context, std::string passe
 
     // Evaluate condition
     stream << loop_label << ":" << std::endl;
-    dynamic_cast<ConditionEvaluation *>(condition_)->Evaluate(stream, context, passed_reg, end_label);
+    dynamic_cast<ConditionEvaluation *>(condition_)->Evaluate(stream, context, passed_reg, end_label, false);
 
     // Emit the body
     body_->EmitRISC(stream, context, passed_reg);

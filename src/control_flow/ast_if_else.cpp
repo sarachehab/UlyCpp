@@ -6,7 +6,7 @@ void IfElse::EmitRISC(std::ostream &stream, Context &context, std::string passed
     std::string false_label = context.create_label("if_else");
     std::string jump_label = (false_statement_ == nullptr) ? end_label : false_label;
 
-    dynamic_cast<ConditionEvaluation *>(condition_)->Evaluate(stream, context, passed_reg, jump_label);
+    dynamic_cast<ConditionEvaluation *>(condition_)->Evaluate(stream, context, passed_reg, jump_label, false);
 
     true_statement_->EmitRISC(stream, context, passed_reg);
 

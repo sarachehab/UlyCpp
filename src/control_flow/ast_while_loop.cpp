@@ -8,7 +8,7 @@ void WhileLoop::EmitRISC(std::ostream &stream, Context &context, std::string pas
     context.save_end_label(end_label);
 
     stream << loop_label << ":" << std::endl;
-    dynamic_cast<ConditionEvaluation *>(condition_)->Evaluate(stream, context, passed_reg, end_label);
+    dynamic_cast<ConditionEvaluation *>(condition_)->Evaluate(stream, context, passed_reg, end_label, false);
     statement_->EmitRISC(stream, context, passed_reg);
     stream << "j " << loop_label << std::endl;
     stream << end_label << ":" << std::endl;

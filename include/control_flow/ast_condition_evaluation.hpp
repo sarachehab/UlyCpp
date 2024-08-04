@@ -18,8 +18,10 @@ public:
         delete condition_;
     }
 
-    void CheckCondition(std::ostream &stream, Context &context, std::string condition_evaluation_register, std::string jump_label, Type type) const;
-    void Evaluate(std::ostream &stream, Context &context, std::string passed_reg, std::string jump_label) const;
+    void CheckCondition(std::ostream &stream, Context &context, std::string condition_evaluation_register, std::string jump_label, Type type, bool inversion) const;
+    void Evaluate(std::ostream &stream, Context &context, std::string passed_reg, std::string jump_label, bool inversion) const;
+
+    std::string GetMneumonic(bool inversion) const;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
