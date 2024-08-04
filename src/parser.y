@@ -286,7 +286,9 @@ selection_statement
 	;
 
 iteration_statement
-	: WHILE '(' expression ')' statement	{ $$ = new WhileLoop(new ConditionEvaluation($3), $5); }
+	: WHILE '(' expression ')' statement											{ $$ = new WhileLoop(new ConditionEvaluation($3), $5); }
+	| FOR '(' expression_statement expression_statement ')' statement				{ $$ = new ForLoop($3, new ConditionEvaluation($4), $6); }
+	| FOR '(' expression_statement expression_statement expression ')' statement	{ $$ = new ForLoop($3, new ConditionEvaluation($4), $5, $7); }
 	;
 
 %%

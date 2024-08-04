@@ -5,7 +5,7 @@
 #include "ast_condition_evaluation.hpp"
 #include "ast_control_flow.hpp"
 
-class IfElse : public Node
+class IfElse : public ControlFlow
 {
 private:
     Node *condition_;

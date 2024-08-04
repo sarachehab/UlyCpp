@@ -5,7 +5,7 @@
 #include "../statements/ast_expression.hpp"
 #include "ast_control_flow.hpp"
 
-class ConditionEvaluation : public Node
+class ConditionEvaluation : public ControlFlow
 {
 private:
     Node *condition_;

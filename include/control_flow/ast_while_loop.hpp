@@ -6,7 +6,7 @@
 #include "ast_condition_evaluation.hpp"
 #include "ast_control_flow.hpp"
 
-class WhileLoop : public Node
+class WhileLoop : public ControlFlow
 {
 private:
     Node *condition_;

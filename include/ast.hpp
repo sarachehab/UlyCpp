@@ -31,6 +31,7 @@
 #include "control_flow/ast_if_else.hpp"
 #include "control_flow/ast_while_loop.hpp"
 #include "control_flow/ast_condition_evaluation.hpp"
+#include "control_flow/ast_for_loop.hpp"
 
 #include "ast_direct_declarator.hpp"
 #include "ast_type_specifier.hpp"
