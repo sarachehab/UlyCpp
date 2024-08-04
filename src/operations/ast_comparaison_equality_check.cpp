@@ -37,6 +37,9 @@ void EqualityCheck::EmitRISC(std::ostream &stream, Context &context, std::string
         throw std::runtime_error("EqualityCheck::EmitRISC: Floating point equality check not supported");
     }
 
+    context.deallocate_register(left_register);
+    context.deallocate_register(right_register);
+
     context.pop_operation_type();
     context.remove_register_from_set(left_register);
 }

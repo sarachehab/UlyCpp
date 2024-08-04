@@ -144,7 +144,7 @@ std::string Context::get_register(Type type)
     case Type::_SHORT:
     case Type::_UNSIGNED_INT:
     case Type::_LONG:
-        start_register_file = 5;
+        start_register_file = 0;
         break;
     case Type::_FLOAT:
     case Type::_DOUBLE:
@@ -154,7 +154,7 @@ std::string Context::get_register(Type type)
         throw std::runtime_error("Context::get_register: Invalid variable type");
     }
 
-    for (int i = start_register_file; i < 64; i++)
+    for (int i = start_register_file; i < start_register_file + 32; i++)
     {
         if (register_file[i].is_available)
         {
