@@ -20,16 +20,16 @@ std::unordered_map<int, Register> Context::register_file = {
     {15, Register(false, Type::_INT, "a5")},
     {16, Register(false, Type::_INT, "a6")},
     {17, Register(false, Type::_INT, "a7")},
-    {18, Register(false, Type::_INT, "s2")},
-    {19, Register(false, Type::_INT, "s3")},
-    {20, Register(false, Type::_INT, "s4")},
-    {21, Register(false, Type::_INT, "s5")},
-    {22, Register(false, Type::_INT, "s6")},
-    {23, Register(false, Type::_INT, "s7")},
-    {24, Register(false, Type::_INT, "s8")},
-    {25, Register(false, Type::_INT, "s9")},
-    {26, Register(false, Type::_INT, "s10")},
-    {27, Register(false, Type::_INT, "s11")},
+    {18, Register(true, Type::_INT, "s2")},
+    {19, Register(true, Type::_INT, "s3")},
+    {20, Register(true, Type::_INT, "s4")},
+    {21, Register(true, Type::_INT, "s5")},
+    {22, Register(true, Type::_INT, "s6")},
+    {23, Register(true, Type::_INT, "s7")},
+    {24, Register(true, Type::_INT, "s8")},
+    {25, Register(true, Type::_INT, "s9")},
+    {26, Register(true, Type::_INT, "s10")},
+    {27, Register(true, Type::_INT, "s11")},
     {28, Register(true, Type::_INT, "t3")},
     {29, Register(true, Type::_INT, "t4")},
     {30, Register(true, Type::_INT, "t5")},
@@ -46,12 +46,12 @@ std::unordered_map<int, Register> Context::register_file = {
     {41, Register(false, Type::_FLOAT, "fs1")},
     {42, Register(false, Type::_FLOAT, "fa0")},
     {43, Register(false, Type::_FLOAT, "fa1")},
-    {44, Register(true, Type::_FLOAT, "fa2")},
-    {45, Register(true, Type::_FLOAT, "fa3")},
-    {46, Register(true, Type::_FLOAT, "fa4")},
-    {47, Register(true, Type::_FLOAT, "fa5")},
-    {48, Register(true, Type::_FLOAT, "fa6")},
-    {49, Register(true, Type::_FLOAT, "fa7")},
+    {44, Register(false, Type::_FLOAT, "fa2")},
+    {45, Register(false, Type::_FLOAT, "fa3")},
+    {46, Register(false, Type::_FLOAT, "fa4")},
+    {47, Register(false, Type::_FLOAT, "fa5")},
+    {48, Register(false, Type::_FLOAT, "fa6")},
+    {49, Register(false, Type::_FLOAT, "fa7")},
     {50, Register(true, Type::_FLOAT, "fs2")},
     {51, Register(true, Type::_FLOAT, "fs3")},
     {52, Register(true, Type::_FLOAT, "fs4")},
@@ -62,10 +62,10 @@ std::unordered_map<int, Register> Context::register_file = {
     {57, Register(true, Type::_FLOAT, "fs9")},
     {58, Register(true, Type::_FLOAT, "fs10")},
     {59, Register(true, Type::_FLOAT, "fs11")},
-    {60, Register(false, Type::_FLOAT, "ft8")},
-    {61, Register(false, Type::_FLOAT, "ft9")},
-    {62, Register(false, Type::_FLOAT, "ft10")},
-    {63, Register(false, Type::_FLOAT, "ft11")}};
+    {60, Register(true, Type::_FLOAT, "ft8")},
+    {61, Register(true, Type::_FLOAT, "ft9")},
+    {62, Register(true, Type::_FLOAT, "ft10")},
+    {63, Register(true, Type::_FLOAT, "ft11")}};
 
 // Map register name to register number
 std::unordered_map<std::string, int> register_name_to_int = {
@@ -143,11 +143,11 @@ std::string Context::get_register(Type type)
     case Type::_CHAR:
     case Type::_SHORT:
     case Type::_UNSIGNED_INT:
+    case Type::_LONG:
         start_register_file = 5;
         break;
     case Type::_FLOAT:
     case Type::_DOUBLE:
-    case Type::_LONG:
         start_register_file = 32;
         break;
     default:
@@ -191,32 +191,20 @@ void Context::add_register_to_set(std::string reg_name)
 {
     int reg = register_name_to_int[reg_name];
     allocated_registers.top().insert(reg);
-    std::cout << "Adding register " << reg << " to set" << std::endl;
-    std::cout << "STACK SIZE: " << allocated_registers.size() << std::endl;
-    std::cout << "SET SIZE: " << allocated_registers.top().size() << std::endl;
 }
 
 void Context::remove_register_from_set(std::string reg_name)
 {
     int reg = register_name_to_int[reg_name];
     allocated_registers.top().erase(reg);
-    std::cout << "Removing register " << reg << " from set" << std::endl;
-    std::cout << "STACK SIZE: " << allocated_registers.size() << std::endl;
 }
 
 // TODO
 void Context::push_registers(std::ostream &stream)
 {
-    stream << "# Push registers ..." << std::endl;
-    std::cout << "# Push registers ..." << std::endl;
-    std::cout << "STACK SIZE: " << allocated_registers.size() << std::endl;
-    std::cout << "SET SIZE: " << allocated_registers.top().size() << std::endl;
 
     for (int reg : allocated_registers.top())
     {
-        stream << "# Pushing register " << reg << std::endl;
-        std::cout << "# Pushing register " << reg << std::endl;
-
         int offset = get_stack_offset();
         Type type = register_file[reg].type;
         stream << store_instruction(type) << " " << get_register_name(reg) << ", " << offset << "(sp)" << std::endl;

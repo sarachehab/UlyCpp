@@ -2,7 +2,8 @@
 #define AST_CONDITIONAL_STATEMENT_HPP
 
 #include "../ast_node.hpp"
-#include "../control_flow/ast_condition_evaluation.hpp"
+#include "ast_condition_evaluation.hpp"
+#include "ast_control_flow.hpp"
 
 class IfElse : public Node
 {
@@ -21,8 +22,6 @@ public:
         delete true_statement_;
         delete false_statement_;
     }
-
-    void CheckCondition(std::ostream &stream, Context &context, std::string condition_evaluation_register, std::string jump_label, Type type) const;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;

@@ -26,6 +26,7 @@
 #include "operations/ast_increment_operation.hpp"
 #include "operations/ast_logical_operation.hpp"
 #include "operations/ast_unary_operation.hpp"
+#include "operations/ast_inline_if.hpp"
 
 #include "control_flow/ast_if_else.hpp"
 #include "control_flow/ast_while_loop.hpp"

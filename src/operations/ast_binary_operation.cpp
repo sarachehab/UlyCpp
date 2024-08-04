@@ -31,8 +31,25 @@ void BinaryOperation::Print(std::ostream &stream) const
 
 Type BinaryOperation::GetType(Context &context) const
 {
-    Type leftType = dynamic_cast<Operand *>(left_)->GetType(context);
-    Type rightType = dynamic_cast<Operand *>(right_)->GetType(context);
+    // Attempt to cast left_ and right_ to Operand
+    Operand *leftOperand = dynamic_cast<Operand *>(left_);
+    Operand *rightOperand = dynamic_cast<Operand *>(right_);
 
+    // Check if the cast was successful
+    if (!leftOperand)
+    {
+        throw std::runtime_error("Error: dynamic_cast failed for left_ in BinaryOperation::GetType");
+    }
+
+    if (!rightOperand)
+    {
+        throw std::runtime_error("Error: dynamic_cast failed for right_ in BinaryOperation::GetType");
+    }
+
+    // Get types from the operands
+    Type leftType = leftOperand->GetType(context);
+    Type rightType = rightOperand->GetType(context);
+
+    // Return the max type
     return std::max(leftType, rightType);
 }

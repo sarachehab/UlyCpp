@@ -121,7 +121,7 @@ compound_statement
 
 statement_list
 	: statement                 { $$ = new StatementList($1); }
-	| statement_list statement  { $1->PushBack($2); $$=$1; }
+	| statement_list statement  { StatementList *statement_list = dynamic_cast<StatementList *>($1); statement_list->PushBack($2); $$ = statement_list; }
 	;
 
 jump_statement
@@ -130,10 +130,11 @@ jump_statement
 	;
 
 primary_expression
-	: INT_CONSTANT 		{ $$ = new IntConstant($1); }
-	| DOUBLE_CONSTANT	{ $$ = new DoubleConstant($1); }
-	| FLOAT_CONSTANT	{ $$ = new FloatConstant($1); }
-	| IDENTIFIER		{ $$ = new Identifier($1); }
+	: INT_CONSTANT 			{ $$ = new IntConstant($1); }
+	| DOUBLE_CONSTANT		{ $$ = new DoubleConstant($1); }
+	| FLOAT_CONSTANT		{ $$ = new FloatConstant($1); }
+	| IDENTIFIER			{ $$ = new Identifier($1); }
+	| '(' expression ')'	{ $$ = $2; }
 	;
 
 expression_statement
@@ -228,7 +229,7 @@ logical_or_expression
 
 conditional_expression
 	: logical_or_expression
-	| logical_or_expression '?' expression ':' conditional_expression	{ $$ = new IfElse(new ConditionEvaluation($1), $3, $5); }
+	| logical_or_expression '?' expression ':' conditional_expression	{ $$ = new InlineIf(new ConditionEvaluation($1), $3, $5); }
 	;
 
 assignment_expression

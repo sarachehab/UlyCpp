@@ -12,6 +12,7 @@ void IfElse::EmitRISC(std::ostream &stream, Context &context, std::string passed
 
     if (false_statement_ != nullptr)
     {
+        stream << "j " << end_label << std::endl;
         stream << false_label << ":" << std::endl;
         false_statement_->EmitRISC(stream, context, passed_reg);
     }

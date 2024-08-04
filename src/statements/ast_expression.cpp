@@ -5,6 +5,35 @@ Type Expression::GetType(Context &context) const
     return dynamic_cast<Operand *>(nodes_[0])->GetType(context);
 }
 
+void Expression::PushBack(Node *item)
+{
+    nodes_.push_back(item);
+}
+
+void Expression::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
+{
+    for (auto node : nodes_)
+    {
+        if (node == nullptr)
+        {
+            continue;
+        }
+        node->EmitRISC(stream, context, passed_reg);
+    }
+}
+
+void Expression::Print(std::ostream &stream) const
+{
+    for (auto node : nodes_)
+    {
+        if (node == nullptr)
+        {
+            continue;
+        }
+        node->Print(stream);
+    }
+}
+
 void ExpressionList::GetArguments(std::ostream &stream, Context &context, std::string passed_reg) const
 {
     Function function = context.get_function_call();
@@ -31,7 +60,9 @@ void ExpressionList::GetArguments(std::ostream &stream, Context &context, std::s
         }
 
         std::string argument_register_name = context.get_register_name(argument_register_number);
+        context.set_operation_type(function.arguments[arg_nb].type);
         dynamic_cast<Operand *>(nodes_[arg_nb])->EmitRISC(stream, context, argument_register_name);
+        context.pop_operation_type();
     }
 }
 

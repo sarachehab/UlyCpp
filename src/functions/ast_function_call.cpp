@@ -12,9 +12,11 @@ void FunctionCall::EmitRISC(std::ostream &stream, Context &context, std::string 
         dynamic_cast<ExpressionList *>(argument_list_)->GetArguments(stream, context, passed_reg);
     }
 
+    context.set_operation_type(GetType(context));
     stream << "call " << function_name << std::endl;
     stream << context.move_instruction(context.get_function_call().return_value.type) << " " << passed_reg << ", " << context.get_return_register() << std::endl;
 
+    context.pop_operation_type();
     context.pop_function_call();
     context.pop_registers(stream);
 }

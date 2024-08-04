@@ -4,6 +4,7 @@
 #include "../ast_node.hpp"
 #include "../statements/ast_expression.hpp"
 #include "ast_condition_evaluation.hpp"
+#include "ast_control_flow.hpp"
 
 class WhileLoop : public Node
 {

@@ -4,6 +4,7 @@
 #include "../ast_node.hpp"
 #include "../primitives/ast_identifier.hpp"
 #include "../statements/ast_expression.hpp"
+#include "../operations/ast_operand.hpp"
 
 class FunctionCall : public Operand
 {
