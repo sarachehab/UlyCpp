@@ -33,6 +33,9 @@
 #include "control_flow/ast_condition_evaluation.hpp"
 #include "control_flow/ast_for_loop.hpp"
 #include "control_flow/ast_do_while.hpp"
+#include "control_flow/ast_break.hpp"
+#include "control_flow/ast_continue.hpp"
+#include "control_flow/ast_flow_breaker.hpp"
 
 #include "ast_direct_declarator.hpp"
 #include "ast_type_specifier.hpp"

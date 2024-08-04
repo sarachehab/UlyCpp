@@ -127,6 +127,8 @@ statement_list
 jump_statement
 	: RETURN ';'            { $$ = new ReturnStatement(nullptr); }
 	| RETURN expression ';' { $$ = new ReturnStatement($2); }
+	| CONTINUE ';'			{ $$ = new ContinueStatement(); }
+	| BREAK ';'				{ $$ = new BreakStatement(); }
 	;
 
 primary_expression
