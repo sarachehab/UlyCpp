@@ -1,6 +1,7 @@
 int f()
 {
     int x[8];
-    x[0]=23;
-    return x[0];
+    x[1] = 23;
+    x[0] = 22;
+    return x[1];
 }

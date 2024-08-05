@@ -86,7 +86,9 @@ type_specifier
 	;
 
 declarator
-	: direct_declarator { $$ = $1; }
+	: direct_declarator 								{ $$ = $1; }
+	| direct_declarator '[' constant_expression ']'		{ $$ = new ArrayDeclarator($1, $3); }
+	| direct_declarator '[' ']'							{ $$ = new ArrayDeclarator($1, nullptr); }
 	;
 
 direct_declarator
@@ -147,6 +149,7 @@ expression_statement
 
 postfix_expression
 	: primary_expression
+	| postfix_expression '[' expression ']'						{ $$ = new ArrayAccess($1, $3); }
 	| postfix_expression INC_OP									{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new PostfixIncrement(identifier_, new Addition(operator_, new IntConstant(1))); }
 	| postfix_expression DEC_OP									{ Identifier* identifier_ = dynamic_cast<Identifier *>($1); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new PostfixIncrement(identifier_, new Substraction(operator_, new IntConstant(1))); }
 	| postfix_expression '(' ')' 								{ $$ = new FunctionCall($1); }
@@ -271,11 +274,13 @@ init_declarator
 
 initializer
 	: assignment_expression
+	| '{' initializer_list '}'			{ $$ = new ArrayInitializer($2); }
+	| '{' initializer_list ',' '}'		{ $$ = new ArrayInitializer($2); }
 	;
 
 initializer_list
 	: initializer						{ $$ = new NodeList($1); }
-	| initializer_list ',' initializer	{ $1->PushBack($3); $$ = $1; }
+	| initializer_list ',' initializer	{ NodeList *node_list = dynamic_cast<NodeList *>($1); node_list->PushBack($3); $$ = node_list; }
 	;
 
 declaration_list

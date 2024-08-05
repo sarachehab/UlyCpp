@@ -3,6 +3,9 @@
 
 #include "../ast_node.hpp"
 #include "../primitives/ast_identifier.hpp"
+#include "../arrays/ast_array_declarator.hpp"
+#include "../arrays/ast_array_initializer.hpp"
+#include "../arrays/ast_array_access.hpp"
 
 class AssignmentList : public NodeList
 {
@@ -30,6 +33,18 @@ public:
      * @return Identifier name
      */
     std::string GetIdentifier() const;
+
+    /**
+     * @brief Get the size of the array
+     */
+    int GetSize() const;
+
+    /**
+     * @brief Check if the assignment is an array initialization
+     *
+     * @return true if the assignment is an array initialization
+     */
+    bool IsArrayInitialization() const;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;

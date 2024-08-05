@@ -15,6 +15,11 @@ Type IntConstant::GetType(Context &context) const
     return Type::_INT;
 }
 
+int IntConstant::GetValue() const
+{
+    return value_;
+}
+
 void FloatConstant::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
     int label_number = context.declare_constant(value_);

@@ -37,6 +37,23 @@ const std::unordered_map<Type, int> types_size = {
 };
 
 /**
+ * @brief Map of types to their log2(size)
+ *
+ * Used in conjunction with Context::increase_stack_size.
+ * Used with SizeOf operator.
+ */
+const std::unordered_map<Type, int> types_shift = {
+    {Type::_VOID, 0},
+    {Type::_CHAR, 0},
+    {Type::_SHORT, 1},
+    {Type::_UNSIGNED_INT, 2},
+    {Type::_INT, 2},
+    {Type::_LONG, 3},
+    {Type::_FLOAT, 2},
+    {Type::_DOUBLE, 3},
+};
+
+/**
  * @brief Map of types to their assembler directives
  */
 const std::unordered_map<Type, std::string> assembler_directives = {
