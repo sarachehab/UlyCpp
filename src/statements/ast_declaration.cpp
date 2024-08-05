@@ -12,7 +12,6 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
     {
         Assignment *assignment = dynamic_cast<Assignment *>(declarator);
         Identifier *identifier = dynamic_cast<Identifier *>(declarator);
-        DirectDeclarator *direct_declarator = dynamic_cast<DirectDeclarator *>(declarator);
         ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(declarator);
 
         int offset = context.get_stack_offset();
@@ -21,19 +20,19 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
         if (assignment != nullptr)
         {
             // Get number of elements if array
-            int size = assignment->GetSize();
+            int array_size = assignment->GetSize();
 
             // Determine if array
             bool is_array = assignment->IsArrayInitialization();
 
             // Increase stack offset to account for new variable
-            context.increase_stack_offset(type_size * size);
+            context.increase_stack_offset(type_size * array_size);
 
             // Get variable name
             std::string variable_name = assignment->GetIdentifier();
 
             // Add variable to bindings
-            Variable variable_specs(false, is_array, type, Scope::_LOCAL, offset);
+            Variable variable_specs(false, is_array, array_size, type, offset);
             context.define_variable(variable_name, variable_specs);
 
             // Evaluate expression and store in variable
@@ -50,7 +49,7 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
             std::string variable_name = identifier->GetIdentifier();
 
             // Add variable to bindings
-            Variable variable_specs(false, false, type, Scope::_LOCAL, offset);
+            Variable variable_specs(false, false, type, offset);
             context.define_variable(variable_name, variable_specs);
         }
 
@@ -71,8 +70,81 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
             std::string variable_name = array_declarator->GetIdentifier();
 
             // Add variable to bindings
-            Variable variable_specs(false, true, type, Scope::_LOCAL, offset);
+            Variable variable_specs(false, true, array_size, type, offset);
             context.define_variable(variable_name, variable_specs);
+        }
+
+        else
+        {
+            throw std::runtime_error("Declaration EmitRISC: Unknown declarator type");
+        }
+    }
+}
+
+void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::string passed_reg) const
+{
+    // Get size of atomic type
+    Type type = GetType();
+    int type_size = types_size.at(type);
+
+    // Iterate over all declarations
+    NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
+    for (auto declarator : declarator_list->get_nodes())
+    {
+        Assignment *assignment = dynamic_cast<Assignment *>(declarator);
+        Identifier *identifier = dynamic_cast<Identifier *>(declarator);
+        DirectDeclarator *direct_declarator = dynamic_cast<DirectDeclarator *>(declarator);
+        ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(declarator);
+
+        int offset = context.get_stack_offset();
+
+        // Initialization
+        if (assignment != nullptr)
+        {
+            // Get number of elements if array
+            int array_size = assignment->GetSize();
+
+            // Determine if array
+            bool is_array = assignment->IsArrayInitialization();
+
+            // Get variable name
+            std::string global_name = assignment->GetIdentifier();
+            Global global_specs(false, is_array, array_size, type);
+
+            // Evaluate expression and store in variable
+            assignment->InitializeGlobals(stream, context, global_specs);
+
+            // Add variable to bindings
+            context.define_global(global_name, global_specs);
+        }
+
+        // Simple declaration
+        else if (identifier != nullptr)
+        {
+            // Get variable name
+            std::string global_name = identifier->GetIdentifier();
+
+            // Add variable to bindings
+            Global global_specs = Global(false, false, type);
+            context.define_global(global_name, global_specs);
+        }
+
+        else if (array_declarator != nullptr)
+        {
+            // Get array size
+            int array_size = array_declarator->GetSize();
+
+            if (array_declarator->GetSize() == -1)
+            {
+                throw std::runtime_error("Declaration EmitRISC: Array size not specified");
+            }
+
+            // Get variable name
+            std::string global_name = array_declarator->GetIdentifier();
+
+            // Add variable to bindings
+            Global global_specs(false, true, array_size, type);
+            context.define_global(global_name, global_specs);
         }
 
         // Function external declaration
@@ -92,7 +164,7 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
 
         else
         {
-            throw std::runtime_error("Declaration EmitRISC: Unknown declarator type");
+            throw std::runtime_error("Declaration DeclareGlobal: Unknown declarator type");
         }
     }
 }

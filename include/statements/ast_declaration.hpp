@@ -34,6 +34,13 @@ public:
 
     Type GetType() const;
 
+    /**
+     * @brief Declare global variables
+     *
+     * Also performs initialization if required.
+     */
+    void DeclareGlobal(std::ostream &stream, Context &context, std::string passed_reg) const;
+
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
 };

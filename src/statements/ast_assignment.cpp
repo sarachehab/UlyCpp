@@ -19,7 +19,7 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
     // If the expression is an array initializer, save the array
     if (IsArrayInitialization())
     {
-        dynamic_cast<ArrayInitializer *>(expression_)->Save(stream, context, offset, type);
+        dynamic_cast<ArrayInitializer *>(expression_)->Save(stream, context, variable_specs, GetIdentifier());
     }
 
     else
@@ -30,8 +30,26 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
         // If atomic identifier, load expression into variable
         if (identifier != nullptr)
         {
-            // Load expression into variable
-            stream << context.store_instruction(type) << " " << reg << ", " << offset << "(sp)" << std::endl;
+            if (variable_specs.scope == Scope::_LOCAL)
+            {
+                stream << context.store_instruction(type) << " " << reg << ", " << offset << "(sp)" << std::endl;
+            }
+
+            else if (variable_specs.scope == Scope::_GLOBAL)
+            {
+                std::string global_memory_location = "global_" + GetIdentifier();
+                std::string global_memory_register = context.get_register(Type::_INT);
+
+                // Access global memory by targetting global label
+                stream << "lui " << global_memory_register << ", " << "%hi(" << global_memory_location << ")" << std::endl;
+                stream << context.store_instruction(type) << " " << reg << ", %lo(" << global_memory_location << ")(" << global_memory_register << ")" << std::endl;
+                context.deallocate_register(global_memory_register);
+            }
+
+            else
+            {
+                throw std::runtime_error("Assignment EmitRISC: Invalid scope in Identifier");
+            }
         }
 
         // If array access, load expression into specific element by first evaluating index
@@ -41,8 +59,33 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
             std::string index_register = context.get_register(Type::_INT);
             array_access->GetIndex(stream, context, index_register, type);
 
-            // Get variable offset
-            stream << context.store_instruction(type) << " " << reg << ", " << variable_specs.offset << "(" << index_register << ")" << std::endl;
+            // If local scope, access variable through offset specified in bindings
+            if (variable_specs.scope == Scope::_LOCAL)
+            {
+                // Add index to base pointer
+                stream << "add " << index_register << ", " << index_register << ", sp" << std::endl;
+                // Get variable offset
+                stream << context.store_instruction(type) << " " << reg << ", " << variable_specs.offset << "(" << index_register << ")" << std::endl;
+            }
+
+            // If global scope, access global memory by targetting global label
+            else if (variable_specs.scope == Scope::_GLOBAL)
+            {
+                std::string global_memory_location = "global_" + GetIdentifier();
+                std::string global_memory_register = context.get_register(Type::_INT);
+
+                // Access global memory by targetting global label
+                stream << "lui " << global_memory_register << ", " << "%hi(" << global_memory_location << ")" << std::endl;
+                stream << "add " << global_memory_register << ", " << global_memory_register << ", " << index_register << std::endl;
+                stream << context.store_instruction(type) << " " << reg << ", %lo(" << global_memory_location << ")(" << global_memory_register << ")" << std::endl;
+
+                context.deallocate_register(global_memory_register);
+            }
+
+            else
+            {
+                throw std::runtime_error("Assignment EmitRISC: Invalid scope in ArrayAccess");
+            }
 
             // Deallocate register
             context.deallocate_register(index_register);
@@ -59,6 +102,23 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
 
     // Pop operation type
     context.pop_operation_type();
+}
+
+void Assignment::InitializeGlobals(std::ostream &stream, Context &context, Global &global_specs) const
+{
+    // Get size of atomic type
+    Type type = global_specs.type;
+    int type_size = types_size.at(type);
+
+    if (IsArrayInitialization())
+    {
+        dynamic_cast<ArrayInitializer *>(expression_)->InitializeGlobals(stream, context, global_specs);
+    }
+
+    else
+    {
+        dynamic_cast<Constant *>(expression_)->SaveValue(global_specs);
+    }
 }
 
 void Assignment::Print(std::ostream &stream) const

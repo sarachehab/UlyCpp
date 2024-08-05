@@ -3,6 +3,7 @@
 
 #include "../ast_node.hpp"
 #include "../operations/ast_operand.hpp"
+#include "../primitives/ast_constant.hpp"
 
 class ArrayInitializer : public Node
 {
@@ -24,8 +25,12 @@ public:
     /**
      * @brief Save the initializer list to the stack
      */
-    void Save(std::ostream &stream, Context &context, int initial_offset, Type type) const;
+    void Save(std::ostream &stream, Context &context, Variable variable_specs, std::string identifier) const;
 
+    /**
+     * @brief Initialize the global array
+     */
+    void InitializeGlobals(std::ostream &stream, Context &context, Global &global_specs) const;
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
 };

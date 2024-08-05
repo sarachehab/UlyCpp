@@ -86,7 +86,7 @@ void ParameterDeclaration::EmitRISC(std::ostream &stream, Context &context, std:
     stream << context.store_instruction(type) << " " << passed_reg << ", " << offset << "(sp)" << std::endl;
 
     // Define parameter as variable accessible within function body
-    Variable variable_specs(false, false, type, Scope::_LOCAL, offset);
+    Variable variable_specs(false, false, type, offset);
     context.define_variable(GetIdentifier(), variable_specs);
 
     // Increase stack offset to accomodate for parameter

@@ -9,6 +9,14 @@ class Constant : public Operand
 public:
     Type GetType(Context &context) const override = 0;
 
+    /**
+     * @brief Save the value of the constant to the global specs
+     *
+     * This function is used in conjuction with global initialization.
+     * A global can only be initialized with a constant value.
+     */
+    virtual void SaveValue(Global &global_specs) const = 0;
+
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override = 0;
     void Print(std::ostream &stream) const override = 0;
 };
@@ -23,6 +31,7 @@ public:
 
     Type GetType(Context &context) const override;
     int GetValue() const;
+    void SaveValue(Global &global_specs) const override;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
@@ -37,6 +46,7 @@ public:
     FloatConstant(float value) : value_(value) {}
 
     Type GetType(Context &context) const override;
+    void SaveValue(Global &global_specs) const override;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
@@ -51,6 +61,7 @@ public:
     DoubleConstant(double value) : value_(value) {}
 
     Type GetType(Context &context) const override;
+    void SaveValue(Global &global_specs) const override;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;

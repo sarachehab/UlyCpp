@@ -13,6 +13,7 @@
 #include "context_functions.hpp"
 #include "context_variables.hpp"
 #include "context_constant.hpp"
+#include "context_conversion.hpp"
 
 /**
  * @brief This class represents the context of the program.
@@ -388,6 +389,22 @@ public:
      */
     void print_constant_declarations(std::ostream &stream) const;
 
+    // ============= GLOBALS MANAGEMENT ==============
+
+    /**
+     * @brief This function defines a global variable in the context.
+     *
+     * It saves the global to the global bindings map.
+     */
+    void define_global(std::string identifier, Global &global_specs);
+
+    /**
+     * @brief This function allocates space for a global variable in the assembly file.
+     *
+     * It prints the label of a global (the identifier) and allocates space in memory using the .zero directive.
+     */
+    void print_global(std::ostream &stream) const;
+
     // TODO: Add functions to handle enums, structs, typedef, char and strings
 
 private:
@@ -526,6 +543,16 @@ private:
      * Used to print the float/double constants in the assembly file.
      */
     std::vector<ContextConstant> constant_declarations;
+
+    // ============= GLOBALS MANAGEMENT ==============
+
+    /**
+     * @brief The mapping of global names to global specifications.
+     *
+     * Used to store the global variables defined in the context.
+     * Contains information on type, array, pointer.
+     */
+    std::unordered_map<std::string, Global> global_bindings;
 };
 
 #endif

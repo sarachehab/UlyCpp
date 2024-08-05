@@ -59,8 +59,8 @@ ROOT
     : translation_unit { g_root = $1; }
 
 translation_unit
-	: external_declaration 						{ $$ = new NodeList($1); }
-	| translation_unit external_declaration		{ NodeList *translation_unit = dynamic_cast<NodeList *>($1); translation_unit->PushBack($2); $$ = translation_unit; }
+	: external_declaration 						{ $$ = new TranslationUnit($1); }
+	| translation_unit external_declaration		{ TranslationUnit *translation_unit = dynamic_cast<TranslationUnit *>($1); translation_unit->PushBack($2); $$ = translation_unit; }
 	;
 
 external_declaration

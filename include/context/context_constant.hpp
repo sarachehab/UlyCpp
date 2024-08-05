@@ -2,6 +2,7 @@
 #define CONTEXT_CONSTANT
 
 #include "context_types.hpp"
+#include "context_conversion.hpp"
 #include <iostream>
 
 /**
@@ -17,30 +18,6 @@ private:
     Type type_;
     uint32_t lower_int;
     uint32_t upper_int;
-
-    /**
-     * @brief This union is used to convert between float and int.
-     */
-    union FloatRepresentation
-    {
-        float float_representation;
-        uint32_t integer_representation;
-    };
-
-    /**
-     * @brief This union is used to convert between double and int.
-     *
-     * It assumes little-endian representation.
-     */
-    union DoubleRepresentation
-    {
-        double double_representation;
-        struct
-        {
-            uint32_t lower; // Assuming little-endian
-            uint32_t upper;
-        } parts;
-    };
 
 public:
     /**
@@ -80,6 +57,11 @@ public:
      * @param stream The output stream to write to.
      */
     void PrintConstant(std::ostream &stream) const;
+
+    /**
+     * @brief This function returns the type of the constant.
+     */
+    Type GetType() const;
 };
 
 #endif

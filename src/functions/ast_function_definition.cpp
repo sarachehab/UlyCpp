@@ -64,6 +64,7 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
     }
 
     context.exit_function();
+    stream << ".size " << function_name << ", .-" << function_name << std::endl;
 }
 
 void FunctionDefinition::Print(std::ostream &stream) const

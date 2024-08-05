@@ -69,3 +69,29 @@ Type DoubleConstant::GetType(Context &context) const
 {
     return Type::_DOUBLE;
 }
+
+void IntConstant::SaveValue(Global &global_specs) const
+{
+    std::cout << "Pushing lower: " << value_ << std::endl;
+    global_specs.push_lower(value_);
+}
+
+void FloatConstant::SaveValue(Global &global_specs) const
+{
+    FloatRepresentation representation;
+    representation.float_representation = value_;
+    int lower_int = representation.integer_representation;
+
+    global_specs.push_lower(lower_int);
+}
+
+void DoubleConstant::SaveValue(Global &global_specs) const
+{
+    DoubleRepresentation representation;
+    representation.double_representation = value_;
+    int lower_int = representation.parts.lower;
+    int upper_int = representation.parts.upper;
+
+    global_specs.push_lower(lower_int);
+    global_specs.push_upper(upper_int);
+}

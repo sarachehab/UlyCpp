@@ -3,6 +3,7 @@
 
 #include "../ast_node.hpp"
 #include "../primitives/ast_identifier.hpp"
+#include "../primitives/ast_constant.hpp"
 #include "../arrays/ast_array_declarator.hpp"
 #include "../arrays/ast_array_initializer.hpp"
 #include "../arrays/ast_array_access.hpp"
@@ -46,6 +47,10 @@ public:
      */
     bool IsArrayInitialization() const;
 
+    /**
+     * @brief Perform initialization of the global variable
+     */
+    void InitializeGlobals(std::ostream &stream, Context &context, Global &global_specs) const;
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
 };
