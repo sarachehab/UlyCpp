@@ -4,7 +4,7 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
 {
     // Get variable specifications
     Variable variable_specs = context.get_variable(GetIdentifier());
-    Type type = variable_specs.type;
+    Type type = IsPointerInitialization() ? Type::_INT : variable_specs.type;
 
     // Get offset of variable within current stack frame
     int offset = variable_specs.offset;
@@ -26,6 +26,7 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
     {
         Identifier *identifier = dynamic_cast<Identifier *>(unary_expression_);
         ArrayAccess *array_access = dynamic_cast<ArrayAccess *>(unary_expression_);
+        PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(unary_expression_);
 
         // If atomic identifier, load expression into variable
         if (identifier != nullptr)
@@ -65,7 +66,7 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
                 // Add index to base pointer
                 stream << "add " << index_register << ", " << index_register << ", sp" << std::endl;
                 // Get variable offset
-                stream << context.store_instruction(type) << " " << reg << ", " << variable_specs.offset << "(" << index_register << ")" << std::endl;
+                stream << context.store_instruction(type) << " " << reg << ", " << offset << "(" << index_register << ")" << std::endl;
             }
 
             // If global scope, access global memory by targetting global label
@@ -91,9 +92,35 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
             context.deallocate_register(index_register);
         }
 
+        else if (pointer_declarator != nullptr)
+        {
+            // If local scope, access variable through offset specified in bindings
+            if (variable_specs.scope == Scope::_LOCAL)
+            {
+                stream << context.store_instruction(type) << " " << reg << ", " << variable_specs.offset << "(sp)" << std::endl;
+            }
+
+            // If global scope, access global memory by targetting global label
+            else if (variable_specs.scope == Scope::_GLOBAL)
+            {
+                std::string global_memory_location = "global_" + GetIdentifier();
+                std::string global_memory_register = context.get_register(Type::_INT);
+
+                // Access global memory by targetting global label
+                stream << "lui " << global_memory_register << ", " << "%hi(" << global_memory_location << ")" << std::endl;
+                stream << context.store_instruction(type) << " " << reg << ", %lo(" << global_memory_location << ")(" << global_memory_register << ")" << std::endl;
+                context.deallocate_register(global_memory_register);
+            }
+
+            else
+            {
+                throw std::runtime_error("Assignment EmitRISC: Invalid scope in PointerDeclarator");
+            }
+        }
+
         else
         {
-            throw std::runtime_error("Assignment EmitRISC: Not an identifier or array access");
+            throw std::runtime_error("Assignment EmitRISC: Not an identifier, array access or pointer declarator");
         }
     }
 
@@ -119,6 +146,8 @@ void Assignment::InitializeGlobals(std::ostream &stream, Context &context, Globa
     {
         dynamic_cast<Constant *>(expression_)->SaveValue(global_specs);
     }
+
+    // If pointer, initialization is not possible
 }
 
 void Assignment::Print(std::ostream &stream) const
@@ -134,6 +163,9 @@ std::string Assignment::GetIdentifier() const
     Identifier *identifier = dynamic_cast<Identifier *>(unary_expression_);
     ArrayAccess *array_access = dynamic_cast<ArrayAccess *>(unary_expression_);
     ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(unary_expression_);
+    PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(unary_expression_);
+    Declarator *declarator = dynamic_cast<Declarator *>(unary_expression_);
+    DirectDeclarator *direct_declarator = dynamic_cast<DirectDeclarator *>(unary_expression_);
 
     if (identifier != nullptr)
     {
@@ -147,8 +179,20 @@ std::string Assignment::GetIdentifier() const
     {
         return array_declarator->GetIdentifier();
     }
+    else if (pointer_declarator != nullptr)
+    {
+        return pointer_declarator->GetIdentifier();
+    }
+    else if (direct_declarator != nullptr)
+    {
+        return direct_declarator->GetIdentifier();
+    }
+    else if (declarator != nullptr)
+    {
+        return declarator->GetIdentifier();
+    }
 
-    throw std::runtime_error("Assignment GetIdentifier: Not an identifier");
+    throw std::runtime_error("Assignment GetIdentifier: Not an identifier, array access, array declarator, declarator");
 }
 
 int Assignment::GetSize() const
@@ -172,4 +216,19 @@ int Assignment::GetSize() const
 bool Assignment::IsArrayInitialization() const
 {
     return dynamic_cast<ArrayDeclarator *>(unary_expression_) != nullptr;
+}
+
+bool Assignment::IsPointerInitialization() const
+{
+    if (dynamic_cast<PointerDeclarator *>(unary_expression_) != nullptr)
+    {
+        return true;
+    }
+
+    if (dynamic_cast<ArrayDeclarator *>(unary_expression_) != nullptr)
+    {
+        return dynamic_cast<ArrayDeclarator *>(unary_expression_)->IsPointer();
+    }
+
+    return false;
 }

@@ -43,11 +43,15 @@ void ExpressionList::GetArguments(std::ostream &stream, Context &context, std::s
     int int_arg_reg = 10, float_arg_reg = 42;
     int argument_register_number;
 
+    Type type;
+
     // Iterate through list of arguments
     for (long unsigned int arg_nb = 0; arg_nb < function.arguments.size(); arg_nb++)
     {
 
-        switch (function.arguments[arg_nb].type)
+        type = function.arguments[arg_nb].is_pointer ? Type::_INT : function.arguments[arg_nb].type;
+
+        switch (type)
         {
         case Type::_CHAR:
         case Type::_SHORT:
@@ -67,7 +71,7 @@ void ExpressionList::GetArguments(std::ostream &stream, Context &context, std::s
         std::string argument_register_name = context.get_register_name(argument_register_number);
 
         // Evaluate argument and store in register
-        context.set_operation_type(function.arguments[arg_nb].type);
+        context.set_operation_type(type);
         dynamic_cast<Operand *>(nodes_[arg_nb])->EmitRISC(stream, context, argument_register_name);
         context.pop_operation_type();
     }

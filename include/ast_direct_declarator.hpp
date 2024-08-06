@@ -4,6 +4,29 @@
 #include "ast_node.hpp"
 #include "primitives/ast_identifier.hpp"
 #include "functions/ast_parameter_definition.hpp"
+#include "arrays/ast_array_declarator.hpp"
+
+class Declarator : public Node
+{
+private:
+    Node *direct_declarator_;
+
+public:
+    Declarator(Node *direct_declarator) : direct_declarator_(direct_declarator) {};
+    ~Declarator()
+    {
+        delete direct_declarator_;
+    };
+
+    std::string GetIdentifier() const;
+    std::vector<Parameter> GetParameters(Context &context) const;
+    int GetScopeOffset() const;
+    void StoreParameters(std::ostream &stream, Context &context, std::string passed_reg) const;
+    bool IsPointer() const;
+
+    void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
+    void Print(std::ostream &stream) const override;
+};
 
 class DirectDeclarator : public Node
 {

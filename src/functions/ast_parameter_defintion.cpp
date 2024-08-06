@@ -103,17 +103,48 @@ void ParameterDeclaration::Print(std::ostream &stream) const
 Parameter ParameterDeclaration::GetParameter(Context &context, int offset) const
 {
     // Define parameter type for function
-    Type type = GetType(context);
-    return Parameter(GetIdentifier(), false, false, type, offset);
+    if (IsPointer())
+    {
+        return Parameter(GetIdentifier(), true, false, GetType(context), offset);
+    }
+    return Parameter(GetIdentifier(), false, false, GetType(context), offset);
 }
 
 int ParameterDeclaration::GetSize(Context &context) const
 {
     // Get size of parameter
+    if (IsPointer())
+    {
+        types_size.at(Type::_INT);
+    }
+
     return types_size.at(GetType(context));
 }
 
 std::string ParameterDeclaration::GetIdentifier() const
 {
-    return dynamic_cast<Identifier *>(declarator_)->GetIdentifier();
+    Identifier *identifier = dynamic_cast<Identifier *>(declarator_);
+    PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(declarator_);
+
+    if (identifier)
+    {
+        return identifier->GetIdentifier();
+    }
+    else if (pointer_declarator)
+    {
+        return pointer_declarator->GetIdentifier();
+    }
+
+    throw std::runtime_error("ParameterDeclaration::GetIdentifier() - declarator_ is not an Identifier or PointerDeclarator");
+}
+
+bool ParameterDeclaration::IsPointer() const
+{
+
+    if (dynamic_cast<PointerDeclarator *>(declarator_))
+    {
+        return true;
+    }
+
+    return false;
 }

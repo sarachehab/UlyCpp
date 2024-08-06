@@ -4,6 +4,7 @@
 #include "../ast_node.hpp"
 #include "../primitives/ast_constant.hpp"
 #include "../primitives/ast_identifier.hpp"
+#include "../pointers/ast_pointer_declarator.hpp"
 
 class ArrayDeclarator : public Node
 {
@@ -27,6 +28,7 @@ public:
      * @brief Get the size of the array
      */
     int GetSize() const;
+    bool IsPointer() const;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const;
     void Print(std::ostream &stream) const;

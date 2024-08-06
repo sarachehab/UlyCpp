@@ -2,7 +2,20 @@
 
 std::string ArrayDeclarator::GetIdentifier() const
 {
-    return dynamic_cast<Identifier *>(identifier_)->GetIdentifier();
+    Identifier *identifier = dynamic_cast<Identifier *>(identifier_);
+    PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(identifier_);
+
+    if (pointer_declarator != nullptr)
+    {
+        return pointer_declarator->GetIdentifier();
+    }
+
+    else if (identifier != nullptr)
+    {
+        return identifier->GetIdentifier();
+    }
+
+    throw std::runtime_error("ArrayDeclarator GetIdentifier: Identifier not found");
 }
 
 int ArrayDeclarator::GetSize() const
@@ -28,4 +41,9 @@ void ArrayDeclarator::Print(std::ostream &stream) const
         constant_expression_->Print(stream);
     }
     stream << "]";
+}
+
+bool ArrayDeclarator::IsPointer() const
+{
+    return dynamic_cast<PointerDeclarator *>(identifier_) != nullptr;
 }

@@ -2,6 +2,11 @@
 
 int Parameter::GetSize() const
 {
+    if (is_pointer)
+    {
+        return types_size.at(Type::_INT);
+    }
+
     return types_size.at(type);
 }
 
@@ -9,7 +14,7 @@ void Context::define_function(std::string identifier, Function function)
 {
     function_bindings[identifier] = function;
     last_function_end_statement = identifier + "_end";
-    set_return_register(function.return_value.type);
+    set_return_register(function.return_value.is_pointer ? Type::_INT : function.return_value.type);
 
     // Set stack offset to 0, variables defined within other functions should not be accessible
     stack_offset.push(0);

@@ -7,6 +7,8 @@
 #include "../arrays/ast_array_declarator.hpp"
 #include "../arrays/ast_array_initializer.hpp"
 #include "../arrays/ast_array_access.hpp"
+#include "../pointers/ast_pointer_declarator.hpp"
+#include "../ast_direct_declarator.hpp"
 
 class AssignmentList : public NodeList
 {
@@ -46,6 +48,13 @@ public:
      * @return true if the assignment is an array initialization
      */
     bool IsArrayInitialization() const;
+
+    /**
+     * @brief Check if the assignment is a pointer initialization
+     *
+     * @return true if the assignment is a pointer initialization
+     */
+    bool IsPointerInitialization() const;
 
     /**
      * @brief Perform initialization of the global variable

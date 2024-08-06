@@ -69,7 +69,7 @@ external_declaration
 	;
 
 function_definition
-	: declaration_specifiers declarator compound_statement { $$ = new FunctionDefinition($1, $2, $3); }
+	: declaration_specifiers declarator compound_statement { $$ = new FunctionDefinition($1, new Declarator($2), $3); }
 	;
 
 declaration_specifiers
@@ -87,14 +87,15 @@ type_specifier
 
 declarator
 	: direct_declarator 								{ $$ = $1; }
-	| direct_declarator '[' constant_expression ']'		{ $$ = new ArrayDeclarator($1, $3); }
-	| direct_declarator '[' ']'							{ $$ = new ArrayDeclarator($1, nullptr); }
+	| '*' direct_declarator 							{ $$ = new PointerDeclarator($2); }
 	;
 
 direct_declarator
-	: IDENTIFIER                					{ $$ = new Identifier($1); }
-	| direct_declarator '(' ')' 					{ $$ = new DirectDeclarator($1); }
-	| direct_declarator '(' parameter_list ')'		{ $$ = new DirectDeclarator($1, $3); }
+	: IDENTIFIER                						{ $$ = new Identifier($1); }
+	| direct_declarator '(' ')' 						{ $$ = new DirectDeclarator($1); }
+	| direct_declarator '(' parameter_list ')'			{ $$ = new DirectDeclarator($1, $3); }
+	| direct_declarator '[' constant_expression ']'		{ $$ = new ArrayDeclarator($1, $3); }
+	| direct_declarator '[' ']'							{ $$ = new ArrayDeclarator($1, nullptr); }
 	;
 
 parameter_list
