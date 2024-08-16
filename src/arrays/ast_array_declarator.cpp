@@ -3,11 +3,11 @@
 std::string ArrayDeclarator::GetIdentifier() const
 {
     Identifier *identifier = dynamic_cast<Identifier *>(identifier_);
-    PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(identifier_);
+    Declarator *declarator = dynamic_cast<Declarator *>(identifier_);
 
-    if (pointer_declarator != nullptr)
+    if (declarator != nullptr)
     {
-        return pointer_declarator->GetIdentifier();
+        return declarator->GetIdentifier();
     }
 
     else if (identifier != nullptr)
@@ -46,4 +46,19 @@ void ArrayDeclarator::Print(std::ostream &stream) const
 bool ArrayDeclarator::IsPointer() const
 {
     return dynamic_cast<PointerDeclarator *>(identifier_) != nullptr;
+}
+
+std::vector<Parameter> ArrayDeclarator::GetParameters(Context &context) const
+{
+    return dynamic_cast<Declarator *>(identifier_)->GetParameters(context);
+}
+
+int ArrayDeclarator::GetScopeOffset() const
+{
+    return dynamic_cast<Declarator *>(identifier_)->GetScopeOffset();
+}
+
+void ArrayDeclarator::StoreParameters(std::ostream &stream, Context &context, std::string passed_reg) const
+{
+    return dynamic_cast<Declarator *>(identifier_)->StoreParameters(stream, context, passed_reg);
 }

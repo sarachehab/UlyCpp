@@ -162,10 +162,7 @@ std::string Assignment::GetIdentifier() const
 {
     Identifier *identifier = dynamic_cast<Identifier *>(unary_expression_);
     ArrayAccess *array_access = dynamic_cast<ArrayAccess *>(unary_expression_);
-    ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(unary_expression_);
-    PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(unary_expression_);
     Declarator *declarator = dynamic_cast<Declarator *>(unary_expression_);
-    DirectDeclarator *direct_declarator = dynamic_cast<DirectDeclarator *>(unary_expression_);
 
     if (identifier != nullptr)
     {
@@ -174,18 +171,6 @@ std::string Assignment::GetIdentifier() const
     else if (array_access != nullptr)
     {
         return array_access->GetIdentifier();
-    }
-    else if (array_declarator != nullptr)
-    {
-        return array_declarator->GetIdentifier();
-    }
-    else if (pointer_declarator != nullptr)
-    {
-        return pointer_declarator->GetIdentifier();
-    }
-    else if (direct_declarator != nullptr)
-    {
-        return direct_declarator->GetIdentifier();
     }
     else if (declarator != nullptr)
     {
@@ -225,10 +210,38 @@ bool Assignment::IsPointerInitialization() const
         return true;
     }
 
-    if (dynamic_cast<ArrayDeclarator *>(unary_expression_) != nullptr)
+    return false;
+}
+
+void Assignment::DeclareLocalScope(Type type, int offset, std::ostream &stream, Context &context) const
+{
+    // Get number of elements if array
+    int array_size = GetSize();
+
+    // Determine if array
+    bool is_array = IsArrayInitialization();
+    bool is_pointer = IsPointerInitialization();
+
+    // Increase stack offset to account for new variable
+    Type actual_type = is_pointer ? Type::_INT : type;
+    int actual_type_size = types_size.at(actual_type);
+    context.increase_stack_offset(actual_type_size * array_size);
+
+    // Get variable name
+    std::string variable_name = GetIdentifier();
+
+    // Add variable to bindings
+    Variable variable_specs(is_pointer, is_array, array_size, actual_type, offset);
+    context.define_variable(variable_name, variable_specs);
+
+    PointerDeclarator *ptr = dynamic_cast<PointerDeclarator *>(unary_expression_);
+    if (ptr != nullptr)
     {
-        return dynamic_cast<ArrayDeclarator *>(unary_expression_)->IsPointer();
+        int number_dereferences = ptr->NumberPointers();
+        Pointer pointer_specs(type, number_dereferences);
+        context.define_pointer(variable_name, pointer_specs);
     }
 
-    return false;
+    // Evaluate expression and store in variable
+    EmitRISC(stream, context, "unused");
 }

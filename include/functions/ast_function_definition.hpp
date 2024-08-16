@@ -5,6 +5,7 @@
 #include "../ast_direct_declarator.hpp"
 #include "../ast_type_specifier.hpp"
 #include "../statements/ast_statements.hpp"
+#include "../ast_declarator.hpp"
 
 class FunctionDefinition : public Node
 {
@@ -19,7 +20,7 @@ public:
                        Node *declarator,
                        Node *compound_statement) : declaration_specifiers_(declaration_specifiers),
                                                    declarator_(declarator),
-                                                   compound_statement_(compound_statement){};
+                                                   compound_statement_(compound_statement) {};
 
     ~FunctionDefinition()
     {

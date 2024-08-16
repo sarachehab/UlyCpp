@@ -14,6 +14,7 @@
 #include "context_variables.hpp"
 #include "context_constant.hpp"
 #include "context_conversion.hpp"
+#include "context_pointers.hpp"
 
 /**
  * @brief This class represents the context of the program.
@@ -405,6 +406,27 @@ public:
      */
     void print_global(std::ostream &stream) const;
 
+    // ============= POINTERS MANAGEMENT ==============
+
+    /**
+     * @brief Define a variable in the current scope
+     *
+     * This function defines a pointer.
+     * This is there to define pointers with multiple *
+     *
+     * @param identifier The name of the variable
+     */
+    void define_pointer(std::string identifier, Pointer pointer);
+
+    /**
+     * @brief Get a variable from the current scope
+     *
+     * This function returns the specifications of a pointer with the given identifier.
+     *
+     * @param identifier The name of the variable
+     */
+    Pointer get_pointer(std::string identifier) const;
+
     // TODO: Add functions to handle enums, structs, typedef, char and strings
 
 private:
@@ -553,6 +575,9 @@ private:
      * Contains information on type, array, pointer.
      */
     std::unordered_map<std::string, Global> global_bindings;
+
+    // ============= POINTERS MANAGEMENT ==============
+    std::unordered_map<std::string, Pointer> pointer_bindings;
 };
 
 #endif

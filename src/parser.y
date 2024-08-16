@@ -69,7 +69,7 @@ external_declaration
 	;
 
 function_definition
-	: declaration_specifiers declarator compound_statement { $$ = new FunctionDefinition($1, new Declarator($2), $3); }
+	: declaration_specifiers declarator compound_statement { $$ = new FunctionDefinition($1, $2, $3); }
 	;
 
 declaration_specifiers
@@ -86,9 +86,13 @@ type_specifier
 	;
 
 declarator
-	: direct_declarator 								{ $$ = $1; }
-	| '*' direct_declarator 							{ $$ = new PointerDeclarator($2); }
+	: direct_declarator 			{ $$ = $1; }
+	| pointer direct_declarator 	{ PointerDeclarator* _ptr = new PointerDeclarator($2); for (int i = 1; i < dynamic_cast<IntConstant *>($1)->GetValue(); i++) { _ptr = new PointerDeclarator(_ptr); } $$ = _ptr; delete $1; }
 	;
+
+pointer
+	: '*'			{ $$ = new IntConstant(1); }
+	| '*' pointer	{ $$ = new IntConstant(dynamic_cast<IntConstant *>($2)->GetValue() + 1); delete $2; }
 
 direct_declarator
 	: IDENTIFIER                						{ $$ = new Identifier($1); }

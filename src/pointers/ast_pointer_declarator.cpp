@@ -3,18 +3,18 @@
 std::string PointerDeclarator::GetIdentifier() const
 {
     Identifier *identifier = dynamic_cast<Identifier *>(direct_declarator_);
-    PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(direct_declarator_);
+    Declarator *declarator = dynamic_cast<Declarator *>(direct_declarator_);
 
     if (identifier)
     {
-        identifier->GetIdentifier();
+        return identifier->GetIdentifier();
     }
-    else if (pointer_declarator)
+    else if (declarator)
     {
-        pointer_declarator->GetIdentifier();
+        return declarator->GetIdentifier();
     }
 
-    throw std::runtime_error("PointerDeclarator::GetIdentifier() - direct_declarator_ is not an Identifier or PointerDeclarator");
+    throw std::runtime_error("PointerDeclarator::GetIdentifier - unrecognised type");
 }
 
 void PointerDeclarator::EmitRISC(std::ostream &stream, Context &context, std::string passed_register) const
@@ -31,4 +31,35 @@ void PointerDeclarator::Print(std::ostream &stream) const
 Type PointerDeclarator::GetType() const
 {
     return Type::_INT;
+}
+
+int PointerDeclarator::NumberPointers() const
+{
+    PointerDeclarator *ptr = dynamic_cast<PointerDeclarator *>(direct_declarator_);
+
+    if (ptr != nullptr)
+    {
+        return 1 + ptr->NumberPointers();
+    }
+    return 1;
+}
+
+std::vector<Parameter> PointerDeclarator::GetParameters(Context &context) const
+{
+    return dynamic_cast<Declarator *>(direct_declarator_)->GetParameters(context);
+}
+
+void PointerDeclarator::StoreParameters(std::ostream &stream, Context &context, std::string passed_reg) const
+{
+    return dynamic_cast<Declarator *>(direct_declarator_)->StoreParameters(stream, context, passed_reg);
+}
+
+int PointerDeclarator::GetScopeOffset() const
+{
+    return dynamic_cast<Declarator *>(direct_declarator_)->GetScopeOffset();
+}
+
+bool PointerDeclarator::IsPointer() const
+{
+    return true;
 }

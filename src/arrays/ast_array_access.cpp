@@ -2,7 +2,19 @@
 
 std::string ArrayAccess::GetIdentifier() const
 {
-    return dynamic_cast<Identifier *>(identifier_)->GetIdentifier();
+    Identifier *identifier = dynamic_cast<Identifier *>(identifier_);
+    ArrayAccess *array_access = dynamic_cast<ArrayAccess *>(identifier_);
+
+    if (identifier != nullptr)
+    {
+        return identifier->GetIdentifier();
+    }
+    else if (array_access != nullptr)
+    {
+        return array_access->GetIdentifier();
+    }
+
+    throw std::runtime_error("ArrayAccess GetIdentifier: Identifier not found");
 }
 
 void ArrayAccess::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
