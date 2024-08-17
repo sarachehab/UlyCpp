@@ -14,6 +14,7 @@ public:
 
     std::string GetMneumonic(Type type) const;
     std::string GetOperation() const;
+    bool IsPointerOperation(Context &context) const override;
 
     std::string GetIdentifier() const;
     Type GetType(Context &context) const override;

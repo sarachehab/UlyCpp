@@ -126,3 +126,8 @@ void Dereference::InitialOffset(std::ostream &stream, Context &context, std::str
         context.deallocate_register(index_reg);
     }
 }
+
+bool Dereference::IsPointerOperation(Context &context) const
+{
+    return IsPointer(context);
+}

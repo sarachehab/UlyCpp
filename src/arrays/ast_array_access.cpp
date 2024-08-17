@@ -98,3 +98,8 @@ Type ArrayAccess::GetType(Context &context) const
     Variable variable_specs = context.get_variable(GetIdentifier());
     return variable_specs.type;
 }
+
+bool ArrayAccess::IsPointerOperation(Context &context) const
+{
+    return context.get_variable(GetIdentifier()).is_pointer;
+}

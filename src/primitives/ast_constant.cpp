@@ -95,3 +95,8 @@ void DoubleConstant::SaveValue(Global &global_specs) const
     global_specs.push_lower(lower_int);
     global_specs.push_upper(upper_int);
 }
+
+bool Constant::IsPointerOperation(Context &context) const
+{
+    return false;
+}

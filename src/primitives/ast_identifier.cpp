@@ -51,3 +51,8 @@ Type Identifier::GetType(Context &context) const
 {
     return context.get_variable(identifier_).type;
 }
+
+bool Identifier::IsPointerOperation(Context &context) const
+{
+    return context.get_variable(identifier_).is_pointer;
+}

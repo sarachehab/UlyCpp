@@ -104,3 +104,8 @@ std::string AddressOf::GetMneumonic(Type type) const
 {
     return "AddressOf::GetMneumonic - unsupported";
 }
+
+bool AddressOf::IsPointerOperation(Context &context) const
+{
+    return true;
+}

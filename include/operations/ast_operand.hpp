@@ -25,6 +25,8 @@ public:
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override = 0;
     void Print(std::ostream &stream) const override = 0;
+
+    virtual bool IsPointerOperation(Context &context) const = 0;
 };
 
 #endif

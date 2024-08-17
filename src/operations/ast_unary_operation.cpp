@@ -31,3 +31,8 @@ Type UnaryOperation::GetType(Context &context) const
 {
     return dynamic_cast<Operand *>(expression_)->GetType(context);
 }
+
+bool UnaryOperation::IsPointerOperation(Context &context) const
+{
+    return dynamic_cast<Operand *>(expression_)->IsPointerOperation(context);
+}

@@ -91,3 +91,8 @@ void ExpressionList::Print(std::ostream &stream) const
     }
     stream << std::endl;
 }
+
+bool Expression::IsPointerOperation(Context &context) const
+{
+    return false;
+}

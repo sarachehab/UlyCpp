@@ -48,3 +48,8 @@ void Prefixincrement::Print(std::ostream &stream) const
     }
     identifier_->Print(stream);
 }
+
+bool IncrementOperation::IsPointerOperation(Context &context) const
+{
+    return false;
+}
