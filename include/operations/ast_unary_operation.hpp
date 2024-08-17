@@ -9,7 +9,7 @@
  */
 class UnaryOperation : public Operand
 {
-private:
+protected:
     Node *expression_;
 
 public:

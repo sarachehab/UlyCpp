@@ -9,6 +9,7 @@
 #include "../arrays/ast_array_access.hpp"
 #include "../pointers/ast_pointer_declarator.hpp"
 #include "../ast_direct_declarator.hpp"
+#include "../pointers/ast_address_of.hpp"
 
 class AssignmentList : public NodeList
 {

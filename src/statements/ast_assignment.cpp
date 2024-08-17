@@ -27,6 +27,7 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
         Identifier *identifier = dynamic_cast<Identifier *>(unary_expression_);
         ArrayAccess *array_access = dynamic_cast<ArrayAccess *>(unary_expression_);
         PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(unary_expression_);
+        AddressOf *address_of = dynamic_cast<AddressOf *>(unary_expression_);
 
         // If atomic identifier, load expression into variable
         if (identifier != nullptr)
@@ -132,6 +133,32 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
             else
             {
                 throw std::runtime_error("Assignment EmitRISC: Invalid scope in PointerDeclarator");
+            }
+        }
+
+        else if (address_of != nullptr)
+        {
+            // If local scope, access variable through offset specified in bindings
+            if (variable_specs.scope == Scope::_LOCAL)
+            {
+                stream << context.store_instruction(type) << " " << reg << ", " << variable_specs.offset << "(sp)" << std::endl;
+            }
+
+            // If global scope, access global memory by targetting global label
+            else if (variable_specs.scope == Scope::_GLOBAL)
+            {
+                std::string global_memory_location = "global_" + GetIdentifier();
+                std::string global_memory_register = context.get_register(Type::_INT);
+
+                // Access global memory by targetting global label
+                stream << "lui " << global_memory_register << ", " << "%hi(" << global_memory_location << ")" << std::endl;
+                stream << context.store_instruction(type) << " " << reg << ", %lo(" << global_memory_location << ")(" << global_memory_register << ")" << std::endl;
+                context.deallocate_register(global_memory_register);
+            }
+
+            else
+            {
+                throw std::runtime_error("Assignment EmitRISC: Invalid scope in AddressOf");
             }
         }
 

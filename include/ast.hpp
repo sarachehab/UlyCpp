@@ -43,6 +43,7 @@
 #include "control_flow/ast_case.hpp"
 
 #include "pointers/ast_pointer_declarator.hpp"
+#include "pointers/ast_address_of.hpp"
 
 #include "ast_translation_unit.hpp"
 #include "ast_direct_declarator.hpp"

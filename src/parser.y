@@ -172,6 +172,7 @@ unary_expression
 	| '-' cast_expression		{ $$ = new Negate($2); }
 	| '~' cast_expression		{ $$ = new OneComplement($2); }
 	| '!' cast_expression		{ $$ = new Inverse($2); }
+	| '&' cast_expression		{ $$ = new AddressOf($2); }
 	| INC_OP unary_expression	{ Identifier* identifier_ = dynamic_cast<Identifier *>($2); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new Prefixincrement(identifier_, new Addition(operator_, new IntConstant(1))); }
 	| DEC_OP unary_expression	{ Identifier* identifier_ = dynamic_cast<Identifier *>($2); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new Prefixincrement(identifier_, new Substraction(operator_, new IntConstant(1))); }
 	;
