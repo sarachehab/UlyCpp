@@ -77,3 +77,14 @@ bool DirectDeclarator::IsPointer() const
 {
     return false;
 }
+
+int DirectDeclarator::GetDereferenceNumber() const
+{
+    Declarator *declarator = dynamic_cast<Declarator *>(identifier_);
+    if (declarator)
+    {
+        return declarator->GetDereferenceNumber();
+    }
+
+    return 0;
+}

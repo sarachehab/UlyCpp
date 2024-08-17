@@ -47,6 +47,7 @@
 #include "ast_translation_unit.hpp"
 #include "ast_direct_declarator.hpp"
 #include "ast_type_specifier.hpp"
+#include "ast_declarator.hpp"
 #include "ast_node.hpp"
 
 #include "context/context.hpp"

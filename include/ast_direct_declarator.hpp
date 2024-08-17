@@ -46,6 +46,7 @@ public:
     void StoreParameters(std::ostream &stream, Context &context, std::string passed_reg) const override;
 
     bool IsPointer() const override;
+    int GetDereferenceNumber() const override;
 };
 
 #endif

@@ -40,6 +40,7 @@ public:
     std::string GetIdentifier() const;
     int GetSize(Context &context) const;
     bool IsPointer() const;
+    int GetDereferenceNumber() const;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;

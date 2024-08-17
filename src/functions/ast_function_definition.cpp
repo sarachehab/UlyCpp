@@ -20,7 +20,7 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
     stream << function_name << ":" << std::endl;
 
     // Define return value and parameters
-    ReturnValue return_value(return_is_pointer, false, return_type);
+    ReturnValue return_value(return_is_pointer, false, return_type, direct_declarator_->GetDereferenceNumber());
     std::vector<Parameter> parameters = direct_declarator_->GetParameters(context);
 
     // Define function for later access in context, set offset to 0

@@ -16,9 +16,10 @@ struct ReturnValue
     bool is_pointer = false;
     bool is_array = false;
     Type type;
+    int dereference_number;
 
-    ReturnValue() : is_pointer(false), is_array(false), type(Type::_INT) {}
-    ReturnValue(bool is_pointer, bool is_array, Type type) : is_pointer(is_pointer), is_array(is_array), type(type) {};
+    ReturnValue() : is_pointer(false), is_array(false), type(Type::_INT), dereference_number(0) {}
+    ReturnValue(bool is_pointer, bool is_array, Type type, int dereference_number) : is_pointer(is_pointer), is_array(is_array), type(type), dereference_number(dereference_number) {};
 };
 
 /**
@@ -33,6 +34,7 @@ struct Parameter
     bool is_array = false;
     Type type;
     int offset;
+    int dereference_number;
 
     /**
      * @brief This function returns the size of the parameter.
@@ -41,8 +43,8 @@ struct Parameter
      */
     int GetSize() const;
 
-    Parameter() : name("random"), is_pointer(false), is_array(false), type(Type::_INT), offset(0) {}
-    Parameter(std::string name, bool is_pointer, bool is_array, Type type, int offset) : name(name), is_pointer(is_pointer), is_array(is_array), type(type), offset(offset) {};
+    Parameter() : name("random"), is_pointer(false), is_array(false), type(Type::_INT), offset(0), dereference_number(0) {}
+    Parameter(std::string name, bool is_pointer, bool is_array, Type type, int offset, int dereference_number) : name(name), is_pointer(is_pointer), is_array(is_array), type(type), offset(offset), dereference_number(dereference_number) {};
 };
 
 /**

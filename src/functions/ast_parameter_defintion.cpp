@@ -86,7 +86,7 @@ void ParameterDeclaration::EmitRISC(std::ostream &stream, Context &context, std:
     stream << context.store_instruction(type) << " " << passed_reg << ", " << offset << "(sp)" << std::endl;
 
     // Define parameter as variable accessible within function body
-    Variable variable_specs(false, false, type, offset);
+    Variable variable_specs(IsPointer(), false, type, offset, GetDereferenceNumber());
     context.define_variable(GetIdentifier(), variable_specs);
 
     // Increase stack offset to accomodate for parameter
@@ -105,9 +105,9 @@ Parameter ParameterDeclaration::GetParameter(Context &context, int offset) const
     // Define parameter type for function
     if (IsPointer())
     {
-        return Parameter(GetIdentifier(), true, false, GetType(context), offset);
+        return Parameter(GetIdentifier(), true, false, GetType(context), offset, GetDereferenceNumber());
     }
-    return Parameter(GetIdentifier(), false, false, GetType(context), offset);
+    return Parameter(GetIdentifier(), false, false, GetType(context), offset, 0);
 }
 
 int ParameterDeclaration::GetSize(Context &context) const
@@ -147,4 +147,17 @@ bool ParameterDeclaration::IsPointer() const
     }
 
     return false;
+}
+
+int ParameterDeclaration::GetDereferenceNumber() const
+{
+    // Get dereference number for parameter
+    Declarator *declarator = dynamic_cast<Declarator *>(declarator_);
+
+    if (declarator)
+    {
+        return declarator->GetDereferenceNumber();
+    }
+
+    return 0;
 }

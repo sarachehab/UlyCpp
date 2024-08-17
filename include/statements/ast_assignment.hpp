@@ -61,6 +61,8 @@ public:
      */
     void InitializeGlobals(std::ostream &stream, Context &context, Global &global_specs) const;
     void DeclareLocalScope(Type type, int offset, std::ostream &stream, Context &context) const;
+    int GetDereferenceNumber() const;
+
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
 };

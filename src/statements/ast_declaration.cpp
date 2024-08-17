@@ -33,7 +33,7 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
             std::string variable_name = identifier->GetIdentifier();
 
             // Add variable to bindings
-            Variable variable_specs(false, false, type, offset);
+            Variable variable_specs(false, false, type, offset, 0);
             context.define_variable(variable_name, variable_specs);
         }
 
@@ -54,7 +54,7 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
             std::string variable_name = array_declarator->GetIdentifier();
 
             // Add variable to bindings
-            Variable variable_specs(false, true, array_size, type, offset);
+            Variable variable_specs(false, true, array_size, type, offset, 0);
             context.define_variable(variable_name, variable_specs);
         }
 
@@ -67,13 +67,9 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
             std::string variable_name = pointer_declarator->GetIdentifier();
 
             // Add variable to bindings
-            Variable variable_specs(true, false, Type::_INT, offset);
+            int number_dereferences = pointer_declarator->GetDereferenceNumber();
+            Variable variable_specs(true, false, type, offset, number_dereferences);
             context.define_variable(variable_name, variable_specs);
-
-            // Add pointer to bindings
-            int number_dereferences = pointer_declarator->NumberPointers();
-            Pointer pointer_specs(type, number_dereferences);
-            context.define_pointer(variable_name, pointer_specs);
         }
 
         else
@@ -110,10 +106,11 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
             // Determine if array
             bool is_array = assignment->IsArrayInitialization();
             bool is_pointer = assignment->IsPointerInitialization();
+            int number_dereferences = assignment->GetDereferenceNumber();
 
             // Get variable name
             std::string global_name = assignment->GetIdentifier();
-            Global global_specs(is_pointer, is_array, array_size, type);
+            Global global_specs(is_pointer, is_array, array_size, type, number_dereferences);
 
             // Evaluate expression and store in variable
             assignment->InitializeGlobals(stream, context, global_specs);
@@ -129,7 +126,7 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
             std::string global_name = identifier->GetIdentifier();
 
             // Add variable to bindings
-            Global global_specs = Global(false, false, type);
+            Global global_specs = Global(false, false, type, 0);
             context.define_global(global_name, global_specs);
         }
 
@@ -147,7 +144,8 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
             std::string global_name = array_declarator->GetIdentifier();
 
             // Add variable to bindings
-            Global global_specs(false, true, array_size, type);
+            int number_dereferences = array_declarator->GetDereferenceNumber();
+            Global global_specs(false, true, array_size, type, number_dereferences);
             context.define_global(global_name, global_specs);
         }
 
@@ -157,13 +155,9 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
             std::string global_name = pointer_declarator->GetIdentifier();
 
             // Add variable to bindings
-            Global global_specs(true, false, Type::_INT);
+            int number_dereferences = pointer_declarator->GetDereferenceNumber();
+            Global global_specs(true, false, type, number_dereferences);
             context.define_global(global_name, global_specs);
-
-            // Add pointer to bindings
-            int number_dereferences = pointer_declarator->NumberPointers();
-            Pointer pointer_specs(type, number_dereferences);
-            context.define_pointer(global_name, pointer_specs);
         }
 
         // Function external declaration
@@ -174,7 +168,8 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
 
             // Define function return value and parameters
             bool return_is_pointer = declarator->IsPointer();
-            ReturnValue return_value = ReturnValue(return_is_pointer, false, type);
+            int number_dereferences = declarator->GetDereferenceNumber();
+            ReturnValue return_value = ReturnValue(return_is_pointer, false, type, number_dereferences);
             std::vector<Parameter> arguments = declarator->GetParameters(context);
 
             // Define function for later access in context

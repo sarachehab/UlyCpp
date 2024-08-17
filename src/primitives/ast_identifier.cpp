@@ -7,7 +7,7 @@ void Identifier::EmitRISC(std::ostream &stream, Context &context, std::string pa
     {
         // Fetch variable specifications
         Variable variable_specs = context.get_variable(identifier_);
-        Type type = variable_specs.type;
+        Type type = variable_specs.is_pointer ? Type::_INT : variable_specs.type;
 
         // Load variable from memory specified in variable bindings if local scope
         if (variable_specs.scope == Scope::_LOCAL)

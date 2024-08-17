@@ -62,3 +62,14 @@ void ArrayDeclarator::StoreParameters(std::ostream &stream, Context &context, st
 {
     return dynamic_cast<Declarator *>(identifier_)->StoreParameters(stream, context, passed_reg);
 }
+
+int ArrayDeclarator::GetDereferenceNumber() const
+{
+    Declarator *declarator = dynamic_cast<Declarator *>(identifier_);
+    if (declarator)
+    {
+        return declarator->GetDereferenceNumber();
+    }
+
+    return 0;
+}

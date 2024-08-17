@@ -4,7 +4,7 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
 {
     // Get variable specifications
     Variable variable_specs = context.get_variable(GetIdentifier());
-    Type type = IsPointerInitialization() ? Type::_INT : variable_specs.type;
+    Type type = variable_specs.is_pointer ? Type::_INT : variable_specs.type;
 
     // Get offset of variable within current stack frame
     int offset = variable_specs.offset;
@@ -63,10 +63,27 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
             // If local scope, access variable through offset specified in bindings
             if (variable_specs.scope == Scope::_LOCAL)
             {
-                // Add index to base pointer
-                stream << "add " << index_register << ", " << index_register << ", sp" << std::endl;
+                if (variable_specs.is_array)
+                {
+                    // Add index to base pointer
+                    stream << "add " << index_register << ", " << index_register << ", sp" << std::endl;
+                    stream << "addi " << index_register << ", " << index_register << ", " << offset << std::endl;
+                }
+                else if (variable_specs.is_pointer)
+                {
+                    // Pointers points to first item in list
+                    std::string pointer_register = context.get_register(Type::_INT);
+                    stream << context.load_instruction(Type::_INT) << " " << pointer_register << ", " << offset << "(sp)" << std::endl;
+                    stream << "add " << index_register << ", " << index_register << ", " << pointer_register << std::endl;
+                    context.deallocate_register(pointer_register);
+                }
+                else
+                {
+                    throw std::runtime_error("Assignment EmitRISC: Variable is not a pointer or array in ArrayAccess LOCAL");
+                }
+
                 // Get variable offset
-                stream << context.store_instruction(type) << " " << reg << ", " << offset << "(" << index_register << ")" << std::endl;
+                stream << context.store_instruction(type) << " " << reg << ", 0(" << index_register << ")" << std::endl;
             }
 
             // If global scope, access global memory by targetting global label
@@ -205,9 +222,10 @@ bool Assignment::IsArrayInitialization() const
 
 bool Assignment::IsPointerInitialization() const
 {
-    if (dynamic_cast<PointerDeclarator *>(unary_expression_) != nullptr)
+    Declarator *declarator = dynamic_cast<Declarator *>(unary_expression_);
+    if (declarator)
     {
-        return true;
+        return declarator->IsPointer();
     }
 
     return false;
@@ -231,17 +249,21 @@ void Assignment::DeclareLocalScope(Type type, int offset, std::ostream &stream, 
     std::string variable_name = GetIdentifier();
 
     // Add variable to bindings
-    Variable variable_specs(is_pointer, is_array, array_size, actual_type, offset);
+    int number_dereferences = GetDereferenceNumber();
+    Variable variable_specs(is_pointer, is_array, array_size, type, offset, number_dereferences);
     context.define_variable(variable_name, variable_specs);
-
-    PointerDeclarator *ptr = dynamic_cast<PointerDeclarator *>(unary_expression_);
-    if (ptr != nullptr)
-    {
-        int number_dereferences = ptr->NumberPointers();
-        Pointer pointer_specs(type, number_dereferences);
-        context.define_pointer(variable_name, pointer_specs);
-    }
 
     // Evaluate expression and store in variable
     EmitRISC(stream, context, "unused");
+}
+
+int Assignment::GetDereferenceNumber() const
+{
+    Declarator *declarator = dynamic_cast<Declarator *>(unary_expression_);
+    if (declarator != nullptr)
+    {
+        return declarator->GetDereferenceNumber();
+    }
+
+    return 0;
 }

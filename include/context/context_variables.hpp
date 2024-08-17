@@ -27,12 +27,13 @@ struct Variable
     Type type;
     int offset;
     int size_array;
+    int dereferences_number;
 
-    Variable() : is_pointer(false), is_array(false), scope(Scope::_LOCAL), type(Type::_INT), offset(0), size_array(0) {}
-    Variable(bool is_pointer, bool is_array, Type type, int offset) : is_pointer(is_pointer), is_array(is_array), scope(Scope::_LOCAL), type(type), offset(offset), size_array(1) {}
-    Variable(bool is_pointer, bool is_array, int size_array, Type type, int offset) : is_pointer(is_pointer), is_array(is_array), scope(Scope::_LOCAL), type(type), offset(offset), size_array(size_array) {}
-    Variable(bool is_pointer, bool is_array, Type type, Scope scope) : is_pointer(is_pointer), is_array(is_array), scope(scope), type(type), offset(0), size_array(1) {}
-    Variable(bool is_pointer, bool is_array, int size_array, Type type, Scope scope) : is_pointer(is_pointer), is_array(is_array), scope(scope), type(type), offset(0), size_array(size_array) {}
+    Variable() : is_pointer(false), is_array(false), scope(Scope::_LOCAL), type(Type::_INT), offset(0), size_array(0), dereferences_number(0) {}
+    Variable(bool is_pointer, bool is_array, Type type, int offset, int dereferences_number) : is_pointer(is_pointer), is_array(is_array), scope(Scope::_LOCAL), type(type), offset(offset), size_array(1), dereferences_number(dereferences_number) {}
+    Variable(bool is_pointer, bool is_array, int size_array, Type type, int offset, int dereferences_number) : is_pointer(is_pointer), is_array(is_array), scope(Scope::_LOCAL), type(type), offset(offset), size_array(size_array), dereferences_number(dereferences_number) {}
+    Variable(bool is_pointer, bool is_array, Type type, Scope scope, int dereferences_number) : is_pointer(is_pointer), is_array(is_array), scope(scope), type(type), offset(0), size_array(1), dereferences_number(dereferences_number) {}
+    Variable(bool is_pointer, bool is_array, int size_array, Type type, Scope scope, int dereferences_number) : is_pointer(is_pointer), is_array(is_array), scope(scope), type(type), offset(0), size_array(size_array), dereferences_number(dereferences_number) {}
 };
 
 /**
@@ -51,8 +52,8 @@ struct Global : public Variable
     std::vector<uint32_t> upper_values;
 
     Global() : Variable() {}
-    Global(bool is_pointer, bool is_array, Type type) : Variable(is_pointer, is_array, type, Scope::_GLOBAL) {}
-    Global(bool is_pointer, bool is_array, int size_array, Type type) : Variable(is_pointer, is_array, size_array, type, Scope::_GLOBAL) {}
+    Global(bool is_pointer, bool is_array, Type type, int dereferences_number) : Variable(is_pointer, is_array, type, Scope::_GLOBAL, dereferences_number) {}
+    Global(bool is_pointer, bool is_array, int size_array, Type type, int dereferences_number) : Variable(is_pointer, is_array, size_array, type, Scope::_GLOBAL, dereferences_number) {}
 
     void print_global(std::ostream &stream) const;
 

@@ -22,7 +22,7 @@ public:
     std::string GetIdentifier() const override;
     Type GetType() const;
 
-    int NumberPointers() const;
+    int GetDereferenceNumber() const override;
 
     virtual std::vector<Parameter> GetParameters(Context &context) const override;
     virtual int GetScopeOffset() const override;

@@ -33,13 +33,13 @@ Type PointerDeclarator::GetType() const
     return Type::_INT;
 }
 
-int PointerDeclarator::NumberPointers() const
+int PointerDeclarator::GetDereferenceNumber() const
 {
     PointerDeclarator *ptr = dynamic_cast<PointerDeclarator *>(direct_declarator_);
 
     if (ptr != nullptr)
     {
-        return 1 + ptr->NumberPointers();
+        return 1 + ptr->GetDereferenceNumber();
     }
     return 1;
 }
