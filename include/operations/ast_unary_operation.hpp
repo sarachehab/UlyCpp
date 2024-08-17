@@ -9,7 +9,7 @@
  */
 class UnaryOperation : public Operand
 {
-private:
+protected:
     Node *expression_;
 
 public:
@@ -35,6 +35,8 @@ public:
     virtual std::string GetOperation() const = 0;
 
     Type GetType(Context &context) const override;
+
+    bool IsPointerOperation(Context &context) const override;
 
     virtual void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     virtual void Print(std::ostream &stream) const override;

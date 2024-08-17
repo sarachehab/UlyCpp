@@ -83,10 +83,10 @@ void ParameterDeclaration::EmitRISC(std::ostream &stream, Context &context, std:
     int offset = context.get_stack_offset();
 
     // Store parameter on stack
-    stream << context.store_instruction(type) << " " << passed_reg << ", " << offset << "(sp)" << std::endl;
+    stream << context.store_instruction(type) << " " << passed_reg << ", " << offset << "(s0)" << std::endl;
 
     // Define parameter as variable accessible within function body
-    Variable variable_specs(false, false, type, offset);
+    Variable variable_specs(IsPointer(), false, type, offset, GetDereferenceNumber());
     context.define_variable(GetIdentifier(), variable_specs);
 
     // Increase stack offset to accomodate for parameter
@@ -103,17 +103,61 @@ void ParameterDeclaration::Print(std::ostream &stream) const
 Parameter ParameterDeclaration::GetParameter(Context &context, int offset) const
 {
     // Define parameter type for function
-    Type type = GetType(context);
-    return Parameter(GetIdentifier(), false, false, type, offset);
+    if (IsPointer())
+    {
+        return Parameter(GetIdentifier(), true, false, GetType(context), offset, GetDereferenceNumber());
+    }
+    return Parameter(GetIdentifier(), false, false, GetType(context), offset, 0);
 }
 
 int ParameterDeclaration::GetSize(Context &context) const
 {
     // Get size of parameter
+    if (IsPointer())
+    {
+        types_size.at(Type::_INT);
+    }
+
     return types_size.at(GetType(context));
 }
 
 std::string ParameterDeclaration::GetIdentifier() const
 {
-    return dynamic_cast<Identifier *>(declarator_)->GetIdentifier();
+    Identifier *identifier = dynamic_cast<Identifier *>(declarator_);
+    PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(declarator_);
+
+    if (identifier)
+    {
+        return identifier->GetIdentifier();
+    }
+    else if (pointer_declarator)
+    {
+        return pointer_declarator->GetIdentifier();
+    }
+
+    throw std::runtime_error("ParameterDeclaration::GetIdentifier() - declarator_ is not an Identifier or PointerDeclarator");
+}
+
+bool ParameterDeclaration::IsPointer() const
+{
+
+    if (dynamic_cast<PointerDeclarator *>(declarator_))
+    {
+        return true;
+    }
+
+    return false;
+}
+
+int ParameterDeclaration::GetDereferenceNumber() const
+{
+    // Get dereference number for parameter
+    Declarator *declarator = dynamic_cast<Declarator *>(declarator_);
+
+    if (declarator)
+    {
+        return declarator->GetDereferenceNumber();
+    }
+
+    return 0;
 }

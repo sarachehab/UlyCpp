@@ -2,10 +2,12 @@
 #define AST_DIRECT_DECLARATOR_HPP
 
 #include "ast_node.hpp"
+#include "ast_declarator.hpp"
 #include "primitives/ast_identifier.hpp"
 #include "functions/ast_parameter_definition.hpp"
+#include "arrays/ast_array_declarator.hpp"
 
-class DirectDeclarator : public Node
+class DirectDeclarator : public Declarator
 {
 private:
     Node *identifier_;
@@ -26,22 +28,25 @@ public:
     /**
      * @brief Get the identifier name
      */
-    std::string GetIdentifier() const;
+    std::string GetIdentifier() const override;
 
     /**
      * @brief Get the parameters of the function
      */
-    std::vector<Parameter> GetParameters(Context &context) const;
+    std::vector<Parameter> GetParameters(Context &context) const override;
 
     /**
      * @brief Get the offset needed to account for variable declarations
      */
-    int GetScopeOffset() const;
+    int GetScopeOffset() const override;
 
     /**
      * @brief Store the parameters of the function from argument registers to the memory stack
      */
-    void StoreParameters(std::ostream &stream, Context &context, std::string passed_reg) const;
+    void StoreParameters(std::ostream &stream, Context &context, std::string passed_reg) const override;
+
+    bool IsPointer() const override;
+    int GetDereferenceNumber() const override;
 };
 
 #endif

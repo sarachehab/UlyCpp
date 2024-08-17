@@ -7,7 +7,7 @@ void Identifier::EmitRISC(std::ostream &stream, Context &context, std::string pa
     {
         // Fetch variable specifications
         Variable variable_specs = context.get_variable(identifier_);
-        Type type = variable_specs.type;
+        Type type = variable_specs.is_pointer ? Type::_INT : variable_specs.type;
 
         // Load variable from memory specified in variable bindings if local scope
         if (variable_specs.scope == Scope::_LOCAL)
@@ -15,7 +15,7 @@ void Identifier::EmitRISC(std::ostream &stream, Context &context, std::string pa
             int offset = variable_specs.offset;
 
             // Load variable from specified memory location
-            stream << context.load_instruction(type) << " " << passed_reg << ", " << offset << "(sp)" << std::endl;
+            stream << context.load_instruction(type) << " " << passed_reg << ", " << offset << "(s0)" << std::endl;
         }
 
         // Load variable from label-specified memory location if global scope
@@ -50,4 +50,9 @@ std::string Identifier::GetIdentifier() const
 Type Identifier::GetType(Context &context) const
 {
     return context.get_variable(identifier_).type;
+}
+
+bool Identifier::IsPointerOperation(Context &context) const
+{
+    return context.get_variable(identifier_).is_pointer;
 }

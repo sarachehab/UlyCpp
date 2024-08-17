@@ -2,7 +2,20 @@
 
 std::string ArrayDeclarator::GetIdentifier() const
 {
-    return dynamic_cast<Identifier *>(identifier_)->GetIdentifier();
+    Identifier *identifier = dynamic_cast<Identifier *>(identifier_);
+    Declarator *declarator = dynamic_cast<Declarator *>(identifier_);
+
+    if (declarator != nullptr)
+    {
+        return declarator->GetIdentifier();
+    }
+
+    else if (identifier != nullptr)
+    {
+        return identifier->GetIdentifier();
+    }
+
+    throw std::runtime_error("ArrayDeclarator GetIdentifier: Identifier not found");
 }
 
 int ArrayDeclarator::GetSize() const
@@ -28,4 +41,35 @@ void ArrayDeclarator::Print(std::ostream &stream) const
         constant_expression_->Print(stream);
     }
     stream << "]";
+}
+
+bool ArrayDeclarator::IsPointer() const
+{
+    return dynamic_cast<PointerDeclarator *>(identifier_) != nullptr;
+}
+
+std::vector<Parameter> ArrayDeclarator::GetParameters(Context &context) const
+{
+    return dynamic_cast<Declarator *>(identifier_)->GetParameters(context);
+}
+
+int ArrayDeclarator::GetScopeOffset() const
+{
+    return dynamic_cast<Declarator *>(identifier_)->GetScopeOffset();
+}
+
+void ArrayDeclarator::StoreParameters(std::ostream &stream, Context &context, std::string passed_reg) const
+{
+    return dynamic_cast<Declarator *>(identifier_)->StoreParameters(stream, context, passed_reg);
+}
+
+int ArrayDeclarator::GetDereferenceNumber() const
+{
+    Declarator *declarator = dynamic_cast<Declarator *>(identifier_);
+    if (declarator)
+    {
+        return declarator->GetDereferenceNumber();
+    }
+
+    return 0;
 }

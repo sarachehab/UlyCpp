@@ -204,7 +204,7 @@ void Context::push_registers(std::ostream &stream)
         Type type = register_file[reg].type;
 
         // Spill register to memory
-        stream << store_instruction(type) << " " << get_register_name(reg) << ", " << offset << "(sp)" << std::endl;
+        stream << store_instruction(type) << " " << get_register_name(reg) << ", " << offset << "(s0)" << std::endl;
 
         // Increase stack offset to account for spilled register
         allocated_register_offsets[reg] = offset;
@@ -221,7 +221,7 @@ void Context::pop_registers(std::ostream &stream)
     {
         // Restore register from memory
         Type type = register_file[reg].type;
-        stream << load_instruction(type) << " " << get_register_name(reg) << ", " << allocated_register_offsets[reg] << "(sp)" << std::endl;
+        stream << load_instruction(type) << " " << get_register_name(reg) << ", " << allocated_register_offsets[reg] << "(s0)" << std::endl;
 
         // Reset stack offset to previous value
         increase_stack_offset(-types_size.at(type));

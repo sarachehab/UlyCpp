@@ -24,3 +24,8 @@ Type InlineIf::GetType(Context &context) const
     Type right_type = dynamic_cast<Operand *>(false_statement_)->GetType(context);
     return std::max(left_type, right_type);
 }
+
+bool InlineIf::IsPointerOperation(Context &context) const
+{
+    return dynamic_cast<Operand *>(true_statement_)->IsPointerOperation(context);
+}

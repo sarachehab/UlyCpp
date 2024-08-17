@@ -2,7 +2,19 @@
 
 std::string ArrayAccess::GetIdentifier() const
 {
-    return dynamic_cast<Identifier *>(identifier_)->GetIdentifier();
+    Identifier *identifier = dynamic_cast<Identifier *>(identifier_);
+    ArrayAccess *array_access = dynamic_cast<ArrayAccess *>(identifier_);
+
+    if (identifier != nullptr)
+    {
+        return identifier->GetIdentifier();
+    }
+    else if (array_access != nullptr)
+    {
+        return array_access->GetIdentifier();
+    }
+
+    throw std::runtime_error("ArrayAccess GetIdentifier: Identifier not found");
 }
 
 void ArrayAccess::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
@@ -20,9 +32,26 @@ void ArrayAccess::EmitRISC(std::ostream &stream, Context &context, std::string p
     // Fetch element from variable-binding specified memory location if local scope
     if (variable_specs.scope == Scope::_LOCAL)
     {
-        // Add index to base pointer
-        stream << "add " << index_register << ", " << index_register << ", sp" << std::endl;
-        stream << context.load_instruction(type) << " " << passed_reg << ", " << variable_specs.offset << "(" << index_register << ")" << std::endl;
+        if (variable_specs.is_pointer)
+        {
+            // Pointers points to first item in list
+            std::string pointer_register = context.get_register(Type::_INT);
+            stream << context.load_instruction(Type::_INT) << " " << pointer_register << ", " << variable_specs.offset << "(s0)" << std::endl;
+            stream << "add " << index_register << ", " << index_register << ", " << pointer_register << std::endl;
+            context.deallocate_register(pointer_register);
+        }
+        else if (variable_specs.is_array)
+        {
+            // Add index to base pointe
+            stream << "add " << index_register << ", " << index_register << ", s0" << std::endl;
+            stream << "addi " << index_register << ", " << index_register << ", " << variable_specs.offset << std::endl;
+        }
+        else
+        {
+            throw std::runtime_error("ArrayAccess EmitRISC: Variable is not a pointer or array");
+        }
+
+        stream << context.load_instruction(type) << " " << passed_reg << ", 0(" << index_register << ")" << std::endl;
     }
 
     // Fetch element from label-specified memory location if global scope
@@ -68,4 +97,9 @@ Type ArrayAccess::GetType(Context &context) const
 {
     Variable variable_specs = context.get_variable(GetIdentifier());
     return variable_specs.type;
+}
+
+bool ArrayAccess::IsPointerOperation(Context &context) const
+{
+    return context.get_variable(GetIdentifier()).is_pointer;
 }

@@ -86,15 +86,20 @@ type_specifier
 	;
 
 declarator
-	: direct_declarator 								{ $$ = $1; }
-	| direct_declarator '[' constant_expression ']'		{ $$ = new ArrayDeclarator($1, $3); }
-	| direct_declarator '[' ']'							{ $$ = new ArrayDeclarator($1, nullptr); }
+	: direct_declarator 			{ $$ = $1; }
+	| pointer direct_declarator 	{ PointerDeclarator* _ptr = new PointerDeclarator($2); for (int i = 1; i < dynamic_cast<IntConstant *>($1)->GetValue(); i++) { _ptr = new PointerDeclarator(_ptr); } $$ = _ptr; delete $1; }
 	;
 
+pointer
+	: '*'			{ $$ = new IntConstant(1); }
+	| '*' pointer	{ $$ = new IntConstant(dynamic_cast<IntConstant *>($2)->GetValue() + 1); delete $2; }
+
 direct_declarator
-	: IDENTIFIER                					{ $$ = new Identifier($1); }
-	| direct_declarator '(' ')' 					{ $$ = new DirectDeclarator($1); }
-	| direct_declarator '(' parameter_list ')'		{ $$ = new DirectDeclarator($1, $3); }
+	: IDENTIFIER                						{ $$ = new Identifier($1); }
+	| direct_declarator '(' ')' 						{ $$ = new DirectDeclarator($1); }
+	| direct_declarator '(' parameter_list ')'			{ $$ = new DirectDeclarator($1, $3); }
+	| direct_declarator '[' constant_expression ']'		{ $$ = new ArrayDeclarator($1, $3); }
+	| direct_declarator '[' ']'							{ $$ = new ArrayDeclarator($1, nullptr); }
 	;
 
 parameter_list
@@ -167,6 +172,8 @@ unary_expression
 	| '-' cast_expression		{ $$ = new Negate($2); }
 	| '~' cast_expression		{ $$ = new OneComplement($2); }
 	| '!' cast_expression		{ $$ = new Inverse($2); }
+	| '&' cast_expression		{ $$ = new AddressOf($2); }
+	| '*' cast_expression		{ $$ = new Dereference($2); }
 	| INC_OP unary_expression	{ Identifier* identifier_ = dynamic_cast<Identifier *>($2); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new Prefixincrement(identifier_, new Addition(operator_, new IntConstant(1))); }
 	| DEC_OP unary_expression	{ Identifier* identifier_ = dynamic_cast<Identifier *>($2); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new Prefixincrement(identifier_, new Substraction(operator_, new IntConstant(1))); }
 	;

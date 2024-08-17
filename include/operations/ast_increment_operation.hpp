@@ -25,6 +25,7 @@ public:
     };
 
     virtual Type GetType(Context &context) const;
+    virtual bool IsPointerOperation(Context &context) const override;
 
     virtual void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override = 0;
     virtual void Print(std::ostream &stream) const override = 0;
@@ -34,7 +35,7 @@ class PostfixIncrement : public IncrementOperation
 {
 public:
     using IncrementOperation::IncrementOperation;
-    ~PostfixIncrement(){};
+    ~PostfixIncrement() {};
 
     virtual void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
@@ -44,7 +45,7 @@ class Prefixincrement : public IncrementOperation
 {
 public:
     using IncrementOperation::IncrementOperation;
-    ~Prefixincrement(){};
+    ~Prefixincrement() {};
 
     virtual void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;

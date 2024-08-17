@@ -4,6 +4,7 @@
 #include "../ast_node.hpp"
 #include "../ast_type_specifier.hpp"
 #include "../primitives/ast_identifier.hpp"
+#include "../pointers/ast_pointer_declarator.hpp"
 
 class ParameterList : public NodeList
 {
@@ -38,6 +39,8 @@ public:
     Parameter GetParameter(Context &context, int offset) const;
     std::string GetIdentifier() const;
     int GetSize(Context &context) const;
+    bool IsPointer() const;
+    int GetDereferenceNumber() const;
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;

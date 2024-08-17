@@ -4,11 +4,13 @@ void BinaryOperation::EmitRISC(std::ostream &stream, Context &context, std::stri
 {
     // set type of operation by comparing the type of the operation and the type of the operands
     Type type = std::max(context.get_operation_type(), GetType(context));
+    type = IsPointerOperation(context) ? Type::_INT : type;
     context.set_operation_type(type);
 
     // evaluate left operand
     std::string left_register = context.get_register(type);
     left_->EmitRISC(stream, context, left_register);
+    AdjustPointerOperation(stream, context, left_register, left_);
 
     // add left operand to register set, can be spilled if right part contains function call
     context.add_register_to_set(left_register);
@@ -16,6 +18,7 @@ void BinaryOperation::EmitRISC(std::ostream &stream, Context &context, std::stri
     // evaluate right operand
     std::string right_register = context.get_register(type);
     right_->EmitRISC(stream, context, right_register);
+    AdjustPointerOperation(stream, context, right_register, right_);
 
     // execute desired operation
     stream << GetMneumonic(type) << " " << passed_reg << ", " << left_register << ", " << right_register << std::endl;
@@ -61,4 +64,25 @@ Type BinaryOperation::GetType(Context &context) const
 
     // Return the max type
     return std::max(leftType, rightType);
+}
+
+bool BinaryOperation::IsPointerOperation(Context &context) const
+{
+    // Attempt to cast left_ and right_ to Operand
+    Operand *left_operand = dynamic_cast<Operand *>(left_);
+    Operand *right_operand = dynamic_cast<Operand *>(right_);
+
+    // Return true if either operand is a pointer
+    return left_operand->IsPointerOperation(context) || right_operand->IsPointerOperation(context);
+}
+
+void BinaryOperation::AdjustPointerOperation(std::ostream &stream, Context &context, std::string passed_register, Node *node) const
+{
+    if (IsPointerOperation(context))
+    {
+        if (!dynamic_cast<Operand *>(node)->IsPointerOperation(context))
+        {
+            stream << "slli " << passed_register << ", " << passed_register << ", " << types_shift.at(GetType(context)) << std::endl;
+        }
+    }
 }

@@ -44,6 +44,9 @@ public:
      */
     Type GetType(Context &context) const override;
 
+    bool IsPointerOperation(Context &context) const override;
+    void AdjustPointerOperation(std::ostream &stream, Context &context, std::string passed_register, Node *node) const;
+
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
 };

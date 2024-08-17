@@ -42,9 +42,14 @@
 #include "control_flow/ast_switch.hpp"
 #include "control_flow/ast_case.hpp"
 
+#include "pointers/ast_pointer_declarator.hpp"
+#include "pointers/ast_address_of.hpp"
+#include "pointers/ast_dereference.hpp"
+
 #include "ast_translation_unit.hpp"
 #include "ast_direct_declarator.hpp"
 #include "ast_type_specifier.hpp"
+#include "ast_declarator.hpp"
 #include "ast_node.hpp"
 
 #include "context/context.hpp"

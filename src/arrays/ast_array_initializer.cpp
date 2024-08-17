@@ -34,7 +34,7 @@ void ArrayInitializer::Save(std::ostream &stream, Context &context, Variable var
         {
             dynamic_cast<Operand *>(initializer)->EmitRISC(stream, context, passed_reg);
 
-            stream << context.store_instruction(type) << " " << passed_reg << ", " << offset << "(sp)" << std::endl;
+            stream << context.store_instruction(type) << " " << passed_reg << ", " << offset << "(s0)" << std::endl;
 
             // Increase offset to get next element in array
             offset += types_size.at(type);

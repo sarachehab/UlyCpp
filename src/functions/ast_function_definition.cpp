@@ -2,23 +2,25 @@
 
 void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
-    DirectDeclarator *direct_declarator_ = dynamic_cast<DirectDeclarator *>(declarator_);
+    Declarator *direct_declarator_ = dynamic_cast<Declarator *>(declarator_);
 
     // Get function name
     std::string function_name = direct_declarator_->GetIdentifier();
 
     // Get function return type
     TypeSpecifier *return_type_specifier = dynamic_cast<TypeSpecifier *>(declaration_specifiers_);
+    bool return_is_pointer = direct_declarator_->IsPointer();
     Type return_type = return_type_specifier->GetType();
 
     // Emit function header
     stream << ".text" << std::endl;
     stream << ".globl " << function_name << std::endl;
+    stream << ".align " << types_shift.at(return_type) << std::endl;
     stream << ".type " << function_name << ", @function" << std::endl;
     stream << function_name << ":" << std::endl;
 
     // Define return value and parameters
-    ReturnValue return_value(false, false, return_type);
+    ReturnValue return_value(return_is_pointer, false, return_type, direct_declarator_->GetDereferenceNumber());
     std::vector<Parameter> parameters = direct_declarator_->GetParameters(context);
 
     // Define function for later access in context, set offset to 0
@@ -38,14 +40,15 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
         // Estimate total offset for function stack allocation
         context.increase_stack_offset(8);
         int initial_offset = 8 + direct_declarator_->GetScopeOffset();
-        int stack_allocated_space = compound_statement->GetScopeOffset(context) + initial_offset + 8;
+        int stack_allocated_space = compound_statement->GetScopeOffset(context) + initial_offset + 32;
+        context.set_stack_offset(stack_allocated_space);
 
         // Emit prelimnary register manipulations
         stream << "addi sp, sp, -" << stack_allocated_space << std::endl;
-        stream << "sw ra, 0(sp)" << std::endl;
-        stream << "sw s0, 4(sp)" << std::endl;
-        direct_declarator_->StoreParameters(stream, context, passed_reg);
+        stream << "sw ra, " << stack_allocated_space - 4 << "(sp)" << std::endl;
+        stream << "sw s0, " << stack_allocated_space - 8 << "(sp)" << std::endl;
         stream << "addi s0, sp, " << stack_allocated_space << std::endl;
+        direct_declarator_->StoreParameters(stream, context, passed_reg);
 
         compound_statement_->EmitRISC(stream, context, passed_reg);
 
@@ -53,8 +56,8 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
         stream << context.get_last_function_end_statement() << ":" << std::endl;
 
         // Restore initial register values
-        stream << "lw s0, 4(sp)" << std::endl;
-        stream << "lw ra, 0(sp)" << std::endl;
+        stream << "lw s0, " << stack_allocated_space - 8 << "(sp)" << std::endl;
+        stream << "lw ra, " << stack_allocated_space - 4 << "(sp)" << std::endl;
         stream << "addi sp, sp, " << stack_allocated_space << std::endl;
         stream << "ret" << std::endl;
 
