@@ -46,6 +46,8 @@
 #include "pointers/ast_address_of.hpp"
 #include "pointers/ast_dereference.hpp"
 
+#include "size_of/ast_size_of.hpp"
+
 #include "ast_translation_unit.hpp"
 #include "ast_direct_declarator.hpp"
 #include "ast_type_specifier.hpp"

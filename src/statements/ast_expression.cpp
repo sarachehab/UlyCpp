@@ -94,5 +94,5 @@ void ExpressionList::Print(std::ostream &stream) const
 
 bool Expression::IsPointerOperation(Context &context) const
 {
-    return false;
+    return dynamic_cast<Operand *>(nodes_[0])->IsPointerOperation(context);
 }
