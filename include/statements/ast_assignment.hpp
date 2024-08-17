@@ -10,6 +10,7 @@
 #include "../pointers/ast_pointer_declarator.hpp"
 #include "../ast_direct_declarator.hpp"
 #include "../pointers/ast_address_of.hpp"
+#include "../pointers/ast_dereference.hpp"
 
 class AssignmentList : public NodeList
 {

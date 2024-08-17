@@ -36,14 +36,14 @@ void ArrayAccess::EmitRISC(std::ostream &stream, Context &context, std::string p
         {
             // Pointers points to first item in list
             std::string pointer_register = context.get_register(Type::_INT);
-            stream << context.load_instruction(Type::_INT) << " " << pointer_register << ", " << variable_specs.offset << "(sp)" << std::endl;
+            stream << context.load_instruction(Type::_INT) << " " << pointer_register << ", " << variable_specs.offset << "(s0)" << std::endl;
             stream << "add " << index_register << ", " << index_register << ", " << pointer_register << std::endl;
             context.deallocate_register(pointer_register);
         }
         else if (variable_specs.is_array)
         {
             // Add index to base pointe
-            stream << "add " << index_register << ", " << index_register << ", sp" << std::endl;
+            stream << "add " << index_register << ", " << index_register << ", s0" << std::endl;
             stream << "addi " << index_register << ", " << index_register << ", " << variable_specs.offset << std::endl;
         }
         else

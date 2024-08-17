@@ -28,13 +28,14 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
         ArrayAccess *array_access = dynamic_cast<ArrayAccess *>(unary_expression_);
         PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(unary_expression_);
         AddressOf *address_of = dynamic_cast<AddressOf *>(unary_expression_);
+        Dereference *dereference = dynamic_cast<Dereference *>(unary_expression_);
 
         // If atomic identifier, load expression into variable
         if (identifier != nullptr)
         {
             if (variable_specs.scope == Scope::_LOCAL)
             {
-                stream << context.store_instruction(type) << " " << reg << ", " << offset << "(sp)" << std::endl;
+                stream << context.store_instruction(type) << " " << reg << ", " << offset << "(s0)" << std::endl;
             }
 
             else if (variable_specs.scope == Scope::_GLOBAL)
@@ -67,14 +68,14 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
                 if (variable_specs.is_array)
                 {
                     // Add index to base pointer
-                    stream << "add " << index_register << ", " << index_register << ", sp" << std::endl;
+                    stream << "add " << index_register << ", " << index_register << ", s0" << std::endl;
                     stream << "addi " << index_register << ", " << index_register << ", " << offset << std::endl;
                 }
                 else if (variable_specs.is_pointer)
                 {
                     // Pointers points to first item in list
                     std::string pointer_register = context.get_register(Type::_INT);
-                    stream << context.load_instruction(Type::_INT) << " " << pointer_register << ", " << offset << "(sp)" << std::endl;
+                    stream << context.load_instruction(Type::_INT) << " " << pointer_register << ", " << offset << "(s0)" << std::endl;
                     stream << "add " << index_register << ", " << index_register << ", " << pointer_register << std::endl;
                     context.deallocate_register(pointer_register);
                 }
@@ -115,7 +116,7 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
             // If local scope, access variable through offset specified in bindings
             if (variable_specs.scope == Scope::_LOCAL)
             {
-                stream << context.store_instruction(type) << " " << reg << ", " << variable_specs.offset << "(sp)" << std::endl;
+                stream << context.store_instruction(type) << " " << reg << ", " << variable_specs.offset << "(s0)" << std::endl;
             }
 
             // If global scope, access global memory by targetting global label
@@ -141,7 +142,7 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
             // If local scope, access variable through offset specified in bindings
             if (variable_specs.scope == Scope::_LOCAL)
             {
-                stream << context.store_instruction(type) << " " << reg << ", " << variable_specs.offset << "(sp)" << std::endl;
+                stream << context.store_instruction(type) << " " << reg << ", " << variable_specs.offset << "(s0)" << std::endl;
             }
 
             // If global scope, access global memory by targetting global label
@@ -160,6 +161,18 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
             {
                 throw std::runtime_error("Assignment EmitRISC: Invalid scope in AddressOf");
             }
+        }
+
+        else if (dereference != nullptr)
+        {
+            std::string address_register = context.get_register(Type::_INT);
+            Type type = dereference->GetType(context);
+
+            dereference->InitialOffset(stream, context, address_register);
+            dereference->ExecutePathDereference(stream, context, address_register);
+            stream << context.store_instruction(type) << " " << reg << ", 0(" << address_register << ")" << std::endl;
+
+            context.deallocate_register(address_register);
         }
 
         else
@@ -206,6 +219,8 @@ std::string Assignment::GetIdentifier() const
 {
     Identifier *identifier = dynamic_cast<Identifier *>(unary_expression_);
     ArrayAccess *array_access = dynamic_cast<ArrayAccess *>(unary_expression_);
+    Dereference *dereference = dynamic_cast<Dereference *>(unary_expression_);
+    AddressOf *address_of = dynamic_cast<AddressOf *>(unary_expression_);
     Declarator *declarator = dynamic_cast<Declarator *>(unary_expression_);
 
     if (identifier != nullptr)
@@ -219,6 +234,14 @@ std::string Assignment::GetIdentifier() const
     else if (declarator != nullptr)
     {
         return declarator->GetIdentifier();
+    }
+    else if (dereference != nullptr)
+    {
+        return dereference->GetIdentifier();
+    }
+    else if (address_of != nullptr)
+    {
+        return address_of->GetIdentifier();
     }
 
     throw std::runtime_error("Assignment GetIdentifier: Not an identifier, array access, array declarator, declarator");

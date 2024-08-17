@@ -15,7 +15,7 @@ void Identifier::EmitRISC(std::ostream &stream, Context &context, std::string pa
             int offset = variable_specs.offset;
 
             // Load variable from specified memory location
-            stream << context.load_instruction(type) << " " << passed_reg << ", " << offset << "(sp)" << std::endl;
+            stream << context.load_instruction(type) << " " << passed_reg << ", " << offset << "(s0)" << std::endl;
         }
 
         // Load variable from label-specified memory location if global scope

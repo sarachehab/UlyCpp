@@ -21,10 +21,15 @@ void Context::pop_scope()
 
 int Context::get_stack_offset() const
 {
-    return stack_offset.top();
+    return stack_offset.top() - total_offset;
 }
 
 void Context::increase_stack_offset(int offset)
 {
     stack_offset.top() += offset;
+}
+
+void Context::set_stack_offset(int offset)
+{
+    total_offset = offset;
 }

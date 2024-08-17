@@ -152,6 +152,11 @@ public:
 
     void increase_stack_offset(int offset);
 
+    /**
+     * @brief This function sets the current stack offset.
+     */
+    void set_stack_offset(int offset);
+
     // ============= VARIABLE MANAGEMENT ==============
 
     /**
@@ -463,6 +468,8 @@ private:
      * Ensures a variables defined in a parent scope is not available in a child scope.
      */
     std::vector<VariablesLayer> variable_bindings;
+
+    int total_offset = 0;
 
     // ============= FUNCTION MANAGEMENT ==============
 

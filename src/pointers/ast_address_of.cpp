@@ -54,13 +54,13 @@ void AddressOf::EmitRISC(std::ostream &stream, Context &context, std::string pas
             if (variable_specs.is_pointer)
             {
                 std::string pointer_register = context.get_register(Type::_INT);
-                stream << context.load_instruction(Type::_INT) << " " << pointer_register << ", " << variable_specs.offset << "(sp)" << std::endl;
+                stream << context.load_instruction(Type::_INT) << " " << pointer_register << ", " << variable_specs.offset << "(s0)" << std::endl;
                 stream << "add " << passed_reg << ", " << index_register << ", " << pointer_register << std::endl;
                 context.deallocate_register(pointer_register);
             }
             else if (variable_specs.is_array)
             {
-                stream << "add " << passed_reg << ", " << index_register << ", sp" << std::endl;
+                stream << "add " << passed_reg << ", " << index_register << ", s0" << std::endl;
                 stream << "addi " << passed_reg << ", " << passed_reg << ", " << variable_specs.offset << std::endl;
             }
             else
@@ -87,7 +87,7 @@ void AddressOf::EmitRISC(std::ostream &stream, Context &context, std::string pas
     {
         if (variable_specs.scope == Scope::_LOCAL)
         {
-            stream << "addi " << passed_reg << ", sp, " << variable_specs.offset << std::endl;
+            stream << "addi " << passed_reg << ", s0, " << variable_specs.offset << std::endl;
         }
         else if (variable_specs.scope == Scope::_GLOBAL)
         {

@@ -83,7 +83,7 @@ void ParameterDeclaration::EmitRISC(std::ostream &stream, Context &context, std:
     int offset = context.get_stack_offset();
 
     // Store parameter on stack
-    stream << context.store_instruction(type) << " " << passed_reg << ", " << offset << "(sp)" << std::endl;
+    stream << context.store_instruction(type) << " " << passed_reg << ", " << offset << "(s0)" << std::endl;
 
     // Define parameter as variable accessible within function body
     Variable variable_specs(IsPointer(), false, type, offset, GetDereferenceNumber());
