@@ -10,7 +10,25 @@ void Global::push_upper(uint32_t value)
     upper_values.push_back(value);
 }
 
+void Global::push_label(std::string label)
+{
+    labels.push_back(label);
+    with_label = true;
+}
+
 void Global::print_global(std::ostream &stream) const
+{
+    if (with_label)
+    {
+        print_labels(stream);
+    }
+    else
+    {
+        print_numbers(stream);
+    }
+}
+
+void Global::print_numbers(std::ostream &stream) const
 {
     int i;
 
@@ -27,6 +45,23 @@ void Global::print_global(std::ostream &stream) const
     while (i < size_array)
     {
         stream << "\t.zero " << types_size.at(type) << std::endl;
+        i++;
+    }
+}
+
+void Global::print_labels(std::ostream &stream) const
+{
+    int i;
+    Type actual_type = is_pointer ? Type::_INT : this->type;
+
+    for (i = 0; i < labels.size(); i++)
+    {
+        stream << "\t" << assembler_directives.at(actual_type) << " " << labels.at(i) << std::endl;
+    }
+
+    while (i < size_array)
+    {
+        stream << "\t.zero " << types_size.at(actual_type) << std::endl;
         i++;
     }
 }

@@ -19,10 +19,18 @@ void StringLiteral::EmitRISC(std::ostream &stream, Context &context, std::string
 
 void StringLiteral::Print(std::ostream &stream) const
 {
-    stream << value_;
+    stream << "\"" << value_ << "\"";
 }
 
 std::string StringLiteral::GetString() const
 {
     return value_;
+}
+
+void StringLiteral::SaveValue(Context &context, Global &global_specs) const
+{
+    int index = context.define_string(value_);
+    std::string label = "string_" + std::to_string(index);
+
+    global_specs.push_label(label);
 }

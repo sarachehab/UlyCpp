@@ -24,7 +24,7 @@ void FunctionCall::EmitRISC(std::ostream &stream, Context &context, std::string 
 
     stream << "call " << function_name << std::endl;
 
-    if (context.evaluating_expression())
+    if (context.evaluating_expression() && !(return_type == Type::_VOID))
     {
         stream << context.move_instruction(return_type) << " " << passed_reg << ", " << context.get_return_register() << std::endl;
     }

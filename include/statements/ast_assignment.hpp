@@ -11,6 +11,7 @@
 #include "../ast_direct_declarator.hpp"
 #include "../pointers/ast_address_of.hpp"
 #include "../pointers/ast_dereference.hpp"
+#include "../chars/ast_string_literal.hpp"
 
 class AssignmentList : public NodeList
 {

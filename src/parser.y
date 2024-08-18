@@ -146,7 +146,7 @@ primary_expression
 	: INT_CONSTANT 			{ $$ = new IntConstant($1); }
 	| DOUBLE_CONSTANT		{ $$ = new DoubleConstant($1); }
 	| FLOAT_CONSTANT		{ $$ = new FloatConstant($1); }
-	| STRING_LITERAL		{ $$ = new StringLiteral($1); }
+	| STRING_LITERAL		{ std::cout << "String Literal" << std::endl; $$ = new StringLiteral($1); }
 	| CHAR_LITERAL			{ $$ = new CharLiteral($1); }
 	| IDENTIFIER			{ $$ = new Identifier($1); }
 	| '(' expression ')'	{ $$ = $2; }
