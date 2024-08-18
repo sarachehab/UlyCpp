@@ -16,7 +16,9 @@ void ParameterList::EmitRISC(std::ostream &stream, Context &context, std::string
 
         ParameterDeclaration *parameter = dynamic_cast<ParameterDeclaration *>(node);
 
-        switch (parameter->GetType(context))
+        Type type = parameter->IsPointer() ? Type::_INT : parameter->GetType(context);
+
+        switch (type)
         {
         case Type::_CHAR:
         case Type::_SHORT:
@@ -50,7 +52,7 @@ std::vector<Parameter> ParameterList::GetParameters(Context &context)
     {
         // Append new parameter to list, specifying offset and type
         ParameterDeclaration *parameter = dynamic_cast<ParameterDeclaration *>(node);
-        Parameter Parameter = parameter->GetParameter(context, initial_offset + GetScopeOffset());
+        Parameter Parameter = parameter->GetParameter(context, initial_offset - GetScopeOffset());
         parameters.push_back(Parameter);
     }
     return parameters;
@@ -65,6 +67,12 @@ int ParameterList::GetScopeOffset() const
     {
         // Add size of parameter to total size
         size += Parameter.GetSize();
+
+        // Align offset to 4 bytes
+        if (size % 4 != 0)
+        {
+            size += 4 - (size % 4);
+        }
     }
     return size;
 }
@@ -77,7 +85,7 @@ Type ParameterDeclaration::GetType(Context &context) const
 void ParameterDeclaration::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
     // Get type of parameter declaration
-    Type type = GetType(context);
+    Type type = IsPointer() ? Type::_INT : GetType(context);
 
     // Get stack offset for parameter
     int offset = context.get_stack_offset();
@@ -86,11 +94,11 @@ void ParameterDeclaration::EmitRISC(std::ostream &stream, Context &context, std:
     stream << context.store_instruction(type) << " " << passed_reg << ", " << offset << "(s0)" << std::endl;
 
     // Define parameter as variable accessible within function body
-    Variable variable_specs(IsPointer(), false, type, offset, GetDereferenceNumber());
+    Variable variable_specs(IsPointer(), false, GetType(context), offset, GetDereferenceNumber());
     context.define_variable(GetIdentifier(), variable_specs);
 
     // Increase stack offset to accomodate for parameter
-    context.increase_stack_offset(types_size.at(type));
+    context.increase_stack_offset(GetSize(context));
 }
 
 void ParameterDeclaration::Print(std::ostream &stream) const

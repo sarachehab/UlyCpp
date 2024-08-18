@@ -72,7 +72,6 @@ Type DoubleConstant::GetType(Context &context) const
 
 void IntConstant::SaveValue(Global &global_specs) const
 {
-    std::cout << "Pushing lower: " << value_ << std::endl;
     global_specs.push_lower(value_);
 }
 

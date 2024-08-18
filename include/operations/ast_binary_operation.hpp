@@ -43,6 +43,7 @@ public:
      * @return Type of the operation
      */
     Type GetType(Context &context) const override;
+    Type GetPointerAjustmentType(Context &context) const;
 
     bool IsPointerOperation(Context &context) const override;
     void AdjustPointerOperation(std::ostream &stream, Context &context, std::string passed_register, Node *node) const;

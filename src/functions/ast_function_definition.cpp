@@ -32,7 +32,11 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
     {
         // Create new scope
         context.create_new_scope();
-        context.set_operation_type(return_type);
+
+        if (return_type != Type::_VOID)
+        {
+            context.set_operation_type(return_type);
+        }
 
         // Allocate stack space
         CompoundStatement *compound_statement = dynamic_cast<CompoundStatement *>(compound_statement_);
@@ -41,6 +45,9 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
         context.increase_stack_offset(8);
         int initial_offset = 8 + direct_declarator_->GetScopeOffset();
         int stack_allocated_space = compound_statement->GetScopeOffset(context) + initial_offset + 32;
+
+        // Ensure stack is aligned
+        stack_allocated_space = stack_allocated_space + (4 - stack_allocated_space % 4);
         context.set_stack_offset(stack_allocated_space);
 
         // Emit prelimnary register manipulations
@@ -63,7 +70,11 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
 
         // Pop scope
         context.pop_scope();
-        context.pop_operation_type();
+
+        if (return_type != Type::_VOID)
+        {
+            context.pop_operation_type();
+        }
     }
 
     context.exit_function();

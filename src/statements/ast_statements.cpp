@@ -29,6 +29,12 @@ int DeclarationList::GetScopeOffset(Context &context) const
         // Add up sizes of variables
         Declaration *declaration = dynamic_cast<Declaration *>(node);
         offset += declaration->GetScopeOffset(context);
+
+        // Align offset to 4 bytes
+        if (offset % 4 != 0)
+        {
+            offset += 4 - (offset % 4);
+        }
     }
 
     return offset;

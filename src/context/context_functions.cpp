@@ -54,11 +54,10 @@ void Context::set_return_register(Type type)
         return_register = "fa0";
         break;
     case Type::_VOID:
-        throw std::runtime_error("Context::set_return_register: VOID not supported");
+        return_register = "zero";
+        std::cerr << "Context::set_return_register - Return register set to zero for VOID" << std::endl;
         break;
     default:
-        std::cerr << "type: " << std::endl;
-        std::cerr << static_cast<int>(type) << std::endl;
         throw std::runtime_error("Context::set_return_register: Invalid return type");
     }
 }

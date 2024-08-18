@@ -4,5 +4,5 @@ int g();
 int main()
 {
     int x;
-    return !(g()=='h');
+    return !(g() == 'h');
 }

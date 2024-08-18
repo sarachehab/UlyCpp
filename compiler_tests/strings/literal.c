@@ -1,5 +1,5 @@
 int g()
 {
-    char *x="hello";
+    char *x = "hello";
     return x[0];
 }

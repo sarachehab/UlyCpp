@@ -23,7 +23,7 @@ void ArrayAccess::EmitRISC(std::ostream &stream, Context &context, std::string p
     Variable variable_specs = context.get_variable(GetIdentifier());
 
     // Get type of atomic element
-    Type type = GetType(context);
+    Type type = IsPointerOperation(context) ? Type::_INT : GetType(context);
 
     // Get index of specific element
     std::string index_register = context.get_register(Type::_INT);
@@ -101,5 +101,12 @@ Type ArrayAccess::GetType(Context &context) const
 
 bool ArrayAccess::IsPointerOperation(Context &context) const
 {
-    return context.get_variable(GetIdentifier()).is_pointer;
+    Variable variable_specs = context.get_variable(GetIdentifier());
+
+    if (!variable_specs.is_pointer)
+    {
+        return false;
+    }
+
+    return variable_specs.dereferences_number > 1;
 }

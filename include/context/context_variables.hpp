@@ -50,6 +50,8 @@ struct Global : public Variable
 {
     std::vector<uint32_t> lower_values;
     std::vector<uint32_t> upper_values;
+    std::vector<std::string> labels;
+    bool with_label = false;
 
     Global() : Variable() {}
     Global(bool is_pointer, bool is_array, Type type, int dereferences_number) : Variable(is_pointer, is_array, type, Scope::_GLOBAL, dereferences_number) {}
@@ -57,9 +59,14 @@ struct Global : public Variable
 
     void print_global(std::ostream &stream) const;
 
+    void print_labels(std::ostream &stream) const;
+    void print_numbers(std::ostream &stream) const;
+
     void push_lower(uint32_t value);
 
     void push_upper(uint32_t value);
+
+    void push_label(std::string label);
 };
 
 #endif

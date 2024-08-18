@@ -58,6 +58,8 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
         // If array access, load expression into specific element by first evaluating index
         else if (array_access != nullptr)
         {
+            type = array_access->IsPointerOperation(context) ? Type::_INT : array_access->GetType(context);
+
             // Get index of specific element
             std::string index_register = context.get_register(Type::_INT);
             array_access->GetIndex(stream, context, index_register, type);
@@ -190,21 +192,31 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
 
 void Assignment::InitializeGlobals(std::ostream &stream, Context &context, Global &global_specs) const
 {
-    // Get size of atomic type
-    Type type = global_specs.type;
-    int type_size = types_size.at(type);
 
-    if (IsArrayInitialization())
+    Constant *constant = dynamic_cast<Constant *>(expression_);
+    StringLiteral *string_literal = dynamic_cast<StringLiteral *>(expression_);
+    ArrayInitializer *array_initializer = dynamic_cast<ArrayInitializer *>(expression_);
+
+    if (constant != nullptr)
     {
-        dynamic_cast<ArrayInitializer *>(expression_)->InitializeGlobals(stream, context, global_specs);
+        constant->SaveValue(global_specs);
+    }
+
+    else if (string_literal != nullptr)
+    {
+        string_literal->SaveValue(context, global_specs);
+    }
+
+    else if (array_initializer != nullptr)
+    {
+        array_initializer->InitializeGlobals(stream, context, global_specs);
     }
 
     else
     {
-        dynamic_cast<Constant *>(expression_)->SaveValue(global_specs);
+        std::cout << "Assignment InitializeGlobals: type is " << typeid(expression_).name() << std::endl; // Replace 'type_id' with 'typeid'
+        throw std::runtime_error("Assignment InitializeGlobals: Not a constant or string literal");
     }
-
-    // If pointer, initialization is not possible
 }
 
 void Assignment::Print(std::ostream &stream) const

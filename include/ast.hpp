@@ -48,6 +48,9 @@
 
 #include "size_of/ast_size_of.hpp"
 
+#include "chars/ast_char_literal.hpp"
+#include "chars/ast_string_literal.hpp"
+
 #include "ast_translation_unit.hpp"
 #include "ast_direct_declarator.hpp"
 #include "ast_type_specifier.hpp"

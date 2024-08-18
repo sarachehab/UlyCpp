@@ -8,43 +8,12 @@
 
   #include "parser.tab.hpp"
 
-  // Function to cancel out * and & pairs in a sequence and return the remaining characters
-  char* cancel_pointer_pairs(const char* sequence) {
-      static char buffer[256]; // Buffer to hold the remaining characters
-      int star_count = 0;
-      int ampersand_count = 0;
-
-      // Count the number of * and & characters
-      for (int i = 0; sequence[i] != '\0'; i++) {
-          if (sequence[i] == '*') {
-              star_count++;
-          } else if (sequence[i] == '&') {
-              if (star_count > 0) {
-                  star_count--; // Cancel out a *
-              } else {
-                  ampersand_count++; // Unmatched &
-              }
-          }
-      }
-
-      // Construct the result with remaining unmatched characters
-      int index = 0;
-      for (int i = 0; i < star_count; i++) {
-          buffer[index++] = '*';
-      }
-      for (int i = 0; i < ampersand_count; i++) {
-          buffer[index++] = '&';
-      }
-      buffer[index] = '\0'; // Null-terminate the string
-
-      return buffer;
-  }
 %}
 
-D	  [0-9]
-L	  [a-zA-Z_]
+D	[0-9]
+L	[a-zA-Z_]
 H   [a-fA-F0-9]
-E	  [Ee][+-]?{D}+
+E	[Ee][+-]?{D}+
 FSF (f|F)
 FSL (l|L)
 IS  (u|U|l|L)*
@@ -57,20 +26,20 @@ IS  (u|U|l|L)*
 "case"			{return(CASE);}
 "char"			{return(CHAR);}
 "const"			{return(CONST);}
-"continue"  {return(CONTINUE);}
+"continue"      {return(CONTINUE);}
 "default"		{return(DEFAULT);}
-"do"			  {return(DO);}
+"do"			{return(DO);}
 "double"		{return(DOUBLE);}
 "else"			{return(ELSE);}
 "enum"			{return(ENUM);}
 "extern"		{return(EXTERN);}
 "float"			{return(FLOAT);}
-"for"			  {return(FOR);}
+"for"			{return(FOR);}
 "goto"			{return(GOTO);}
-"if"			  {return(IF);}
-"int"			  {return(INT);}
+"if"			{return(IF);}
+"int"			{return(INT);}
 "long"			{return(LONG);}
-"register"	{return(REGISTER);}
+"register"	    {return(REGISTER);}
 "return"		{return(RETURN);}
 "short"			{return(SHORT);}
 "signed"		{return(SIGNED);}
@@ -80,31 +49,55 @@ IS  (u|U|l|L)*
 "switch"		{return(SWITCH);}
 "typedef"		{return(TYPEDEF);}
 "union"			{return(UNION);}
-"unsigned"	{return(UNSIGNED);}
+"unsigned"	    {return(UNSIGNED);}
 "void"			{return(VOID);}
-"volatile"	{return(VOLATILE);}
+"volatile"	    {return(VOLATILE);}
 "while"			{return(WHILE);}
 
-{L}({L}|{D})*		{yylval.string = new std::string(yytext); return(IDENTIFIER);}
+{L}({L}|{D})*		        {yylval.string = new std::string(yytext); return(IDENTIFIER);}
 
-0[xX]{H}+{IS}?		{yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
-0{D}+{IS}?		    {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
-{D}+{IS}?		      {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
-L?'(\\.|[^\\'])+' {yylval.number_int = yytext[1]; return(INT_CONSTANT);}
+0[xX]{H}+{IS}?		        {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
+0{D}+{IS}?		            {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
+{D}+{IS}?		            {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
+L?'(\\.|[^\\'])+'           {yylval.number_int = yytext[1]; return(INT_CONSTANT);}
 
 {D}+{E}{FSF}?		        {yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
-{D}*"."{D}+({E})?{FSF}?	{yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
-{D}+"."{D}*({E})?{FSF}?	{yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
+{D}*"."{D}+({E})?{FSF}?	    {yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
+{D}+"."{D}*({E})?{FSF}?	    {yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
 
 {D}+{E}{FSL}		        {yylval.number_double = strtod(yytext, NULL); return(DOUBLE_CONSTANT);}
-{D}*"."{D}+({E})?{FSL}	{yylval.number_double = strtod(yytext, NULL); return(DOUBLE_CONSTANT);}
-{D}+"."{D}*({E})?{FSL}	{yylval.number_double = strtod(yytext, NULL); return(DOUBLE_CONSTANT);}
+{D}*"."{D}+({E})?{FSL}	    {yylval.number_double = strtod(yytext, NULL); return(DOUBLE_CONSTANT);}
+{D}+"."{D}*({E})?{FSL}	    {yylval.number_double = strtod(yytext, NULL); return(DOUBLE_CONSTANT);}
 
-L?\"(\\.|[^\\"])*\"	{yylval.string = new std::string(yytext); return(STRING_LITERAL);}
+
+L?'(\\.|[^\\'])' {
+    // Process the character literal
+    char* characters = Context::process_char(yytext);
+
+    // The result should be a single character
+    yylval.character = characters[0];
+    std::cout << "Character literal: " << yylval.character << std::endl;
+
+    delete[] characters;
+    return(CHAR_LITERAL);
+}
+
+L?\"(\\.|[^\\"])*\" {
+    // Process the string literal
+    char* characters = Context::process_char(yytext);
+    std::string output = Context::preserve_escape_sequences(characters);
+
+    // Create a string from the processed characters
+    yylval.string = new std::string(output);
+    std::cout << "String literal: " << *(yylval.string) << std::endl;
+
+    delete[] characters;
+    return(STRING_LITERAL);
+}
 
 
 (\*+&+)+	{
-              char* result = cancel_pointer_pairs(yytext);
+              char* result = Context::cancel_pointer_pairs(yytext);
               if (result[0] != '\0') {
                   // Push the remaining characters back onto the input stream in reverse order
                   for (int i = strlen(result) - 1; i >= 0; i--) {
@@ -114,52 +107,52 @@ L?\"(\\.|[^\\"])*\"	{yylval.string = new std::string(yytext); return(STRING_LITE
 }
 
 
-"..."      {return(ELLIPSIS);}
-">>="			 {return(RIGHT_ASSIGN);}
-"<<="      {return(LEFT_ASSIGN);}
-"+="			 {return(ADD_ASSIGN);}
-"-="       {return(SUB_ASSIGN);}
-"*="       {return(MUL_ASSIGN);}
-"/="			 {return(DIV_ASSIGN);}
-"%="			 {return(MOD_ASSIGN);}
-"&="       {return(AND_ASSIGN);}
-"^="			 {return(XOR_ASSIGN);}
-"|="       {return(OR_ASSIGN);}
-">>"       {return(RIGHT_OP);}
-"<<"       {return(LEFT_OP);}
-"++"			 {return(INC_OP);}
-"--"			 {return(DEC_OP);}
-"->"			 {return(PTR_OP);}
-"&&"			 {return(AND_OP);}
-"||"			 {return(OR_OP);}
-"<="			 {return(LE_OP);}
-">="			 {return(GE_OP);}
-"=="			 {return(EQ_OP);}
-"!="			 {return(NE_OP);}
-";"			   {return(';');}
-("{"|"<%") {return('{');}
-("}"|"%>") {return('}');}
-","			   {return(',');}
-":"			   {return(':');}
-"="			   {return('=');}
-"("		     {return('(');}
-")"			   {return(')');}
-("["|"<:") {return('[');}
-("]"|":>") {return(']');}
-"."			   {return('.');}
-"&"			   {return('&');}
-"!"			   {return('!');}
-"~"			   {return('~');}
-"-"			   {return('-');}
-"+"			   {return('+');}
-"*"			   {return('*');}
-"/"			   {return('/');}
-"%"			   {return('%');}
-"<"			   {return('<');}
-">"			   {return('>');}
-"^"			   {return('^');}
-"|"			   {return('|');}
-"?"			   {return('?');}
+"..."       {return(ELLIPSIS);}
+">>="		{return(RIGHT_ASSIGN);}
+"<<="       {return(LEFT_ASSIGN);}
+"+="		{return(ADD_ASSIGN);}
+"-="        {return(SUB_ASSIGN);}
+"*="        {return(MUL_ASSIGN);}
+"/="		{return(DIV_ASSIGN);}
+"%="		{return(MOD_ASSIGN);}
+"&="        {return(AND_ASSIGN);}
+"^="		{return(XOR_ASSIGN);}
+"|="        {return(OR_ASSIGN);}
+">>"        {return(RIGHT_OP);}
+"<<"        {return(LEFT_OP);}
+"++"	    {return(INC_OP);}
+"--"	    {return(DEC_OP);}
+"->"	    {return(PTR_OP);}
+"&&"	    {return(AND_OP);}
+"||"	    {return(OR_OP);}
+"<="	    {return(LE_OP);}
+">="	    {return(GE_OP);}
+"=="	    {return(EQ_OP);}
+"!="	    {return(NE_OP);}
+";"			{return(';');}
+("{"|"<%")  {return('{');}
+("}"|"%>")  {return('}');}
+","		    {return(',');}
+":"		    {return(':');}
+"="		    {return('=');}
+"("		    {return('(');}
+")"		    {return(')');}
+("["|"<:")  {return('[');}
+("]"|":>")  {return(']');}
+"."			{return('.');}
+"&"			{return('&');}
+"!"			{return('!');}
+"~"			{return('~');}
+"-"			{return('-');}
+"+"			{return('+');}
+"*"			{return('*');}
+"/"			{return('/');}
+"%"			{return('%');}
+"<"			{return('<');}
+">"			{return('>');}
+"^"			{return('^');}
+"|"			{return('|');}
+"?"			{return('?');}
 
 [ \a\b\t\v\f\n\r]		{/* ignore new lines and special sequences */}
 .                   {yyerror("Unknown character");}
