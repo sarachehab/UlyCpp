@@ -56,7 +56,15 @@ void PointerDeclarator::StoreParameters(std::ostream &stream, Context &context, 
 
 int PointerDeclarator::GetScopeOffset() const
 {
-    return dynamic_cast<Declarator *>(direct_declarator_)->GetScopeOffset();
+    int offset = dynamic_cast<Declarator *>(direct_declarator_)->GetScopeOffset();
+
+    // Align offset to 4 bytes
+    if (offset % 4 != 0)
+    {
+        offset += 4 - (offset % 4);
+    }
+
+    return offset;
 }
 
 bool PointerDeclarator::IsPointer() const

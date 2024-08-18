@@ -52,7 +52,7 @@ std::vector<Parameter> ParameterList::GetParameters(Context &context)
     {
         // Append new parameter to list, specifying offset and type
         ParameterDeclaration *parameter = dynamic_cast<ParameterDeclaration *>(node);
-        Parameter Parameter = parameter->GetParameter(context, initial_offset + GetScopeOffset());
+        Parameter Parameter = parameter->GetParameter(context, initial_offset - GetScopeOffset());
         parameters.push_back(Parameter);
     }
     return parameters;
@@ -67,6 +67,12 @@ int ParameterList::GetScopeOffset() const
     {
         // Add size of parameter to total size
         size += Parameter.GetSize();
+
+        // Align offset to 4 bytes
+        if (size % 4 != 0)
+        {
+            size += 4 - (size % 4);
+        }
     }
     return size;
 }

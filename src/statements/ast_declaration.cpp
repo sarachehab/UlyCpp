@@ -232,6 +232,12 @@ int Declaration::GetScopeOffset(Context &context) const
         {
             type_size = total_size + type_size;
         }
+
+        // Align offset to 4 bytes
+        if (type_size % 4 != 0)
+        {
+            type_size = type_size + 4 - (type_size % 4);
+        }
     }
 
     return total_size;
