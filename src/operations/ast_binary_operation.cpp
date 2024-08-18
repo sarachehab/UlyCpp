@@ -82,7 +82,21 @@ void BinaryOperation::AdjustPointerOperation(std::ostream &stream, Context &cont
     {
         if (!dynamic_cast<Operand *>(node)->IsPointerOperation(context))
         {
-            stream << "slli " << passed_register << ", " << passed_register << ", " << types_shift.at(GetType(context)) << std::endl;
+            Type type = GetPointerAjustmentType(context);
+            stream << "slli " << passed_register << ", " << passed_register << ", " << types_shift.at(type) << std::endl;
         }
     }
+}
+
+Type BinaryOperation::GetPointerAjustmentType(Context &context) const
+{
+
+    Operand *left_operand = dynamic_cast<Operand *>(left_);
+    Operand *right_operand = dynamic_cast<Operand *>(right_);
+
+    if (left_operand->IsPointerOperation(context))
+    {
+        return left_operand->GetType(context);
+    }
+    return right_operand->GetType(context);
 }

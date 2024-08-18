@@ -17,16 +17,24 @@ void FunctionCall::EmitRISC(std::ostream &stream, Context &context, std::string 
     }
 
     // Call function
-    context.set_operation_type(GetType(context));
+    Type return_type = IsPointerOperation(context) ? Type::_INT : GetType(context);
+
+    if (return_type != Type::_VOID)
+        context.set_operation_type(return_type);
+
     stream << "call " << function_name << std::endl;
 
-    // Move return value to specified register
-    stream << context.move_instruction(context.get_function_call().return_value.type) << " " << passed_reg << ", " << context.get_return_register() << std::endl;
+    if (context.evaluating_expression())
+    {
+        stream << context.move_instruction(return_type) << " " << passed_reg << ", " << context.get_return_register() << std::endl;
+    }
 
     // Reset to initial state
-    context.pop_operation_type();
     context.pop_function_call();
     context.pop_registers(stream);
+
+    if (return_type != Type::_VOID)
+        context.pop_operation_type();
 }
 
 void FunctionCall::Print(std::ostream &stream) const

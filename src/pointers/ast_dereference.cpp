@@ -104,7 +104,7 @@ void Dereference::InitialOffset(std::ostream &stream, Context &context, std::str
     std::string variable_identifier = GetIdentifier();
     Variable variable_specs = context.get_variable(variable_identifier);
     Scope scope = variable_specs.scope;
-    Type type = GetType(context);
+    Type type = IsPointer(context) ? Type::_INT : GetType(context);
 
     if (scope == Scope::_LOCAL)
     {
@@ -122,6 +122,7 @@ void Dereference::InitialOffset(std::ostream &stream, Context &context, std::str
     {
         std::string index_reg = context.get_register(Type::_INT);
         array_access->GetIndex(stream, context, address_reg, type);
+
         stream << "add " << address_reg << ", " << address_reg << ", " << index_reg << std::endl;
         context.deallocate_register(index_reg);
     }

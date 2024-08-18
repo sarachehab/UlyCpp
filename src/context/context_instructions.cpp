@@ -28,7 +28,7 @@ std::string Context::load_instruction(Type type) const
     switch (type)
     {
     case Type::_CHAR:
-        return "lb";
+        return "lbu";
     case Type::_SHORT:
         return "lh";
     case Type::_INT:

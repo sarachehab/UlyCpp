@@ -7,6 +7,8 @@
 #include <stack>
 #include <iostream>
 #include <set>
+#include <cstring>
+#include <stdexcept>
 
 #include "context_types.hpp"
 #include "context_registers.hpp"
@@ -14,6 +16,7 @@
 #include "context_variables.hpp"
 #include "context_constant.hpp"
 #include "context_conversion.hpp"
+#include "context_chars.hpp"
 
 /**
  * @brief This class represents the context of the program.
@@ -410,6 +413,42 @@ public:
      */
     void print_global(std::ostream &stream) const;
 
+    // ============= POINTERS ==============
+    /**
+     * @brief This functions is used within the lexer to simplify pointer expressions if it is possible to do so.
+     *
+     * It cancels out pairs of * and & operators.
+     */
+    static char *cancel_pointer_pairs(const char *sequence);
+
+    // ============= CHAR LITERALS ==============
+    /**
+     * @brief This functions is used within the lexer to simplify char literals if it is possible to do so.
+     *
+     * It processes escape sequences in char literals.
+     */
+    static char *process_char(const char *sequence);
+
+    /**
+     * @brief This function is used within the lexer to convert to string in case of escape sequences.
+     */
+    static std::string preserve_escape_sequences(const char *processed_characters);
+
+    /**
+     * @brief This function saves the char literals to the char_declarations vector.
+     *
+     * @param label The label of the char literal
+     * @param value The value of the char literal
+     */
+    int define_string(std::string string_val);
+
+    /**
+     * @brief This function prints all the char literals in the assembly file.
+     *
+     * @param stream The output stream to write to.
+     */
+    void print_string_declarations(std::ostream &stream) const;
+
     // TODO: Add functions to handle enums, structs, typedef, char and strings
 
 private:
@@ -560,6 +599,20 @@ private:
      * Contains information on type, array, pointer.
      */
     std::unordered_map<std::string, Global> global_bindings;
+
+    // ============= CHAR LITERALS ==============
+    /**
+     * @brief The vector of string literals.
+     *
+     * Used to store the string literals declared in the context.
+     * Used to print the string literals in the assembly file.
+     */
+    std::vector<ContextStrings> string_declarations;
+
+    /**
+     * @brief The counter for the stirng literals.
+     */
+    int string_declaration_number = 0;
 };
 
 #endif

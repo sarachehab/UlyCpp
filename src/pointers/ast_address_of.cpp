@@ -38,7 +38,7 @@ void AddressOf::EmitRISC(std::ostream &stream, Context &context, std::string pas
 
     // Get the variable specs and output variable type
     Variable variable_specs = context.get_variable(identifier);
-    Type type = GetType(context);
+    Type type = IsPointerOperation(context) ? Type::_INT : GetType(context);
 
     // Check if the expression array_access
     ArrayAccess *array_access = dynamic_cast<ArrayAccess *>(expression_);

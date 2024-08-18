@@ -38,6 +38,7 @@ void Compile(Node *root, CommandLineArguments &args)
     root->EmitRISC(output, ctx, "zero");
     output << std::endl;
     ctx.print_constant_declarations(output);
+    ctx.print_string_declarations(output);
     output << std::endl;
     ctx.print_global(output);
     output.close();

@@ -58,6 +58,8 @@ void Assignment::EmitRISC(std::ostream &stream, Context &context, std::string pa
         // If array access, load expression into specific element by first evaluating index
         else if (array_access != nullptr)
         {
+            type = array_access->IsPointerOperation(context) ? Type::_INT : array_access->GetType(context);
+
             // Get index of specific element
             std::string index_register = context.get_register(Type::_INT);
             array_access->GetIndex(stream, context, index_register, type);
