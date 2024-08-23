@@ -79,13 +79,30 @@ declaration_specifiers
 	;
 
 type_specifier
-	: INT 		{ $$ = new TypeSpecifier(Type::_INT); }
-	| FLOAT 	{ $$ = new TypeSpecifier(Type::_FLOAT); }
-	| DOUBLE 	{ $$ = new TypeSpecifier(Type::_DOUBLE); }
-	| CHAR 		{ $$ = new TypeSpecifier(Type::_CHAR); }
-	| UNSIGNED 	{ $$ = new TypeSpecifier(Type::_UNSIGNED_INT); }
-	| SHORT 	{ $$ = new TypeSpecifier(Type::_SHORT); }
-	| VOID		{ $$ = new TypeSpecifier(Type::_VOID); }
+	: INT 				{ $$ = new TypeSpecifier(Type::_INT); }
+	| FLOAT 			{ $$ = new TypeSpecifier(Type::_FLOAT); }
+	| DOUBLE 			{ $$ = new TypeSpecifier(Type::_DOUBLE); }
+	| CHAR 				{ $$ = new TypeSpecifier(Type::_CHAR); }
+	| UNSIGNED 			{ $$ = new TypeSpecifier(Type::_UNSIGNED_INT); }
+	| SHORT 			{ $$ = new TypeSpecifier(Type::_SHORT); }
+	| VOID				{ $$ = new TypeSpecifier(Type::_VOID); }
+	| enum_specifier	{ $$ = $1; }
+	;
+
+enum_specifier
+	: ENUM '{' enumerator_list '}'				{ NodeList* enumerator_list = dynamic_cast<NodeList *>($3); $$ = new EnumeratorSpecifier(enumerator_list); }
+	| ENUM IDENTIFIER '{' enumerator_list '}'	{ NodeList* enumerator_list = dynamic_cast<NodeList *>($4); $$ = new EnumeratorSpecifier($2, enumerator_list); }
+	| ENUM IDENTIFIER							{ $$ = new EnumeratorSpecifier($2); }
+	;
+
+enumerator_list
+	: enumerator							{ $$ = new NodeList($1); }
+	| enumerator_list ',' enumerator		{ NodeList* enumerator_list = dynamic_cast<NodeList *>($1); enumerator_list->PushBack($3); $$ = enumerator_list; }
+	;
+
+enumerator
+	: IDENTIFIER							{ $$ = new Enumerator($1); }
+	| IDENTIFIER '=' constant_expression	{ $$ = new Enumerator($1, $3); }
 	;
 
 declarator
@@ -146,7 +163,7 @@ primary_expression
 	: INT_CONSTANT 			{ $$ = new IntConstant($1); }
 	| DOUBLE_CONSTANT		{ $$ = new DoubleConstant($1); }
 	| FLOAT_CONSTANT		{ $$ = new FloatConstant($1); }
-	| STRING_LITERAL		{ std::cout << "String Literal" << std::endl; $$ = new StringLiteral($1); }
+	| STRING_LITERAL		{ $$ = new StringLiteral($1); }
 	| CHAR_LITERAL			{ $$ = new CharLiteral($1); }
 	| IDENTIFIER			{ $$ = new Identifier($1); }
 	| '(' expression ')'	{ $$ = $2; }
@@ -275,6 +292,7 @@ expression
 
 declaration
 	: declaration_specifiers init_declarator_list ';'	{ $$ = new Declaration($1, $2); }
+	| declaration_specifiers ';'						{ $$ = new Declaration($1); }
 	;
 
 init_declarator_list

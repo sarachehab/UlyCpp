@@ -3,6 +3,7 @@
 void Context::create_new_scope()
 {
     variable_bindings.push_back(VariablesLayer());
+    enums_correspondance.push_back(EnumsCorrespondance());
 
     // Set stack offset to the current stack offset, variables defined within this scope should be accessible.
     stack_offset.push(stack_offset.top());
@@ -10,13 +11,18 @@ void Context::create_new_scope()
 
 void Context::pop_scope()
 {
-    if (variable_bindings.empty())
+    if (!variable_bindings.empty())
     {
-        std::runtime_error("Error: trying to pop empty scope");
+        variable_bindings.pop_back();
     }
-
-    variable_bindings.pop_back();
-    stack_offset.pop();
+    if (!enums_correspondance.empty())
+    {
+        enums_correspondance.pop_back();
+    }
+    if (!stack_offset.empty())
+    {
+        stack_offset.pop();
+    }
 }
 
 int Context::get_stack_offset() const

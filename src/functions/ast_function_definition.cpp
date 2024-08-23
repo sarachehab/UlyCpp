@@ -8,7 +8,7 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
     std::string function_name = direct_declarator_->GetIdentifier();
 
     // Get function return type
-    TypeSpecifier *return_type_specifier = dynamic_cast<TypeSpecifier *>(declaration_specifiers_);
+    Specifier *return_type_specifier = dynamic_cast<Specifier *>(declaration_specifiers_);
     bool return_is_pointer = direct_declarator_->IsPointer();
     Type return_type = return_type_specifier->GetType();
 

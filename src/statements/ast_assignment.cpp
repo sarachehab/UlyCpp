@@ -214,7 +214,6 @@ void Assignment::InitializeGlobals(std::ostream &stream, Context &context, Globa
 
     else
     {
-        std::cout << "Assignment InitializeGlobals: type is " << typeid(expression_).name() << std::endl; // Replace 'type_id' with 'typeid'
         throw std::runtime_error("Assignment InitializeGlobals: Not a constant or string literal");
     }
 }
@@ -259,7 +258,7 @@ std::string Assignment::GetIdentifier() const
     throw std::runtime_error("Assignment GetIdentifier: Not an identifier, array access, array declarator, declarator");
 }
 
-int Assignment::GetSize() const
+int Assignment::GetSize(Context &context) const
 {
     ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(unary_expression_);
 
@@ -267,11 +266,11 @@ int Assignment::GetSize() const
     if (array_declarator != nullptr)
     {
         // If no size specified in array declarator, get size from array initializer
-        if (array_declarator->GetSize() == -1)
+        if (array_declarator->GetSize(context) == -1)
         {
             return dynamic_cast<ArrayInitializer *>(expression_)->GetSize();
         }
-        return array_declarator->GetSize();
+        return array_declarator->GetSize(context);
     }
 
     return 1;
@@ -296,7 +295,7 @@ bool Assignment::IsPointerInitialization() const
 void Assignment::DeclareLocalScope(Type type, int offset, std::ostream &stream, Context &context) const
 {
     // Get number of elements if array
-    int array_size = GetSize();
+    int array_size = GetSize(context);
 
     // Determine if array
     bool is_array = IsArrayInitialization();

@@ -1,6 +1,4 @@
-#include "ast_type_specifier.hpp"
-
-void TypeSpecifier::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const {}
+#include "../../include/specifiers/ast_type_specifier.hpp"
 
 void TypeSpecifier::Print(std::ostream &stream) const
 {
@@ -38,4 +36,9 @@ void TypeSpecifier::Print(std::ostream &stream) const
 Type TypeSpecifier::GetType() const
 {
     return type_;
+}
+
+void TypeSpecifier::DefineSpecifier(Context &context) const
+{
+    // left empty
 }

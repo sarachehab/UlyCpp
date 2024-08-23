@@ -12,7 +12,7 @@ bool SizeOf::IsPointerOperation(Context &context) const
 
 void SizeOf::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
-    TypeSpecifier *type_specifier = dynamic_cast<TypeSpecifier *>(unary_expression_);
+    Specifier *type_specifier = dynamic_cast<Specifier *>(unary_expression_);
     Operand *operand = dynamic_cast<Operand *>(unary_expression_);
 
     Type type;

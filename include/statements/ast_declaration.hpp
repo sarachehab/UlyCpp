@@ -2,7 +2,7 @@
 #define AST_DECLARATION_HPP
 
 #include "../ast_node.hpp"
-#include "../ast_type_specifier.hpp"
+#include "../specifiers/ast_specifier.hpp"
 #include "../primitives/ast_identifier.hpp"
 #include "ast_assignment.hpp"
 #include "../ast_direct_declarator.hpp"
@@ -15,6 +15,7 @@ private:
     Node *declarator_list_;
 
 public:
+    Declaration(Node *type_specifier) : type_specifier_(type_specifier), declarator_list_(nullptr) {}
     Declaration(Node *type_specifier, Node *declarator_list) : type_specifier_(type_specifier), declarator_list_(declarator_list) {}
     ~Declaration()
     {

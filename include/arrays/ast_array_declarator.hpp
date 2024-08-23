@@ -28,7 +28,7 @@ public:
     /**
      * @brief Get the size of the array
      */
-    int GetSize() const;
+    int GetSize(Context &context) const;
     bool IsPointer() const override;
 
     virtual std::vector<Parameter> GetParameters(Context &context) const override;

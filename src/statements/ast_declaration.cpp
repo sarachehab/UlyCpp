@@ -2,6 +2,14 @@
 
 void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    Specifier *specifier = dynamic_cast<Specifier *>(type_specifier_);
+    specifier->DefineSpecifier(context);
+
+    if (declarator_list_ == nullptr)
+    {
+        return;
+    }
+
     // Get size of atomic type
     Type type = GetType();
     int type_size = types_size.at(type);
@@ -40,9 +48,9 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
         else if (array_declarator != nullptr)
         {
             // Get array size
-            int array_size = array_declarator->GetSize();
+            int array_size = array_declarator->GetSize(context);
 
-            if (array_declarator->GetSize() == -1)
+            if (array_declarator->GetSize(context) == -1)
             {
                 throw std::runtime_error("Declaration EmitRISC: Array size not specified");
             }
@@ -81,6 +89,14 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
 
 void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    Specifier *specifier = dynamic_cast<Specifier *>(type_specifier_);
+    specifier->DefineSpecifier(context);
+
+    if (declarator_list_ == nullptr)
+    {
+        return;
+    }
+
     // Get size of atomic type
     Type type = GetType();
     int type_size = types_size.at(type);
@@ -101,7 +117,7 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
         if (assignment != nullptr)
         {
             // Get number of elements if array
-            int array_size = assignment->GetSize();
+            int array_size = assignment->GetSize(context);
 
             // Determine if array
             bool is_array = assignment->IsArrayInitialization();
@@ -133,9 +149,9 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
         else if (array_declarator != nullptr)
         {
             // Get array size
-            int array_size = array_declarator->GetSize();
+            int array_size = array_declarator->GetSize(context);
 
-            if (array_declarator->GetSize() == -1)
+            if (array_declarator->GetSize(context) == -1)
             {
                 throw std::runtime_error("Declaration EmitRISC: Array size not specified");
             }
@@ -189,7 +205,11 @@ void Declaration::Print(std::ostream &stream) const
     type_specifier_->Print(stream);
     stream << " ";
 
-    declarator_list_->Print(stream);
+    if (declarator_list_)
+    {
+        declarator_list_->Print(stream);
+    }
+
     stream << ";" << std::endl;
 }
 
@@ -198,7 +218,7 @@ int Declaration::GetScopeOffset(Context &context) const
     NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
 
     // Get size of atomic type
-    TypeSpecifier *type_specifier = dynamic_cast<TypeSpecifier *>(type_specifier_);
+    Specifier *type_specifier = dynamic_cast<Specifier *>(type_specifier_);
 
     // Get size of atomic type
     Type type = type_specifier->GetType();
@@ -206,45 +226,47 @@ int Declaration::GetScopeOffset(Context &context) const
 
     int total_size = 0;
 
-    // Take into consideration size of array if it is an array
-    for (auto declaration_ : declarator_list->get_nodes())
+    if (declarator_list != nullptr)
     {
-        ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(declaration_);
-        Assignment *assignment = dynamic_cast<Assignment *>(declaration_);
-        PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(declaration_);
-        Identifier *identifier = dynamic_cast<Identifier *>(declaration_);
+        // Take into consideration size of array if it is an array
+        for (auto declaration_ : declarator_list->get_nodes())
+        {
+            ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(declaration_);
+            Assignment *assignment = dynamic_cast<Assignment *>(declaration_);
+            PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(declaration_);
+            Identifier *identifier = dynamic_cast<Identifier *>(declaration_);
 
-        if (array_declarator != nullptr)
-        {
-            int actual_type_size = array_declarator->IsPointer() ? types_size.at(Type::_INT) : type_size;
-            total_size = total_size + actual_type_size * array_declarator->GetSize();
-        }
-        else if (assignment != nullptr)
-        {
-            int actual_size = assignment->IsPointerInitialization() ? types_size.at(Type::_INT) : type_size;
-            type_size = total_size + type_size * assignment->GetSize();
-        }
-        else if (pointer_declarator != nullptr)
-        {
-            type_size = total_size + types_size.at(Type::_INT);
-        }
-        else if (identifier != nullptr)
-        {
-            type_size = total_size + type_size;
-        }
+            if (array_declarator != nullptr)
+            {
+                int actual_type_size = array_declarator->IsPointer() ? types_size.at(Type::_INT) : type_size;
+                total_size = total_size + actual_type_size * array_declarator->GetSize(context);
+            }
+            else if (assignment != nullptr)
+            {
+                int actual_size = assignment->IsPointerInitialization() ? types_size.at(Type::_INT) : type_size;
+                type_size = total_size + type_size * assignment->GetSize(context);
+            }
+            else if (pointer_declarator != nullptr)
+            {
+                type_size = total_size + types_size.at(Type::_INT);
+            }
+            else if (identifier != nullptr)
+            {
+                type_size = total_size + type_size;
+            }
 
-        // Align offset to 4 bytes
-        if (type_size % 4 != 0)
-        {
-            type_size = type_size + 4 - (type_size % 4);
+            // Align offset to 4 bytes
+            if (type_size % 4 != 0)
+            {
+                type_size = type_size + 4 - (type_size % 4);
+            }
         }
     }
-
     return total_size;
 }
 
 Type Declaration::GetType() const
 {
-    TypeSpecifier *type_specifier = dynamic_cast<TypeSpecifier *>(type_specifier_);
+    Specifier *type_specifier = dynamic_cast<Specifier *>(type_specifier_);
     return type_specifier->GetType();
 }
