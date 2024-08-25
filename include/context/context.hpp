@@ -17,6 +17,7 @@
 #include "context_constant.hpp"
 #include "context_conversion.hpp"
 #include "context_chars.hpp"
+#include "context_enums.hpp"
 
 /**
  * @brief This class represents the context of the program.
@@ -449,7 +450,39 @@ public:
      */
     void print_string_declarations(std::ostream &stream) const;
 
-    // TODO: Add functions to handle enums, structs, typedef, char and strings
+    // ============= ENUMS ==============
+
+    /**
+     * @brief Checks if an identifier is an enum
+     *
+     * @param identifier: the identifier to check
+     */
+    bool is_enum(std::string identifier);
+
+    /**
+     * @brief Gets enum value
+     *
+     * @param label: the enum label
+     */
+    int get_enum_value(std::string label);
+
+    /**
+     * @brief define enum structure
+     *
+     * @param enum_name: name of enum structure
+     * @param enum_labels: list of names of all enum values taken
+     */
+    void define_enum(std::string enum_name, std::vector<std::string> enum_labels);
+
+    /**
+     * @brief Associate enum label to int value
+     *
+     * @param enum_label: enum label
+     * @param value: value associated to enum_label
+     */
+    void define_enum_label_value_correspondance(std::string enum_label, int value);
+
+    // TODO: Add functions to handle enums, structs, typedef
 
 private:
     // ============= REGISTER ALLOCATION ==============
@@ -613,6 +646,19 @@ private:
      * @brief The counter for the stirng literals.
      */
     int string_declaration_number = 0;
+
+    // ============= ENUMS ==============
+
+    /**
+     * @brief Store enums and corresponding values
+     */
+    std::unordered_map<std::string, std::vector<std::string>> enums_definitions;
+
+    /**
+     * @brief Store values associated with enums identifiers
+     * This works on the basis of scopes
+     */
+    std::vector<EnumsCorrespondance> enums_correspondance;
 };
 
 #endif

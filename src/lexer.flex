@@ -54,7 +54,7 @@ IS  (u|U|l|L)*
 "volatile"	    {return(VOLATILE);}
 "while"			{return(WHILE);}
 
-{L}({L}|{D})*		        {yylval.string = new std::string(yytext); return(IDENTIFIER);}
+{L}({L}|{D})*		        {yylval.string = new std::string(yytext); return(IDENTIFIER); }
 
 0[xX]{H}+{IS}?		        {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
 0{D}+{IS}?		            {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}

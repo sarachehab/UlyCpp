@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <typeinfo>
+#include <optional>
 
 #include "context/context.hpp"
 

@@ -2,7 +2,7 @@
 #define AST_SIZE_OF_HPP
 
 #include "../ast_node.hpp"
-#include "../ast_type_specifier.hpp"
+#include "../specifiers/ast_specifier.hpp"
 #include "../operations/ast_operand.hpp"
 
 class SizeOf : public Operand

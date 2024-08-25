@@ -51,9 +51,14 @@
 #include "chars/ast_char_literal.hpp"
 #include "chars/ast_string_literal.hpp"
 
+#include "specifiers/ast_specifier.hpp"
+#include "specifiers/ast_type_specifier.hpp"
+
+#include "enums/ast_enumerator_specifier.hpp"
+#include "enums/ast_enumerator.hpp"
+
 #include "ast_translation_unit.hpp"
 #include "ast_direct_declarator.hpp"
-#include "ast_type_specifier.hpp"
 #include "ast_declarator.hpp"
 #include "ast_node.hpp"
 

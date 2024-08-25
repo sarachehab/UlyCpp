@@ -79,7 +79,7 @@ int ParameterList::GetScopeOffset() const
 
 Type ParameterDeclaration::GetType(Context &context) const
 {
-    return dynamic_cast<TypeSpecifier *>(type_specifier_)->GetType();
+    return dynamic_cast<Specifier *>(type_specifier_)->GetType();
 }
 
 void ParameterDeclaration::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const

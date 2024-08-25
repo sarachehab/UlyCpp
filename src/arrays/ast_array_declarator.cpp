@@ -18,13 +18,27 @@ std::string ArrayDeclarator::GetIdentifier() const
     throw std::runtime_error("ArrayDeclarator GetIdentifier: Identifier not found");
 }
 
-int ArrayDeclarator::GetSize() const
+int ArrayDeclarator::GetSize(Context &context) const
 {
     if (constant_expression_ == nullptr)
     {
         return -1;
     }
-    return dynamic_cast<IntConstant *>(constant_expression_)->GetValue();
+
+    IntConstant *int_constant = dynamic_cast<IntConstant *>(constant_expression_);
+    Identifier *enumerator = dynamic_cast<Identifier *>(constant_expression_);
+
+    if (int_constant != nullptr)
+    {
+        return int_constant->GetValue();
+    }
+
+    if (enumerator != nullptr)
+    {
+        return enumerator->GetValue(context);
+    }
+
+    throw std::runtime_error("ArrayDeclarator::GetSize - constant_expression neither enumerator not constant");
 }
 
 void ArrayDeclarator::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const

@@ -2,7 +2,7 @@
 #define AST_PARAMETER_DEFINITION_HPP
 
 #include "../ast_node.hpp"
-#include "../ast_type_specifier.hpp"
+#include "../specifiers/ast_specifier.hpp"
 #include "../primitives/ast_identifier.hpp"
 #include "../pointers/ast_pointer_declarator.hpp"
 
