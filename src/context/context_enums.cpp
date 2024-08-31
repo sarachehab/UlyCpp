@@ -1,8 +1,19 @@
 #include "../../include/context/context.hpp"
 
-void Context::define_enum(std::string enum_name, std::vector<std::string> enum_labels)
+void Context::define_enum(std::string enum_name)
 {
-    enums_definitions[enum_name] = enum_labels;
+    if (custom_typedef.empty())
+    {
+        throw std::runtime_error("Context::define_enum: custom_typedef is empty.");
+    }
+
+    if (enum_name.empty())
+    {
+        throw std::runtime_error("Context::define_enum: enum_name is empty.");
+    }
+
+    TypedefSpec typedef_specs = TypedefSpec(Type::_INT, 0);
+    custom_typedef.back()[enum_name] = typedef_specs;
 }
 
 void Context::define_enum_label_value_correspondance(std::string enum_label, int value)

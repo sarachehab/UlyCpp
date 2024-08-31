@@ -2,22 +2,32 @@
 
 void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    TypedefDefinition *typedef_definition = dynamic_cast<TypedefDefinition *>(type_specifier_);
+    if (typedef_definition)
+    {
+        return;
+    }
+
     Specifier *specifier = dynamic_cast<Specifier *>(type_specifier_);
-    specifier->DefineSpecifier(context);
+    specifier->DefineSpecifier();
 
     if (declarator_list_ == nullptr)
     {
         return;
     }
 
+    TypedefSpecifier *typedef_specifier = dynamic_cast<TypedefSpecifier *>(type_specifier_);
+    bool is_typedef_specifier = (typedef_specifier != nullptr);
+
     // Get size of atomic type
-    Type type = GetType();
+    Type type = is_typedef_specifier ? typedef_specifier->GetType() : GetType();
     int type_size = types_size.at(type);
 
     // Iterate over all declarations
     NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
     for (auto declarator : declarator_list->get_nodes())
     {
+
         Assignment *assignment = dynamic_cast<Assignment *>(declarator);
         Identifier *identifier = dynamic_cast<Identifier *>(declarator);
         ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(declarator);
@@ -29,10 +39,16 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
         if (assignment != nullptr)
         {
             assignment->DeclareLocalScope(type, offset, stream, context);
+            continue;
+        }
+
+        if (is_typedef_specifier)
+        {
+            declarator = typedef_specifier->ConvertNode(context, declarator);
         }
 
         // Simple declaration
-        else if (identifier != nullptr)
+        if (identifier != nullptr)
         {
             // Increase stack offset to account for new variable
             context.increase_stack_offset(type_size);
@@ -89,8 +105,14 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
 
 void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    TypedefDefinition *typedef_definition = dynamic_cast<TypedefDefinition *>(type_specifier_);
+    if (typedef_definition)
+    {
+        return;
+    }
+
     Specifier *specifier = dynamic_cast<Specifier *>(type_specifier_);
-    specifier->DefineSpecifier(context);
+    specifier->DefineSpecifier();
 
     if (declarator_list_ == nullptr)
     {

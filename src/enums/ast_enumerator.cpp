@@ -5,15 +5,15 @@ std::string Enumerator::GetLabel() const
     return label_;
 }
 
-int Enumerator::DefineEnumerator(Context &context, int value) const
+int Enumerator::DefineEnumerator(int value) const
 {
 
     if (constant_expression_)
     {
-        value = GetValue(context);
+        value = GetValue();
     }
 
-    context.define_enum_label_value_correspondance(label_, value);
+    Context::define_enum_label_value_correspondance(label_, value);
     return value + 1;
 }
 
@@ -35,20 +35,14 @@ void Enumerator::Print(std::ostream &stream) const
     stream << "," << std::endl;
 }
 
-int Enumerator::GetValue(Context &context) const
+int Enumerator::GetValue() const
 {
-    Identifier *enumerator = dynamic_cast<Identifier *>(constant_expression_);
     IntConstant *int_constant = dynamic_cast<IntConstant *>(constant_expression_);
 
-    if (enumerator != nullptr)
-    {
-        return enumerator->GetValue(context);
-    }
-
-    else if (int_constant != nullptr)
+    if (int_constant != nullptr)
     {
         return int_constant->GetValue();
     }
 
-    throw std::runtime_error("Enumerator::GetValue - constant_expression not recognised");
+    throw std::runtime_error("Enumerator::IntConstant - constant_expression not recognised");
 }

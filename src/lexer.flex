@@ -54,7 +54,7 @@ IS  (u|U|l|L)*
 "volatile"	    {return(VOLATILE);}
 "while"			{return(WHILE);}
 
-{L}({L}|{D})*		        {yylval.string = new std::string(yytext); return(IDENTIFIER); }
+{L}({L}|{D})*		        { std::string *str = new std::string(yytext); if (Context::is_enum(*str)) { yylval.number_int = Context::get_enum_value(*str); delete str; return (INT_CONSTANT); } else if(Context::is_typedef(*str)) { yylval.string = str; return (TYPE_NAME); } yylval.string = str; return(IDENTIFIER); }
 
 0[xX]{H}+{IS}?		        {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
 0{D}+{IS}?		            {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
@@ -76,7 +76,6 @@ L?'(\\.|[^\\'])' {
 
     // The result should be a single character
     yylval.character = characters[0];
-    std::cout << "Character literal: " << yylval.character << std::endl;
 
     delete[] characters;
     return(CHAR_LITERAL);
@@ -89,12 +88,10 @@ L?\"(\\.|[^\\"])*\" {
 
     // Create a string from the processed characters
     yylval.string = new std::string(output);
-    std::cout << "String literal: " << *(yylval.string) << std::endl;
 
     delete[] characters;
     return(STRING_LITERAL);
 }
-
 
 (\*+&+)+	{
               char* result = Context::cancel_pointer_pairs(yytext);
@@ -105,7 +102,6 @@ L?\"(\\.|[^\\"])*\" {
                   }
               }
 }
-
 
 "..."       {return(ELLIPSIS);}
 ">>="		{return(RIGHT_ASSIGN);}

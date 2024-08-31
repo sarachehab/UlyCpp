@@ -17,6 +17,7 @@ enum class Type
     _LONG,
     _FLOAT,
     _DOUBLE,
+    _STRUCT,
 };
 
 /**

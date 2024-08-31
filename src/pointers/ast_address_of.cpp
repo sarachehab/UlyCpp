@@ -109,3 +109,14 @@ bool AddressOf::IsPointerOperation(Context &context) const
 {
     return true;
 }
+
+int AddressOf::GetAddressOfCount() const
+{
+    AddressOf *adddress_of = dynamic_cast<AddressOf *>(expression_);
+
+    if (adddress_of != nullptr)
+    {
+        return 1 + adddress_of->GetAddressOfCount();
+    }
+    return 1;
+}

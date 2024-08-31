@@ -26,19 +26,13 @@ int ArrayDeclarator::GetSize(Context &context) const
     }
 
     IntConstant *int_constant = dynamic_cast<IntConstant *>(constant_expression_);
-    Identifier *enumerator = dynamic_cast<Identifier *>(constant_expression_);
 
     if (int_constant != nullptr)
     {
         return int_constant->GetValue();
     }
 
-    if (enumerator != nullptr)
-    {
-        return enumerator->GetValue(context);
-    }
-
-    throw std::runtime_error("ArrayDeclarator::GetSize - constant_expression neither enumerator not constant");
+    throw std::runtime_error("ArrayDeclarator::GetSize - constant_expression neither enumerator nor constant");
 }
 
 void ArrayDeclarator::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const

@@ -57,6 +57,9 @@
 #include "enums/ast_enumerator_specifier.hpp"
 #include "enums/ast_enumerator.hpp"
 
+#include "typedef/ast_typedef_definition.hpp"
+#include "typedef/ast_typedef_specifier.hpp"
+
 #include "ast_translation_unit.hpp"
 #include "ast_direct_declarator.hpp"
 #include "ast_declarator.hpp"

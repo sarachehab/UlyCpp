@@ -38,7 +38,7 @@ Type TypeSpecifier::GetType() const
     return type_;
 }
 
-void TypeSpecifier::DefineSpecifier(Context &context) const
+void TypeSpecifier::DefineSpecifier() const
 {
     // left empty
 }

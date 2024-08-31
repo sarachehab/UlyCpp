@@ -7,6 +7,8 @@
 #include "ast_assignment.hpp"
 #include "../ast_direct_declarator.hpp"
 #include "../arrays/ast_array_declarator.hpp"
+#include "../typedef/ast_typedef_specifier.hpp"
+#include "../typedef/ast_typedef_definition.hpp"
 
 class Declaration : public Node
 {

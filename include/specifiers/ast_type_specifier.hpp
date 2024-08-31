@@ -13,7 +13,7 @@ public:
     TypeSpecifier(Type type) : type_(type) {};
     ~TypeSpecifier() {};
 
-    void DefineSpecifier(Context &context) const override;
+    void DefineSpecifier() const override;
 
     /**
      * @brief Get the type of the specifier

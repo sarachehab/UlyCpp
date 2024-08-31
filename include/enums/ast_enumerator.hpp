@@ -20,10 +20,10 @@ public:
         delete constant_expression_;
     }
 
-    int DefineEnumerator(Context &context, int value) const;
+    int DefineEnumerator(int value) const;
     std::string GetLabel() const;
 
-    int GetValue(Context &context) const;
+    int GetValue() const;
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
 };

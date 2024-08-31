@@ -4,6 +4,7 @@ void Context::create_new_scope()
 {
     variable_bindings.push_back(VariablesLayer());
     enums_correspondance.push_back(EnumsCorrespondance());
+    custom_typedef.push_back(TypedefCorrespondance());
 
     // Set stack offset to the current stack offset, variables defined within this scope should be accessible.
     stack_offset.push(stack_offset.top());
@@ -18,6 +19,10 @@ void Context::pop_scope()
     if (!enums_correspondance.empty())
     {
         enums_correspondance.pop_back();
+    }
+    if (!custom_typedef.empty())
+    {
+        custom_typedef.pop_back();
     }
     if (!stack_offset.empty())
     {
