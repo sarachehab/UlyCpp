@@ -328,3 +328,12 @@ int Assignment::GetDereferenceNumber() const
 
     return 0;
 }
+
+void Assignment::ApplyTypedef(Declarator *typedef_placeholder)
+{
+    if (typedef_placeholder != nullptr)
+    {
+        typedef_placeholder->DefineRoot(unary_expression_);
+        unary_expression_ = typedef_placeholder;
+    }
+}

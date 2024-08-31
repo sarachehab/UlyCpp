@@ -14,11 +14,11 @@ class Declaration : public Node
 {
 private:
     Node *type_specifier_;
-    Node *declarator_list_;
+    NodeList *declarator_list_;
 
 public:
-    Declaration(Node *type_specifier) : type_specifier_(type_specifier), declarator_list_(nullptr) {}
-    Declaration(Node *type_specifier, Node *declarator_list) : type_specifier_(type_specifier), declarator_list_(declarator_list) {}
+    Declaration(Node *type_specifier) : type_specifier_(type_specifier), declarator_list_(nullptr) { ApplyTypedef(); }
+    Declaration(Node *type_specifier, NodeList *declarator_list) : type_specifier_(type_specifier), declarator_list_(declarator_list) { ApplyTypedef(); }
     ~Declaration()
     {
         delete type_specifier_;
@@ -43,6 +43,8 @@ public:
      * Also performs initialization if required.
      */
     void DeclareGlobal(std::ostream &stream, Context &context, std::string passed_reg) const;
+    Node *ApplyIndividualTypedef(Node *declaration);
+    void ApplyTypedef();
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;

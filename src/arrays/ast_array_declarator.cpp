@@ -81,3 +81,21 @@ int ArrayDeclarator::GetDereferenceNumber() const
 
     return 0;
 }
+
+void ArrayDeclarator::DefineRoot(Node *declaration)
+{
+    if (identifier_ == nullptr)
+    {
+        identifier_ = declaration;
+        return;
+    }
+
+    Declarator *declarator = dynamic_cast<Declarator *>(identifier_);
+
+    if (declarator != nullptr)
+    {
+        return declarator->DefineRoot(declaration);
+    }
+
+    throw std::runtime_error("PointerDeclarator::DefineRoot - not nullptr or Declarator");
+}

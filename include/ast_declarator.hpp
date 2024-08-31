@@ -13,6 +13,8 @@ public:
     virtual bool IsPointer() const = 0;
     virtual int GetDereferenceNumber() const = 0;
 
+    virtual void DefineRoot(Node *declaration) = 0;
+
     virtual void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override = 0;
     virtual void Print(std::ostream &stream) const override = 0;
 };

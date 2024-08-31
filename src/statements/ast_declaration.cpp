@@ -16,39 +16,27 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
         return;
     }
 
-    TypedefSpecifier *typedef_specifier = dynamic_cast<TypedefSpecifier *>(type_specifier_);
-    bool is_typedef_specifier = (typedef_specifier != nullptr);
-
     // Get size of atomic type
-    Type type = is_typedef_specifier ? typedef_specifier->GetType() : GetType();
+    Type type = GetType();
     int type_size = types_size.at(type);
 
     // Iterate over all declarations
-    NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
-    for (auto declarator : declarator_list->get_nodes())
+    for (auto declarator : declarator_list_->get_nodes())
     {
-
         Assignment *assignment = dynamic_cast<Assignment *>(declarator);
         Identifier *identifier = dynamic_cast<Identifier *>(declarator);
         ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(declarator);
         PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(declarator);
-
         int offset = context.get_stack_offset();
 
         // Initialization
         if (assignment != nullptr)
         {
             assignment->DeclareLocalScope(type, offset, stream, context);
-            continue;
-        }
-
-        if (is_typedef_specifier)
-        {
-            declarator = typedef_specifier->ConvertNode(context, declarator);
         }
 
         // Simple declaration
-        if (identifier != nullptr)
+        else if (identifier != nullptr)
         {
             // Increase stack offset to account for new variable
             context.increase_stack_offset(type_size);
@@ -124,8 +112,7 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
     int type_size = types_size.at(type);
 
     // Iterate over all declarations
-    NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
-    for (auto declarator_ : declarator_list->get_nodes())
+    for (auto declarator_ : declarator_list_->get_nodes())
     {
         Assignment *assignment = dynamic_cast<Assignment *>(declarator_);
         Identifier *identifier = dynamic_cast<Identifier *>(declarator_);
@@ -237,8 +224,6 @@ void Declaration::Print(std::ostream &stream) const
 
 int Declaration::GetScopeOffset(Context &context) const
 {
-    NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
-
     // Get size of atomic type
     Specifier *type_specifier = dynamic_cast<Specifier *>(type_specifier_);
 
@@ -248,10 +233,10 @@ int Declaration::GetScopeOffset(Context &context) const
 
     int total_size = 0;
 
-    if (declarator_list != nullptr)
+    if (declarator_list_ != nullptr)
     {
         // Take into consideration size of array if it is an array
-        for (auto declaration_ : declarator_list->get_nodes())
+        for (auto declaration_ : declarator_list_->get_nodes())
         {
             ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(declaration_);
             Assignment *assignment = dynamic_cast<Assignment *>(declaration_);
@@ -289,6 +274,58 @@ int Declaration::GetScopeOffset(Context &context) const
 
 Type Declaration::GetType() const
 {
+
     Specifier *type_specifier = dynamic_cast<Specifier *>(type_specifier_);
-    return type_specifier->GetType();
+
+    if (type_specifier != nullptr)
+    {
+        return type_specifier->GetType();
+    }
+
+    throw std::runtime_error("Declaration::GetType - Not specifier");
+}
+
+Node *Declaration::ApplyIndividualTypedef(Node *declaration)
+{
+    TypedefSpecifier *typedef_specifier = dynamic_cast<TypedefSpecifier *>(type_specifier_);
+    if (typedef_specifier != nullptr)
+    {
+        Declarator *typedef_placeholder_ = typedef_specifier->GetRootNode();
+
+        if (typedef_placeholder_ != nullptr)
+        {
+
+            Assignment *assignment = dynamic_cast<Assignment *>(declaration);
+
+            if (assignment != nullptr)
+            {
+                assignment->ApplyTypedef(typedef_placeholder_);
+            }
+            else
+            {
+                typedef_placeholder_->DefineRoot(declaration);
+                declaration = typedef_placeholder_;
+            }
+        }
+    }
+    return declaration;
+}
+
+void Declaration::ApplyTypedef()
+{
+    TypedefDefinition *typedef_definition = dynamic_cast<TypedefDefinition *>(type_specifier_);
+    if (typedef_definition)
+    {
+        return;
+    }
+
+    if (declarator_list_ != nullptr)
+    {
+        std::vector<Node *> declarations_list = declarator_list_->get_nodes();
+
+        for (int i = 0; i < declarations_list.size(); i++)
+        {
+            declarations_list[i] = ApplyIndividualTypedef(declarations_list[i]);
+        }
+    }
 }

@@ -34,7 +34,7 @@ public:
 
     void DefineSpecifier();
     Specifier *GetSpecifier() const;
-    Node *ConvertNode(Context &context, Node *node) const;
+    Declarator *GetRootNode() const;
 
     Type GetType() const override;
     void DefineSpecifier() const override;

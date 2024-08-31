@@ -66,6 +66,8 @@ public:
     void DeclareLocalScope(Type type, int offset, std::ostream &stream, Context &context) const;
     int GetDereferenceNumber() const;
 
+    void ApplyTypedef(Declarator *typedef_placeholder);
+
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;
     void Print(std::ostream &stream) const override;
 };

@@ -42,12 +42,14 @@ Specifier *TypedefSpecifier::GetSpecifier() const
     return typedef_specifier_;
 }
 
-Node *TypedefSpecifier::ConvertNode(Context &context, Node *node) const
+Declarator *TypedefSpecifier::GetRootNode() const
 {
     if (typedef_spec.number_pointers_ < 0)
     {
         throw std::runtime_error("TypedefSpecifier::ConvertNode - number of pointers should not be smaller than 0");
     }
+
+    Declarator *node = nullptr;
 
     for (int i = 0; i < typedef_spec.number_pointers_; i++)
     {

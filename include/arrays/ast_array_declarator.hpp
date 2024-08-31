@@ -39,6 +39,8 @@ public:
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const;
     void Print(std::ostream &stream) const;
+
+    void DefineRoot(Node *declaration);
 };
 
 #endif

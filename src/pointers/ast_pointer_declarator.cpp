@@ -71,3 +71,21 @@ bool PointerDeclarator::IsPointer() const
 {
     return true;
 }
+
+void PointerDeclarator::DefineRoot(Node *declaration)
+{
+    if (direct_declarator_ == nullptr)
+    {
+        direct_declarator_ = declaration;
+        return;
+    }
+
+    Declarator *declarator = dynamic_cast<Declarator *>(direct_declarator_);
+
+    if (declarator != nullptr)
+    {
+        return declarator->DefineRoot(declaration);
+    }
+
+    throw std::runtime_error("PointerDeclarator::DefineRoot - not nullptr or Declarator");
+}
