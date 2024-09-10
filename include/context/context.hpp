@@ -415,27 +415,7 @@ public:
      */
     void print_global(std::ostream &stream) const;
 
-    // ============= POINTERS ==============
-    /**
-     * @brief This functions is used within the lexer to simplify pointer expressions if it is possible to do so.
-     *
-     * It cancels out pairs of * and & operators.
-     */
-    static char *cancel_pointer_pairs(const char *sequence);
-
     // ============= CHAR LITERALS ==============
-    /**
-     * @brief This functions is used within the lexer to simplify char literals if it is possible to do so.
-     *
-     * It processes escape sequences in char literals.
-     */
-    static char *process_char(const char *sequence);
-
-    /**
-     * @brief This function is used within the lexer to convert to string in case of escape sequences.
-     */
-    static std::string preserve_escape_sequences(const char *processed_characters);
-
     /**
      * @brief This function saves the char literals to the char_declarations vector.
      *

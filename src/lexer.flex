@@ -11,6 +11,9 @@
   void push_back_string(const std::string &s);
   void consume_spaces();
   void process_typedef_and_push_back(TypedefSpec typedef_spec);
+  char* process_char(const std::string &sequence);
+  std::string process_string(const char *processed_characters);
+  void cancel_pointer_pairs(const std::string &sequence);
 %}
 
 D	[0-9]
@@ -86,37 +89,25 @@ L?'(\\.|[^\\'])+'           {yylval.number_int = yytext[1]; return(INT_CONSTANT)
 
 
 L?'(\\.|[^\\'])' {
-    // Process the character literal
-    char* characters = Context::process_char(yytext);
+    // Process the character literal and push back the result
+    char* characters = process_char(yytext);
 
     // The result should be a single character
     yylval.character = characters[0];
-
     delete[] characters;
     return(CHAR_LITERAL);
 }
 
 L?\"(\\.|[^\\"])*\" {
-    // Process the string literal
-    char* characters = Context::process_char(yytext);
-    std::string output = Context::preserve_escape_sequences(characters);
+    // Process the string literal and push back the result
+    std::string output = process_string(yytext);
 
     // Create a string from the processed characters
     yylval.string = new std::string(output);
-
-    delete[] characters;
     return(STRING_LITERAL);
 }
 
-(\*+&+)+	{
-              char* result = Context::cancel_pointer_pairs(yytext);
-              if (result[0] != '\0') {
-                  // Push the remaining characters back onto the input stream in reverse order
-                  for (int i = strlen(result) - 1; i >= 0; i--) {
-                      unput(result[i]);
-                  }
-              }
-}
+(\*+&+)+ { cancel_pointer_pairs(yytext); }
 
 "..."       {return(ELLIPSIS);}
 ">>="		{return(RIGHT_ASSIGN);}
@@ -261,4 +252,84 @@ void process_typedef_and_push_back(TypedefSpec typedef_spec) {
     }
 
     push_back_string(type);  // Push back the type
+}
+
+
+// Helper function to process character literals
+char* process_char(const std::string &sequence) {
+    std::string result;
+
+    for (size_t i = 1; i < sequence.size() - 1; ++i) {
+        if (sequence[i] == '\\') {
+            switch (sequence[i + 1]) {
+                case 'n': result += '\n'; break;
+                case 't': result += '\t'; break;
+                case 'r': result += '\r'; break;
+                case '\\': result += '\\'; break;
+                case '\'': result += '\''; break;
+                case '\"': result += '\"'; break;
+                default:
+                    yyerror("Invalid escape sequence in char literal");
+            }
+            ++i;
+        } else {
+            result += sequence[i];
+        }
+    }
+
+    // Convert result to char* and return
+    char* output = new char[result.size() + 1];
+    strcpy(output, result.c_str());
+    return output;
+}
+
+// Helper function to process string literals
+std::string process_string(const char *processed_characters) {
+    std::string result;
+
+    for (size_t i = 1; processed_characters[i+1] != '\0'; ++i) {
+        if (processed_characters[i] == '\\') {
+            switch (processed_characters[i + 1]) {
+                case 'n': result += "\\n"; break;
+                case 't': result += "\\t"; break;
+                case 'r': result += "\\r"; break;
+                case '\\': result += "\\\\"; break;
+                case '\'': result += "\\\'"; break;
+                case '\"': result += "\\\""; break;
+                default:
+                    yyerror("Invalid escape sequence in string literal");
+            }
+            ++i;
+        } else {
+            result += processed_characters[i];
+        }
+    }
+
+    return result;
+}
+
+// Helper to cancel pointer/reference pairs
+void cancel_pointer_pairs(const std::string &sequence) {
+    int star_count = 0;
+    int ampersand_count = 0;
+
+    for (char c : sequence) {
+        if (c == '*') {
+            star_count++;
+        } else if (c == '&') {
+            if (star_count > 0) {
+                star_count--; // Cancel out a *
+            } else {
+                ampersand_count++; // Unmatched &
+            }
+        }
+    }
+
+    // Push back remaining unmatched * and &
+    for (int i = 0; i < star_count; i++) {
+        unput('*');
+    }
+    for (int i = 0; i < ampersand_count; i++) {
+        unput('&');
+    }
 }
