@@ -98,5 +98,6 @@ Type BinaryOperation::GetPointerAjustmentType(Context &context) const
     {
         return left_operand->GetType(context);
     }
+
     return right_operand->GetType(context);
 }

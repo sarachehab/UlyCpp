@@ -10,6 +10,7 @@ struct TypedefSpec
     int number_pointers_;
     std::string base_class_ = "";
     Type type_ = Type::_VOID;
+    int array_size_ = 0;
 
     TypedefSpec()
         : number_pointers_(0), base_class_("empty"), type_(Type::_VOID) {}

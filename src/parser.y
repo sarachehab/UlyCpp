@@ -40,11 +40,11 @@
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers
 %type <node> init_declarator type_specifier struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
-%type <node> struct_declarator enumerator declarator direct_declarator parameter_list parameter_declaration
+%type <node> struct_declarator enumerator declarator direct_declarator parameter_list parameter_declaration enum_specifier
 %type <node> identifier_list type_name abstract_declarator direct_abstract_declarator initializer statement labeled_statement
+
 %type <node> compound_statement declaration_list expression_statement selection_statement iteration_statement jump_statement
 
-%type <enumerator_specifier> enum_specifier
 %type <nodes> statement_list init_declarator_list initializer_list enumerator_list
 
 %type <string> unary_operator assignment_operator storage_class_specifier
@@ -89,14 +89,13 @@ type_specifier
 	| UNSIGNED 					{ $$ = new TypeSpecifier(Type::_UNSIGNED_INT); }
 	| SHORT 					{ $$ = new TypeSpecifier(Type::_SHORT); }
 	| VOID						{ $$ = new TypeSpecifier(Type::_VOID); }
-	| TYPE_NAME					{ $$ = new TypedefSpecifier($1); }
-	| enum_specifier			{ if ($1->IsSimpleDeclaration()) { $$ = new TypeSpecifier(Type::_INT); } $$ = $1; }
+	| enum_specifier			{ $$ = $1; }
 	;
 
 enum_specifier
 	: ENUM '{' enumerator_list '}'				{ $$ = new EnumeratorSpecifier($3); }
 	| ENUM IDENTIFIER '{' enumerator_list '}'	{ $$ = new EnumeratorSpecifier($2, $4); }
-	| ENUM TYPE_NAME							{ $$ = new EnumeratorSpecifier($2); }
+	| ENUM INT									{ $$ = new TypeSpecifier(Type::_INT); }
 	;
 
 

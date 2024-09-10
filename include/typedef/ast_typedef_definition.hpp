@@ -3,7 +3,6 @@
 
 #include "../ast_node.hpp"
 #include "../specifiers/ast_specifier.hpp"
-#include "ast_typedef_specifier.hpp"
 #include "../pointers/ast_address_of.hpp"
 #include "../pointers/ast_pointer_declarator.hpp"
 

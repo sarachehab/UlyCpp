@@ -71,31 +71,9 @@ void TypedefDefinition::DefineTypedef(NodeList *aliases)
 
 void TypedefDefinition::ExtractDeclarationSpecifier()
 {
-    TypedefSpecifier *typedef_specifier = dynamic_cast<TypedefSpecifier *>(declaration_specifier_);
     Specifier *specifier = dynamic_cast<Specifier *>(declaration_specifier_);
 
-    if (typedef_specifier)
-    {
-        std::string typedef_name = typedef_specifier->GetIdentifier();
-        type = Context::get_typedef_base_type(typedef_name);
-        initial_number_pointers = Context::get_typedef_base_pointers(typedef_name);
-
-        switch (type)
-        {
-        case Type::_STRUCT:
-            throw std::runtime_error("TypedefDefinition::ExtractDeclarationSpecifier - tyepdef specifier is not a PRIMITIVE");
-        case Type::_CHAR:
-        case Type::_SHORT:
-        case Type::_UNSIGNED_INT:
-        case Type::_INT:
-        case Type::_LONG:
-        case Type::_FLOAT:
-        case Type::_DOUBLE:
-        default:;
-        }
-    }
-
-    else if (specifier != nullptr)
+    if (specifier != nullptr)
     {
         type = specifier->GetType();
     }

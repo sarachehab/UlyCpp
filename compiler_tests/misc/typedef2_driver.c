@@ -1,8 +1,9 @@
 
-int g(int );
+int g(int);
 
 int main()
 {
     int x;
-    return !(g(16)==17);
+    printf("Result: %d", g(16));
+    return !(g(16) == 17);
 }
