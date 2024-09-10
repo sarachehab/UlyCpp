@@ -18,6 +18,7 @@ void TypedefDefinition::DefineTypedef(NodeList *aliases)
     for (auto alias : aliases->get_nodes())
     {
         int pointer = initial_number_pointers;
+        int array_size = initial_array_size;
         std::string alias_name;
 
         PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(alias);
@@ -39,7 +40,7 @@ void TypedefDefinition::DefineTypedef(NodeList *aliases)
         {
             alias_name = array_declarator->GetIdentifier();
             pointer += array_declarator->GetDereferenceNumber();
-            throw std::runtime_error("TypedefDefinition::DefineTypedef - ArrayDeclarator not implemented");
+            array_size = array_declarator->GetSize();
         }
         else if (identifier != nullptr)
         {
@@ -59,7 +60,7 @@ void TypedefDefinition::DefineTypedef(NodeList *aliases)
         case Type::_LONG:
         case Type::_FLOAT:
         case Type::_DOUBLE:
-            typedef_spec = TypedefSpec(type, pointer);
+            typedef_spec = TypedefSpec(type, pointer, array_size);
             break;
         default:
             throw std::runtime_error("TypedefDefinition::DefineTypedef - alias is not a PRIMITIVE nor a STRUCT");

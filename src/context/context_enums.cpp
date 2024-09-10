@@ -12,7 +12,7 @@ void Context::define_enum(std::string enum_name)
         throw std::runtime_error("Context::define_enum: enum_name is empty.");
     }
 
-    TypedefSpec typedef_specs = TypedefSpec(Type::_INT, 0);
+    TypedefSpec typedef_specs = TypedefSpec(Type::_INT, 0, 0);
     custom_typedef.back()[enum_name] = typedef_specs;
 }
 

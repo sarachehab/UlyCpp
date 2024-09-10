@@ -52,9 +52,9 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
         else if (array_declarator != nullptr)
         {
             // Get array size
-            int array_size = array_declarator->GetSize(context);
+            int array_size = array_declarator->GetSize();
 
-            if (array_declarator->GetSize(context) == -1)
+            if (array_size == -1)
             {
                 throw std::runtime_error("Declaration EmitRISC: Array size not specified");
             }
@@ -126,7 +126,7 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
         if (assignment != nullptr)
         {
             // Get number of elements if array
-            int array_size = assignment->GetSize(context);
+            int array_size = assignment->GetSize();
 
             // Determine if array
             bool is_array = assignment->IsArrayInitialization();
@@ -158,9 +158,9 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
         else if (array_declarator != nullptr)
         {
             // Get array size
-            int array_size = array_declarator->GetSize(context);
+            int array_size = array_declarator->GetSize();
 
-            if (array_declarator->GetSize(context) == -1)
+            if (array_size == -1)
             {
                 throw std::runtime_error("Declaration EmitRISC: Array size not specified");
             }
@@ -246,12 +246,12 @@ int Declaration::GetScopeOffset(Context &context) const
             if (array_declarator != nullptr)
             {
                 int actual_type_size = array_declarator->IsPointer() ? types_size.at(Type::_INT) : type_size;
-                total_size = total_size + actual_type_size * array_declarator->GetSize(context);
+                total_size = total_size + actual_type_size * array_declarator->GetSize();
             }
             else if (assignment != nullptr)
             {
                 int actual_size = assignment->IsPointerInitialization() ? types_size.at(Type::_INT) : type_size;
-                type_size = total_size + type_size * assignment->GetSize(context);
+                type_size = total_size + type_size * assignment->GetSize();
             }
             else if (pointer_declarator != nullptr)
             {

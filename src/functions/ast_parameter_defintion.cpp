@@ -16,7 +16,7 @@ void ParameterList::EmitRISC(std::ostream &stream, Context &context, std::string
 
         ParameterDeclaration *parameter = dynamic_cast<ParameterDeclaration *>(node);
 
-        Type type = parameter->IsPointer() ? Type::_INT : parameter->GetType(context);
+        Type type = parameter->IsPointer() ? Type::_INT : parameter->GetType();
 
         switch (type)
         {
@@ -77,7 +77,7 @@ int ParameterList::GetScopeOffset() const
     return size;
 }
 
-Type ParameterDeclaration::GetType(Context &context) const
+Type ParameterDeclaration::GetType() const
 {
     return dynamic_cast<Specifier *>(type_specifier_)->GetType();
 }
@@ -85,7 +85,7 @@ Type ParameterDeclaration::GetType(Context &context) const
 void ParameterDeclaration::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
     // Get type of parameter declaration
-    Type type = IsPointer() ? Type::_INT : GetType(context);
+    Type type = IsPointer() ? Type::_INT : GetType();
 
     // Get stack offset for parameter
     int offset = context.get_stack_offset();
@@ -94,11 +94,11 @@ void ParameterDeclaration::EmitRISC(std::ostream &stream, Context &context, std:
     stream << context.store_instruction(type) << " " << passed_reg << ", " << offset << "(s0)" << std::endl;
 
     // Define parameter as variable accessible within function body
-    Variable variable_specs(IsPointer(), false, GetType(context), offset, GetDereferenceNumber());
+    Variable variable_specs(IsPointer(), false, GetType(), offset, GetDereferenceNumber());
     context.define_variable(GetIdentifier(), variable_specs);
 
     // Increase stack offset to accomodate for parameter
-    context.increase_stack_offset(GetSize(context));
+    context.increase_stack_offset(GetSize());
 }
 
 void ParameterDeclaration::Print(std::ostream &stream) const
@@ -113,12 +113,12 @@ Parameter ParameterDeclaration::GetParameter(Context &context, int offset) const
     // Define parameter type for function
     if (IsPointer())
     {
-        return Parameter(GetIdentifier(), true, false, GetType(context), offset, GetDereferenceNumber());
+        return Parameter(GetIdentifier(), true, false, GetType(), offset, GetDereferenceNumber());
     }
-    return Parameter(GetIdentifier(), false, false, GetType(context), offset, 0);
+    return Parameter(GetIdentifier(), false, false, GetType(), offset, 0);
 }
 
-int ParameterDeclaration::GetSize(Context &context) const
+int ParameterDeclaration::GetSize() const
 {
     // Get size of parameter
     if (IsPointer())
@@ -126,7 +126,7 @@ int ParameterDeclaration::GetSize(Context &context) const
         types_size.at(Type::_INT);
     }
 
-    return types_size.at(GetType(context));
+    return types_size.at(GetType());
 }
 
 std::string ParameterDeclaration::GetIdentifier() const

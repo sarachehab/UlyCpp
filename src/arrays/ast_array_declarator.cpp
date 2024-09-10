@@ -18,7 +18,7 @@ std::string ArrayDeclarator::GetIdentifier() const
     throw std::runtime_error("ArrayDeclarator GetIdentifier: Identifier not found");
 }
 
-int ArrayDeclarator::GetSize(Context &context) const
+int ArrayDeclarator::GetSize() const
 {
     if (constant_expression_ == nullptr)
     {

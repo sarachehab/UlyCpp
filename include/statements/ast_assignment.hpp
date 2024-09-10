@@ -43,7 +43,7 @@ public:
     /**
      * @brief Get the size of the array
      */
-    int GetSize(Context &context) const;
+    int GetSize() const;
 
     /**
      * @brief Check if the assignment is an array initialization

@@ -15,11 +15,11 @@ struct TypedefSpec
     TypedefSpec()
         : number_pointers_(0), base_class_("empty"), type_(Type::_VOID) {}
 
-    TypedefSpec(Type type, int number_pointers)
-        : number_pointers_(number_pointers), base_class_(""), type_(type) {}
+    TypedefSpec(Type type, int number_pointers, int array_size)
+        : number_pointers_(number_pointers), base_class_(""), type_(type), array_size_(array_size) {}
 
-    TypedefSpec(std::string base_class, int number_pointers)
-        : number_pointers_(number_pointers), base_class_(base_class), type_(Type::_STRUCT) {}
+    TypedefSpec(std::string base_class, int number_pointers, int array_size)
+        : number_pointers_(number_pointers), base_class_(base_class), type_(Type::_STRUCT), array_size_(array_size) {}
 };
 
 typedef std::unordered_map<std::string, TypedefSpec> TypedefCorrespondance;

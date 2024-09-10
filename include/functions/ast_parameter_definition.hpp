@@ -35,10 +35,10 @@ public:
         delete declarator_;
     }
 
-    Type GetType(Context &context) const;
+    Type GetType() const;
     Parameter GetParameter(Context &context, int offset) const;
     std::string GetIdentifier() const;
-    int GetSize(Context &context) const;
+    int GetSize() const;
     bool IsPointer() const;
     int GetDereferenceNumber() const;
 

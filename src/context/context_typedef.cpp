@@ -28,18 +28,6 @@ TypedefSpec Context::get_typedef_spec(std::string label)
     throw std::runtime_error("Context::get_typedef_specs - no corresponding spec found");
 }
 
-int Context::get_typedef_base_pointers(std::string alias)
-{
-    TypedefSpec typedef_spec = get_typedef_spec(alias);
-    return typedef_spec.number_pointers_;
-}
-
-Type Context::get_typedef_base_type(std::string alias)
-{
-    TypedefSpec typedef_spec = get_typedef_spec(alias);
-    return typedef_spec.type_;
-}
-
 void Context::define_typedef(std::string label, TypedefSpec typedef_spec)
 {
     if (label.empty())

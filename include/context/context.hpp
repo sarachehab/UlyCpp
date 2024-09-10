@@ -479,10 +479,6 @@ public:
      */
     static void define_typedef(std::string label, TypedefSpec typedef_spec);
 
-    static int get_typedef_base_pointers(std::string alias);
-
-    static Type get_typedef_base_type(std::string alias);
-
     // TODO: Add functions to handle structs
 
 private:

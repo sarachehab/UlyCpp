@@ -13,6 +13,7 @@ private:
     Type type;
     int initial_number_pointers = 0;
     std::string base_type;
+    int initial_array_size = 0;
 
 public:
     TypedefDefinition(Node *declaration_specifier) : declaration_specifier_(declaration_specifier) { ExtractDeclarationSpecifier(); }
