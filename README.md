@@ -15,6 +15,8 @@ In this project, we implemented a C90 to RISC-V compiler using C++. The compiler
 * Globals
 * Control flow
 * Switch statement
+* Enums
+* Typedef
 
 
 ## Repository Structure
@@ -47,10 +49,7 @@ python3 test.py ../compiler_tests
 
 ## Future Work
 
-Over the summer, the codebase will be augmented to include:
-* Enums
-* Typedef
-* Structs
+Over the summer, the codebase will be augmented to include structs.
 
 
 ## Technologies Used
