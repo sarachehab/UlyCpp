@@ -6,6 +6,14 @@ void Context::define_variable(std::string identifier, Variable variable)
     {
         throw std::runtime_error("Context::define_variable - trying to define variable in empty scope");
     }
+
+    std::cout << "Defining " << identifier << ": " << std::endl;
+    std::cout << "\t type: " << int(variable.type) << std::endl;
+    std::cout << "\t array : " << variable.is_array << std::endl;
+    std::cout << "\t size: " << variable.size_array << std::endl;
+    std::cout << "\t pointer: " << variable.is_pointer << std::endl;
+    std::cout << "\t dereference: " << variable.dereferences_number << std::endl;
+    std::cout << "\t offset: " << variable.offset << std::endl;
     variable_bindings.back()[identifier] = variable;
 }
 

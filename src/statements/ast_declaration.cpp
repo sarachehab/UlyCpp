@@ -2,8 +2,14 @@
 
 void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    TypedefDefinition *typedef_definition = dynamic_cast<TypedefDefinition *>(type_specifier_);
+    if (typedef_definition)
+    {
+        return;
+    }
+
     Specifier *specifier = dynamic_cast<Specifier *>(type_specifier_);
-    specifier->DefineSpecifier(context);
+    specifier->DefineSpecifier();
 
     if (declarator_list_ == nullptr)
     {
@@ -15,14 +21,12 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
     int type_size = types_size.at(type);
 
     // Iterate over all declarations
-    NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
-    for (auto declarator : declarator_list->get_nodes())
+    for (auto declarator : declarator_list_->get_nodes())
     {
         Assignment *assignment = dynamic_cast<Assignment *>(declarator);
         Identifier *identifier = dynamic_cast<Identifier *>(declarator);
         ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(declarator);
         PointerDeclarator *pointer_declarator = dynamic_cast<PointerDeclarator *>(declarator);
-
         int offset = context.get_stack_offset();
 
         // Initialization
@@ -48,9 +52,9 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
         else if (array_declarator != nullptr)
         {
             // Get array size
-            int array_size = array_declarator->GetSize(context);
+            int array_size = array_declarator->GetSize();
 
-            if (array_declarator->GetSize(context) == -1)
+            if (array_size == -1)
             {
                 throw std::runtime_error("Declaration EmitRISC: Array size not specified");
             }
@@ -89,8 +93,14 @@ void Declaration::EmitRISC(std::ostream &stream, Context &context, std::string p
 
 void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::string passed_reg) const
 {
+    TypedefDefinition *typedef_definition = dynamic_cast<TypedefDefinition *>(type_specifier_);
+    if (typedef_definition)
+    {
+        return;
+    }
+
     Specifier *specifier = dynamic_cast<Specifier *>(type_specifier_);
-    specifier->DefineSpecifier(context);
+    specifier->DefineSpecifier();
 
     if (declarator_list_ == nullptr)
     {
@@ -102,8 +112,7 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
     int type_size = types_size.at(type);
 
     // Iterate over all declarations
-    NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
-    for (auto declarator_ : declarator_list->get_nodes())
+    for (auto declarator_ : declarator_list_->get_nodes())
     {
         Assignment *assignment = dynamic_cast<Assignment *>(declarator_);
         Identifier *identifier = dynamic_cast<Identifier *>(declarator_);
@@ -117,7 +126,7 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
         if (assignment != nullptr)
         {
             // Get number of elements if array
-            int array_size = assignment->GetSize(context);
+            int array_size = assignment->GetSize();
 
             // Determine if array
             bool is_array = assignment->IsArrayInitialization();
@@ -149,9 +158,9 @@ void Declaration::DeclareGlobal(std::ostream &stream, Context &context, std::str
         else if (array_declarator != nullptr)
         {
             // Get array size
-            int array_size = array_declarator->GetSize(context);
+            int array_size = array_declarator->GetSize();
 
-            if (array_declarator->GetSize(context) == -1)
+            if (array_size == -1)
             {
                 throw std::runtime_error("Declaration EmitRISC: Array size not specified");
             }
@@ -215,8 +224,6 @@ void Declaration::Print(std::ostream &stream) const
 
 int Declaration::GetScopeOffset(Context &context) const
 {
-    NodeList *declarator_list = dynamic_cast<NodeList *>(declarator_list_);
-
     // Get size of atomic type
     Specifier *type_specifier = dynamic_cast<Specifier *>(type_specifier_);
 
@@ -226,10 +233,10 @@ int Declaration::GetScopeOffset(Context &context) const
 
     int total_size = 0;
 
-    if (declarator_list != nullptr)
+    if (declarator_list_ != nullptr)
     {
         // Take into consideration size of array if it is an array
-        for (auto declaration_ : declarator_list->get_nodes())
+        for (auto declaration_ : declarator_list_->get_nodes())
         {
             ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(declaration_);
             Assignment *assignment = dynamic_cast<Assignment *>(declaration_);
@@ -239,12 +246,12 @@ int Declaration::GetScopeOffset(Context &context) const
             if (array_declarator != nullptr)
             {
                 int actual_type_size = array_declarator->IsPointer() ? types_size.at(Type::_INT) : type_size;
-                total_size = total_size + actual_type_size * array_declarator->GetSize(context);
+                total_size = total_size + actual_type_size * array_declarator->GetSize();
             }
             else if (assignment != nullptr)
             {
                 int actual_size = assignment->IsPointerInitialization() ? types_size.at(Type::_INT) : type_size;
-                type_size = total_size + type_size * assignment->GetSize(context);
+                type_size = total_size + type_size * assignment->GetSize();
             }
             else if (pointer_declarator != nullptr)
             {
@@ -267,6 +274,13 @@ int Declaration::GetScopeOffset(Context &context) const
 
 Type Declaration::GetType() const
 {
+
     Specifier *type_specifier = dynamic_cast<Specifier *>(type_specifier_);
-    return type_specifier->GetType();
+
+    if (type_specifier != nullptr)
+    {
+        return type_specifier->GetType();
+    }
+
+    throw std::runtime_error("Declaration::GetType - Not specifier");
 }

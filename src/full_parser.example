@@ -254,7 +254,7 @@ type_specifier
 	| DOUBLE
 	| SIGNED
 	| UNSIGNED
-  | struct_specifier
+  	| struct_specifier
 	| enum_specifier
 	| TYPE_NAME
 	;

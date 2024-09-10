@@ -5,7 +5,7 @@ Type EnumeratorSpecifier::GetType() const
     return Type::_INT;
 }
 
-void EnumeratorSpecifier::DefineSpecifier(Context &context) const
+void EnumeratorSpecifier::DefineSpecifier() const
 {
     if (enumerator_list_ != nullptr)
     {
@@ -15,11 +15,14 @@ void EnumeratorSpecifier::DefineSpecifier(Context &context) const
         for (auto node_ : enumerator_list_->get_nodes())
         {
             Enumerator *enumerator_ = dynamic_cast<Enumerator *>(node_);
-            enum_value = enumerator_->DefineEnumerator(context, enum_value);
+            enum_value = enumerator_->DefineEnumerator(enum_value);
             labels.push_back(enumerator_->GetLabel());
         }
+    }
 
-        context.define_enum(*identifier_, labels);
+    if (identifier_ != nullptr)
+    {
+        Context::define_enum(*identifier_);
     }
 }
 
@@ -38,4 +41,9 @@ void EnumeratorSpecifier::Print(std::ostream &stream) const
         enumerator_list_->Print(stream);
         stream << "}";
     }
+}
+
+bool EnumeratorSpecifier::IsSimpleDeclaration() const
+{
+    return enumerator_list_ == nullptr;
 }

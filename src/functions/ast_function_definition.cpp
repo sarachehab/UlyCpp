@@ -44,7 +44,7 @@ void FunctionDefinition::EmitRISC(std::ostream &stream, Context &context, std::s
         // Estimate total offset for function stack allocation
         context.increase_stack_offset(8);
         int initial_offset = 8 + direct_declarator_->GetScopeOffset();
-        int stack_allocated_space = compound_statement->GetScopeOffset(context) + initial_offset + 32;
+        int stack_allocated_space = compound_statement->GetScopeOffset(context) + initial_offset + 128;
 
         // Ensure stack is aligned
         stack_allocated_space = stack_allocated_space + (4 - stack_allocated_space % 4);

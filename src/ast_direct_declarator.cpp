@@ -88,3 +88,8 @@ int DirectDeclarator::GetDereferenceNumber() const
 
     return 0;
 }
+
+void DirectDeclarator::DefineRoot(Node *declaration)
+{
+    throw std::runtime_error("ArrayDeclarator::DefineRoot not implemented");
+}

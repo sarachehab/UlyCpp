@@ -258,7 +258,7 @@ std::string Assignment::GetIdentifier() const
     throw std::runtime_error("Assignment GetIdentifier: Not an identifier, array access, array declarator, declarator");
 }
 
-int Assignment::GetSize(Context &context) const
+int Assignment::GetSize() const
 {
     ArrayDeclarator *array_declarator = dynamic_cast<ArrayDeclarator *>(unary_expression_);
 
@@ -266,11 +266,11 @@ int Assignment::GetSize(Context &context) const
     if (array_declarator != nullptr)
     {
         // If no size specified in array declarator, get size from array initializer
-        if (array_declarator->GetSize(context) == -1)
+        if (array_declarator->GetSize() == -1)
         {
             return dynamic_cast<ArrayInitializer *>(expression_)->GetSize();
         }
-        return array_declarator->GetSize(context);
+        return array_declarator->GetSize();
     }
 
     return 1;
@@ -295,7 +295,7 @@ bool Assignment::IsPointerInitialization() const
 void Assignment::DeclareLocalScope(Type type, int offset, std::ostream &stream, Context &context) const
 {
     // Get number of elements if array
-    int array_size = GetSize(context);
+    int array_size = GetSize();
 
     // Determine if array
     bool is_array = IsArrayInitialization();

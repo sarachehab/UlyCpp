@@ -18,7 +18,7 @@ std::string ArrayDeclarator::GetIdentifier() const
     throw std::runtime_error("ArrayDeclarator GetIdentifier: Identifier not found");
 }
 
-int ArrayDeclarator::GetSize(Context &context) const
+int ArrayDeclarator::GetSize() const
 {
     if (constant_expression_ == nullptr)
     {
@@ -26,19 +26,13 @@ int ArrayDeclarator::GetSize(Context &context) const
     }
 
     IntConstant *int_constant = dynamic_cast<IntConstant *>(constant_expression_);
-    Identifier *enumerator = dynamic_cast<Identifier *>(constant_expression_);
 
     if (int_constant != nullptr)
     {
         return int_constant->GetValue();
     }
 
-    if (enumerator != nullptr)
-    {
-        return enumerator->GetValue(context);
-    }
-
-    throw std::runtime_error("ArrayDeclarator::GetSize - constant_expression neither enumerator not constant");
+    throw std::runtime_error("ArrayDeclarator::GetSize - constant_expression neither enumerator nor constant");
 }
 
 void ArrayDeclarator::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const
@@ -86,4 +80,22 @@ int ArrayDeclarator::GetDereferenceNumber() const
     }
 
     return 0;
+}
+
+void ArrayDeclarator::DefineRoot(Node *declaration)
+{
+    if (identifier_ == nullptr)
+    {
+        identifier_ = declaration;
+        return;
+    }
+
+    Declarator *declarator = dynamic_cast<Declarator *>(identifier_);
+
+    if (declarator != nullptr)
+    {
+        return declarator->DefineRoot(declaration);
+    }
+
+    throw std::runtime_error("PointerDeclarator::DefineRoot - not nullptr or Declarator");
 }

@@ -24,6 +24,7 @@
 	std::string  	*string;
 	char			character;
 	yytokentype  	token;
+	EnumeratorSpecifier *enumerator_specifier;
 }
 
 %token IDENTIFIER INT_CONSTANT FLOAT_CONSTANT STRING_LITERAL DOUBLE_CONSTANT CHAR_LITERAL
@@ -37,20 +38,21 @@
 %type <node> translation_unit external_declaration function_definition primary_expression postfix_expression argument_expression_list
 %type <node> unary_expression cast_expression multiplicative_expression additive_expression shift_expression relational_expression
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
-%type <node> conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers init_declarator_list
+%type <node> conditional_expression assignment_expression expression constant_expression declaration declaration_specifiers
 %type <node> init_declarator type_specifier struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
-%type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_list parameter_declaration
-%type <node> identifier_list type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement labeled_statement
+%type <node> struct_declarator enumerator declarator direct_declarator parameter_list parameter_declaration enum_specifier
+%type <node> identifier_list type_name abstract_declarator direct_abstract_declarator initializer statement labeled_statement
+
 %type <node> compound_statement declaration_list expression_statement selection_statement iteration_statement jump_statement
 
-%type <nodes> statement_list
+%type <nodes> statement_list init_declarator_list initializer_list enumerator_list
 
 %type <string> unary_operator assignment_operator storage_class_specifier
 
-%type <number_int> INT_CONSTANT
+%type <number_int> INT_CONSTANT pointer
 %type <number_float> FLOAT_CONSTANT
 %type <number_double> DOUBLE_CONSTANT
-%type <string> IDENTIFIER STRING_LITERAL
+%type <string> IDENTIFIER STRING_LITERAL TYPE_NAME
 %type <character> CHAR_LITERAL
 
 
@@ -75,29 +77,31 @@ function_definition
 	;
 
 declaration_specifiers
-	: type_specifier { $$ = $1; }
+	: type_specifier 							{ $$ = $1; }
+	| TYPEDEF declaration_specifiers			{ $$ = new TypedefDefinition($2); }
 	;
 
 type_specifier
-	: INT 				{ $$ = new TypeSpecifier(Type::_INT); }
-	| FLOAT 			{ $$ = new TypeSpecifier(Type::_FLOAT); }
-	| DOUBLE 			{ $$ = new TypeSpecifier(Type::_DOUBLE); }
-	| CHAR 				{ $$ = new TypeSpecifier(Type::_CHAR); }
-	| UNSIGNED 			{ $$ = new TypeSpecifier(Type::_UNSIGNED_INT); }
-	| SHORT 			{ $$ = new TypeSpecifier(Type::_SHORT); }
-	| VOID				{ $$ = new TypeSpecifier(Type::_VOID); }
-	| enum_specifier	{ $$ = $1; }
+	: INT 						{ $$ = new TypeSpecifier(Type::_INT); }
+	| FLOAT 					{ $$ = new TypeSpecifier(Type::_FLOAT); }
+	| DOUBLE 					{ $$ = new TypeSpecifier(Type::_DOUBLE); }
+	| CHAR 						{ $$ = new TypeSpecifier(Type::_CHAR); }
+	| UNSIGNED 					{ $$ = new TypeSpecifier(Type::_UNSIGNED_INT); }
+	| SHORT 					{ $$ = new TypeSpecifier(Type::_SHORT); }
+	| VOID						{ $$ = new TypeSpecifier(Type::_VOID); }
+	| enum_specifier			{ $$ = $1; }
 	;
 
 enum_specifier
-	: ENUM '{' enumerator_list '}'				{ NodeList* enumerator_list = dynamic_cast<NodeList *>($3); $$ = new EnumeratorSpecifier(enumerator_list); }
-	| ENUM IDENTIFIER '{' enumerator_list '}'	{ NodeList* enumerator_list = dynamic_cast<NodeList *>($4); $$ = new EnumeratorSpecifier($2, enumerator_list); }
-	| ENUM IDENTIFIER							{ $$ = new EnumeratorSpecifier($2); }
+	: ENUM '{' enumerator_list '}'				{ $$ = new EnumeratorSpecifier($3); }
+	| ENUM IDENTIFIER '{' enumerator_list '}'	{ $$ = new EnumeratorSpecifier($2, $4); }
+	| ENUM INT									{ $$ = new TypeSpecifier(Type::_INT); }
 	;
+
 
 enumerator_list
 	: enumerator							{ $$ = new NodeList($1); }
-	| enumerator_list ',' enumerator		{ NodeList* enumerator_list = dynamic_cast<NodeList *>($1); enumerator_list->PushBack($3); $$ = enumerator_list; }
+	| enumerator_list ',' enumerator		{ $1->PushBack($3); $$ = $1; }
 	;
 
 enumerator
@@ -107,12 +111,12 @@ enumerator
 
 declarator
 	: direct_declarator 			{ $$ = $1; }
-	| pointer direct_declarator 	{ PointerDeclarator* _ptr = new PointerDeclarator($2); for (int i = 1; i < dynamic_cast<IntConstant *>($1)->GetValue(); i++) { _ptr = new PointerDeclarator(_ptr); } $$ = _ptr; delete $1; }
+	| pointer direct_declarator 	{ PointerDeclarator* _ptr = new PointerDeclarator($2); for (int i = 1; i < $1; i++) { _ptr = new PointerDeclarator(_ptr); } $$ = _ptr; }
 	;
 
 pointer
-	: '*'			{ $$ = new IntConstant(1); }
-	| '*' pointer	{ $$ = new IntConstant(dynamic_cast<IntConstant *>($2)->GetValue() + 1); delete $2; }
+	: '*'			{ $$ = 1; }
+	| '*' pointer	{ $$ = $2 + 1; }
 
 direct_declarator
 	: IDENTIFIER                						{ $$ = new Identifier($1); }
@@ -190,16 +194,19 @@ argument_expression_list
 
 unary_expression
 	: postfix_expression
-	| '+' cast_expression				{ $$ = $2; }
-	| '-' cast_expression				{ $$ = new Negate($2); }
-	| '~' cast_expression				{ $$ = new OneComplement($2); }
-	| '!' cast_expression				{ $$ = new Inverse($2); }
-	| '&' cast_expression				{ $$ = new AddressOf($2); }
-	| '*' cast_expression				{ $$ = new Dereference($2); }
-	| SIZEOF unary_expression			{ $$ = new SizeOf($2);}
-	| SIZEOF '(' type_specifier ')'		{ $$ = new SizeOf($3); }
-	| INC_OP unary_expression			{ Identifier* identifier_ = dynamic_cast<Identifier *>($2); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new Prefixincrement(identifier_, new Addition(operator_, new IntConstant(1))); }
-	| DEC_OP unary_expression			{ Identifier* identifier_ = dynamic_cast<Identifier *>($2); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new Prefixincrement(identifier_, new Substraction(operator_, new IntConstant(1))); }
+	| '+' cast_expression													{ $$ = $2; }
+	| '-' cast_expression													{ $$ = new Negate($2); }
+	| '~' cast_expression													{ $$ = new OneComplement($2); }
+	| '!' cast_expression													{ $$ = new Inverse($2); }
+	| '&' cast_expression													{ $$ = new AddressOf($2); }
+	| '*' cast_expression													{ $$ = new Dereference($2); }
+	| SIZEOF unary_expression												{ $$ = new SizeOf($2);}
+	| SIZEOF '(' type_specifier ')'											{ $$ = new SizeOf($3); }
+	| SIZEOF '(' type_specifier pointer ')'									{ $$ = new SizeOf($3, $4); }
+	| SIZEOF '(' type_specifier '[' constant_expression ']' ')'				{ $$ = new SizeOf($3, $5); }
+	| SIZEOF '(' type_specifier pointer '[' constant_expression ']' ')'		{ $$ = new SizeOf($3, $4, $6); }
+	| INC_OP unary_expression												{ Identifier* identifier_ = dynamic_cast<Identifier *>($2); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new Prefixincrement(identifier_, new Addition(operator_, new IntConstant(1))); }
+	| DEC_OP unary_expression												{ Identifier* identifier_ = dynamic_cast<Identifier *>($2); Identifier *operator_ = new Identifier(new std::string(identifier_->GetIdentifier())); $$ = new Prefixincrement(identifier_, new Substraction(operator_, new IntConstant(1))); }
 	;
 
 
@@ -291,13 +298,13 @@ expression
 	;
 
 declaration
-	: declaration_specifiers init_declarator_list ';'	{ $$ = new Declaration($1, $2); }
+	: declaration_specifiers init_declarator_list ';'	{ TypedefDefinition *typedef_definition = dynamic_cast<TypedefDefinition *>($1); if (typedef_definition != nullptr) { typedef_definition->DefineTypedef($2); } $$ = new Declaration($1, $2); }
 	| declaration_specifiers ';'						{ $$ = new Declaration($1); }
 	;
 
 init_declarator_list
 	: init_declarator							{ $$ = new NodeList($1); }
-	| init_declarator_list ',' init_declarator	{ NodeList *declarator_list = dynamic_cast<NodeList *>($1); declarator_list->PushBack($3); $$ = declarator_list; }
+	| init_declarator_list ',' init_declarator	{ $1->PushBack($3); $$ = $1; }
 	;
 
 init_declarator
@@ -313,7 +320,7 @@ initializer
 
 initializer_list
 	: initializer						{ $$ = new NodeList($1); }
-	| initializer_list ',' initializer	{ NodeList *node_list = dynamic_cast<NodeList *>($1); node_list->PushBack($3); $$ = node_list; }
+	| initializer_list ',' initializer	{ $1->PushBack($3); $$ = $1; }
 	;
 
 declaration_list

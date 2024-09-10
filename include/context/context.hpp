@@ -18,6 +18,7 @@
 #include "context_conversion.hpp"
 #include "context_chars.hpp"
 #include "context_enums.hpp"
+#include "context_typedef.hpp"
 
 /**
  * @brief This class represents the context of the program.
@@ -414,27 +415,7 @@ public:
      */
     void print_global(std::ostream &stream) const;
 
-    // ============= POINTERS ==============
-    /**
-     * @brief This functions is used within the lexer to simplify pointer expressions if it is possible to do so.
-     *
-     * It cancels out pairs of * and & operators.
-     */
-    static char *cancel_pointer_pairs(const char *sequence);
-
     // ============= CHAR LITERALS ==============
-    /**
-     * @brief This functions is used within the lexer to simplify char literals if it is possible to do so.
-     *
-     * It processes escape sequences in char literals.
-     */
-    static char *process_char(const char *sequence);
-
-    /**
-     * @brief This function is used within the lexer to convert to string in case of escape sequences.
-     */
-    static std::string preserve_escape_sequences(const char *processed_characters);
-
     /**
      * @brief This function saves the char literals to the char_declarations vector.
      *
@@ -457,22 +438,21 @@ public:
      *
      * @param identifier: the identifier to check
      */
-    bool is_enum(std::string identifier);
+    static bool is_enum(std::string identifier);
 
     /**
      * @brief Gets enum value
      *
      * @param label: the enum label
      */
-    int get_enum_value(std::string label);
+    static int get_enum_value(std::string label);
 
     /**
      * @brief define enum structure
      *
      * @param enum_name: name of enum structure
-     * @param enum_labels: list of names of all enum values taken
      */
-    void define_enum(std::string enum_name, std::vector<std::string> enum_labels);
+    static void define_enum(std::string enum_name);
 
     /**
      * @brief Associate enum label to int value
@@ -480,9 +460,26 @@ public:
      * @param enum_label: enum label
      * @param value: value associated to enum_label
      */
-    void define_enum_label_value_correspondance(std::string enum_label, int value);
+    static void define_enum_label_value_correspondance(std::string enum_label, int value);
 
-    // TODO: Add functions to handle enums, structs, typedef
+    // ============= TYPEDEF ==============
+
+    /**
+     * @brief check whether identifier is a typedef specifier
+     */
+    static bool is_typedef(std::string label);
+
+    /**
+     * @brief Get the specifications of the typedef lookedup
+     */
+    static TypedefSpec get_typedef_spec(std::string label);
+
+    /**
+     * @brief Get the specifications of the typedef lookedup
+     */
+    static void define_typedef(std::string label, TypedefSpec typedef_spec);
+
+    // TODO: Add functions to handle structs
 
 private:
     // ============= REGISTER ALLOCATION ==============
@@ -650,15 +647,16 @@ private:
     // ============= ENUMS ==============
 
     /**
-     * @brief Store enums and corresponding values
-     */
-    std::unordered_map<std::string, std::vector<std::string>> enums_definitions;
-
-    /**
      * @brief Store values associated with enums identifiers
      * This works on the basis of scopes
      */
-    std::vector<EnumsCorrespondance> enums_correspondance;
+    static std::vector<EnumsCorrespondance> enums_correspondance;
+
+    // =========== CUSTOM TYPES ===========
+    /**
+     * @brief Store the typdefs
+     */
+    static std::vector<TypedefCorrespondance> custom_typedef;
 };
 
 #endif

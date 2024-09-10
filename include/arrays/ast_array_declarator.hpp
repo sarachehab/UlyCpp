@@ -28,7 +28,7 @@ public:
     /**
      * @brief Get the size of the array
      */
-    int GetSize(Context &context) const;
+    int GetSize() const;
     bool IsPointer() const override;
 
     virtual std::vector<Parameter> GetParameters(Context &context) const override;
@@ -39,6 +39,8 @@ public:
 
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const;
     void Print(std::ostream &stream) const;
+
+    void DefineRoot(Node *declaration);
 };
 
 #endif

@@ -47,6 +47,8 @@ public:
 
     bool IsPointer() const override;
     int GetDereferenceNumber() const override;
+
+    void DefineRoot(Node *declaration);
 };
 
 #endif

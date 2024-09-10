@@ -54,22 +54,21 @@ bool Dereference::IsPointer(Context &context) const
 
     if (variable_specs.dereferences_number == PointerDereferenceCount())
     {
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 
 int Dereference::PointerDereferenceCount() const
 {
-    int count = 1;
     Dereference *dereference = dynamic_cast<Dereference *>(expression_);
 
     if (dereference != nullptr)
     {
-        count += dereference->PointerDereferenceCount();
+        return 1 + dereference->PointerDereferenceCount();
     }
 
-    return count;
+    return 1;
 }
 
 void Dereference::EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const

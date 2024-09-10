@@ -16,6 +16,8 @@ public:
     std::string GetOperation() const;
     bool IsPointerOperation(Context &context) const override;
 
+    int GetAddressOfCount() const;
+
     std::string GetIdentifier() const;
     Type GetType(Context &context) const override;
     void EmitRISC(std::ostream &stream, Context &context, std::string passed_reg) const override;

@@ -13,9 +13,9 @@ private:
     NodeList *enumerator_list_;
 
 public:
-    EnumeratorSpecifier(std::string *identifier) : identifier_(identifier), enumerator_list_(nullptr) {}
-    EnumeratorSpecifier(NodeList *enumerator_list) : identifier_(nullptr), enumerator_list_(enumerator_list) {}
-    EnumeratorSpecifier(std::string *identifier, NodeList *enumerator_list) : identifier_(identifier), enumerator_list_(enumerator_list) {}
+    EnumeratorSpecifier(std::string *identifier) : identifier_(identifier), enumerator_list_(nullptr) { DefineSpecifier(); }
+    EnumeratorSpecifier(NodeList *enumerator_list) : identifier_(nullptr), enumerator_list_(enumerator_list) { DefineSpecifier(); }
+    EnumeratorSpecifier(std::string *identifier, NodeList *enumerator_list) : identifier_(identifier), enumerator_list_(enumerator_list) { DefineSpecifier(); }
 
     ~EnumeratorSpecifier()
     {
@@ -29,10 +29,12 @@ public:
         }
     }
 
-    void DefineSpecifier(Context &context) const override;
+    void DefineSpecifier() const override;
 
     virtual Type GetType() const override;
     virtual void Print(std::ostream &stream) const override;
+
+    bool IsSimpleDeclaration() const;
 };
 
 #endif
