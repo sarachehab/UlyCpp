@@ -20,6 +20,11 @@ void SizeOf::EmitRISC(std::ostream &stream, Context &context, std::string passed
     if (type_specifier != nullptr)
     {
         type = type_specifier->GetType();
+
+        if (pointer_ > 0)
+        {
+            type = Type::_INT;
+        }
     }
     else if (operand != nullptr)
     {
@@ -30,12 +35,31 @@ void SizeOf::EmitRISC(std::ostream &stream, Context &context, std::string passed
         throw std::runtime_error("SizeOf: unary_expression_ is not a TypeSpecifier or Operand");
     }
 
-    stream << "li " << passed_reg << ", " << types_size.at(type) << std::endl;
+    int size = types_size.at(type);
+
+    if (constant_expression_)
+    {
+        size *= dynamic_cast<IntConstant *>(constant_expression_)->GetValue();
+    }
+
+    stream << "li " << passed_reg << ", " << size << std::endl;
 }
 
 void SizeOf::Print(std::ostream &stream) const
 {
     stream << "SizeOf(";
     unary_expression_->Print(stream);
+
+    for (int i = 0; i < pointer_; i++)
+    {
+        stream << "*";
+    }
+
+    if (constant_expression_)
+    {
+        stream << "[";
+        constant_expression_->Print(stream);
+        stream << "]";
+    }
     stream << ")";
 }
